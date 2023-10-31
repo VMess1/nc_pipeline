@@ -65,7 +65,7 @@ resource "aws_iam_role_policy_attachment" "lambda_s3_policy_attachment" {
     policy_arn = aws_iam_policy.s3_policy.arn
 }
 
-#Attaches cw policy to the lambda_ingestion_role
+#Attaches cw policy to the lambda_ingestion_roles
 resource "aws_iam_role_policy_attachment" "lambda_cw_policy_attachment" {
     role = aws_iam_role.lambda_ingestion_role.name
     policy_arn = aws_iam_policy.cw_policy.arn
