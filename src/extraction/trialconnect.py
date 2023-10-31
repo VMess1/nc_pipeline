@@ -16,7 +16,7 @@ def get_con():
 
 
 def select_payment(con):
-    query = "SELECT * FROM payment LIMIT 1"
+    query = "SELECT * FROM payment LIMIT 2"
     data = con.run(query)
     return data
 
