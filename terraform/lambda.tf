@@ -4,8 +4,8 @@ resource "aws_lambda_function" "lambda_ingestion" {
     role = aws_iam_role.lambda_ingestion_role.arn
     s3_bucket = aws_s3_bucket.code_bucket.id
     s3_key = aws_s3_object.lambda_code.key
-    handler = "trialconnect.function_name"    #update this with function name
-    runtime = "python 3.11"
+    handler = "testfunc.handler"    #update this with function name
+    runtime = "python3.11"
 
 }
 

@@ -42,7 +42,7 @@ data "aws_iam_policy_document" "s3_document" {
   statement {
     actions = ["s3:PutObject"]
     resources = [
-      "${aws_s3_bucket.data_bucket.arn}/*", #NEEDS UPDATING WHEN BUCKET CREATED
+      "${aws_s3_bucket.ingestion_bucket.arn}/*", #NEEDS UPDATING WHEN BUCKET CREATED
     ]
   }
 }

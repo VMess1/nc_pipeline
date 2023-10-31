@@ -8,7 +8,7 @@ resource "aws_s3_bucket" "ingestion_bucket" {
 }
 
 resource "aws_s3_object" "lambda_code" {
-  key    = "function_name/function.zip"      #updating(function name)
-  source = "${path.module}/../function.zip"
+  key    = "ingestion_function/function.zip"      #updating(function name)
+  source = "${path.module}/../function.zip"  #update with proper name
   bucket = aws_s3_bucket.code_bucket.id
 }

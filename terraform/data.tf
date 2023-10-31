@@ -7,6 +7,6 @@ data "aws_region" "current" {}
 #zips the lambda function ready for use
 data "archive_file" "lambda" {
   type        = "zip"
-  source_file = "${path.module}/../src/file_reader/reader.py"  #change this(function name)
+  source_file = "${path.module}/../src/extraction/testfunc.py"  #change this(function name)
   output_path = "${path.module}/../function.zip"  
 }
