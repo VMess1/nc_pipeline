@@ -26,6 +26,19 @@ jobs:
       - name: Make dev-setup
         run: make dev-setup
 
+      - name: Make security-test
+        run: make security-test
+
+      - name: Make run-flake
+        run: make run-flake
+              
+      - name: Make unit-test
+        run: make unit-test
+      
+      - name: Make check-coverage
+        run: make check-coverage
+
+
       - name: Make run-checks
         run: make run-checks
 
