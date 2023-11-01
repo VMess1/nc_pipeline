@@ -6,7 +6,19 @@ resource "aws_lambda_function" "lambda_ingestion" {
     s3_key = aws_s3_object.lambda_code.key
     handler = "testfunc.handler"    #update this with function name
     runtime = "python3.11"
+    layers = [aws_lambda_layer_version.layer_dependencies.arn]
 }
+
+# lambda dependencies
+resource "aws_lambda_layer_version" "layer_dependencies" {
+  layer_name = "layer_dependencies"
+  s3_bucket = aws_s3_bucket.code_bucket.id
+  s3_key = aws_s3_object.layer_code.key
+  compatible_runtimes = ["python3.11"]
+  depends_on = [ aws_s3_object.layer_code ]
+}
+
+
 
 #giving eventbridge permission to invoke lambda
 resource "aws_lambda_permission" "allow_eventbridge" {
