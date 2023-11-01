@@ -5,9 +5,13 @@ import boto3
 import os
 import json
 from botocore.exceptions import ClientError
-from src.extraction.extraction_lambda import get_credentials
+from src.extraction.extraction_lambda import (
+    get_credentials,
+    select_table,
+    select_table_headers,
+)
 from pg8000.native import Connection, InterfaceError, DatabaseError
-from src.extraction.extraction_lambda import select_table, select_table_headers
+
 
 load_dotenv()
 
