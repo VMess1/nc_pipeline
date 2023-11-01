@@ -1,7 +1,8 @@
 venv/
 .env
 
-
+.pytest_cache
+__pycache__
 
 
 # Local .terraform directories
