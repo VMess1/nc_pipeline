@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 import pytest
 import boto3
 import os
+from datetime import datetime
 import json
 from botocore.exceptions import ClientError
 from src.extraction.extraction_lambda import (
@@ -66,26 +67,45 @@ class TestGetCredentials:
 
 class TestSelectFunctions:
     def test_select_table_returns_department_table_rows(self, test_connection):
-        data = select_table(test_connection, "department")
+        data = select_table(
+            test_connection, "department", datetime(2022, 10, 10, 11, 30, 30)
+        )
         assert data[0] == [
             1,
             "departmentname-1",
             "location-1",
             "manager-1",
-            "01-01-2015",
-            "01-02-2015",
+            datetime(2023, 10, 10, 11, 30, 30),
+            datetime(2023, 10, 10, 11, 30, 30),
         ]
         assert data[5] == [
             6,
             "departmentname-6",
             "location-6",
             "manager-6",
-            "06-01-2015",
-            "06-02-2015",
+            datetime(2023, 10, 10, 11, 30, 30),
+            datetime(2023, 10, 10, 11, 30, 30),
+        ]
+
+    def test_select_table_returns_department_table_only_rows_in_which_last_updated_is_greater_than_last_extraction(
+        self, test_connection
+    ):
+        data = select_table(
+            test_connection, "department", datetime(2024, 10, 10, 11, 30, 30)
+        )
+        assert data[0] == [
+            9,
+            "departmentname-9",
+            "location-9",
+            "manager-9",
+            datetime(2023, 10, 10, 11, 30, 30),
+            datetime(2025, 10, 10, 11, 30, 30),
         ]
 
     def test_select_table_returns_staff_table_rows(self, test_connection):
-        data = select_table(test_connection, "staff")
+        data = select_table(
+            test_connection, "staff", datetime(2022, 10, 10, 11, 30, 30)
+        )
         print(data)
         assert data[0] == [
             1,
@@ -93,8 +113,8 @@ class TestSelectFunctions:
             "lastname-1",
             1,
             "name-1@email.com",
-            "01-01-2020",
-            "01-02-2020",
+            datetime(2023, 10, 10, 11, 30, 30),
+            datetime(2023, 10, 10, 11, 30, 30),
         ]
         assert data[5] == [
             6,
@@ -102,8 +122,8 @@ class TestSelectFunctions:
             "lastname-6",
             6,
             "name-6@email.com",
-            "06-01-2020",
-            "06-02-2020",
+            datetime(2023, 10, 10, 11, 30, 30),
+            datetime(2023, 10, 10, 11, 30, 30),
         ]
 
     def test_select_table_headers_returns_department_table_headers(
