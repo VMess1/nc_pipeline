@@ -2,8 +2,6 @@ venv/
 .env
 
 
-
-
 # Local .terraform directories
 **/.terraform/*
 
