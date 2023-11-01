@@ -2,7 +2,7 @@ name: Terraform deploy
 on:
   push:
     branches:
-      - tfdependencies
+      - main
 # only runs when pushing code to main
 # can adapt to individual branch
   
