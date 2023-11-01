@@ -1,5 +1,0 @@
-Need to create an s3 bucket
-need to link the lambda function to a role
-the role needs access to the bucket to put things in
-needs a good naming structure to help with accessing the data easily
-have seperate files in the bucket for the different parts of the db? - check in with others
