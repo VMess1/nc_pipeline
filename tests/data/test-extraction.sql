@@ -9,7 +9,7 @@ CREATE TABLE department (
     department_name VARCHAR,
     location VARCHAR,
     manager VARCHAR,
-    create_at VARCHAR,
+    created_at VARCHAR,
     last_updated VARCHAR
 );
 

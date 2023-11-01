@@ -25,9 +25,6 @@ def get_credentials(secret_name):
         return err
 
 
-credentials = get_credentials("OLTPCredentials")
-
-
 def get_con(credentials):
     return Connection(
         user=credentials["username"],
@@ -38,17 +35,17 @@ def get_con(credentials):
 
 
 def select_table(con, table_name):
-    query = f"SELECT * FROM {table_name} LIMIT 2"
+    query = f"SELECT * FROM {table_name}"
     data = con.run(query)
     return data
 
 
 def select_table_headers(con, table_name):
-    query = f"select column_name from INFORMATION_SCHEMA.COLUMNS where table_name = '{table_name}'"
+    query = f"select column_name from INFORMATION_SCHEMA.COLUMNS where table_name = '{table_name}' ORDER BY ORDINAL_POSITION"
     data = con.run(query)
     return data
 
 
-con = get_con(credentials)
-pprint.pprint(select_table(con, "payment"))
-pprint.pprint(select_table_headers(con, "payment"))
+# con = get_con(credentials)
+# pprint.pprint(select_table(con, "payment"))
+# pprint.pprint(select_table_headers(con, "payment"))
