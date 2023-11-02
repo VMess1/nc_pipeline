@@ -1,0 +1,78 @@
+name: Terraform deploy
+on:
+  push:
+    branches:
+      - main
+# only runs when pushing code to main
+# can adapt to individual branch
+  
+
+jobs:
+
+  run-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Setup- Python
+        uses: actions/checkout@v4
+        with: 
+          python-version: '3.11'
+      
+      - name: Install requirements
+        run: make requirements
+
+      - name: Make dev-setup
+        run: make dev-setup
+
+      - name: Make security-test
+        run: make security-test
+  
+
+      - name: Make run-flake
+        run: make run-flake
+  #will fail as looking for a test directory but ours is called 'tests'
+              
+      - name: Make unit-test
+        run: make unit-test
+      
+      - name: Make check-coverage
+        run: make check-coverage
+
+
+      - name: Make run-checks
+        run: make run-checks
+
+  #can seperate out make run-checks if we prefer
+  #doing all the unit-tests in 'make run-checks'
+  
+  deploy:
+    runs-on: ubuntu-latest
+    needs: run-checks
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+      
+      - name: Configure AWS CLI
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-2
+    #
+      
+      - name: Setup terraform
+        uses: hashicorp/setup-terraform@v2
+
+      - name: Terraform init
+        working-directory: terraform
+        run: terraform init
+
+      - name: Terraform plan
+        working-directory: terraform
+        run: terraform plan
+
+      - name: Terraform apply
+        working-directory: terraform
+        run: terraform apply -auto-approve
