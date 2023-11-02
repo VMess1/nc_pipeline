@@ -25,6 +25,7 @@ def get_credentials(secret_name):
         print("An unexpected error has occurred.")
         return err
 
+
 def get_con(credentials):
     return Connection(
         user=credentials["username"],
@@ -34,8 +35,8 @@ def get_con(credentials):
     )
 
 
-def select_table(con, table_name):
-    query = f"SELECT * FROM {table_name}"
+def select_table(con, table_name, last_extraction):
+    query = f"SELECT * FROM {table_name} WHERE last_updated > '{last_extraction}'"
     data = con.run(query)
     print(data)
     return data
