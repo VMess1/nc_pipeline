@@ -24,7 +24,6 @@ def get_credentials(secret_name):
         print("An unexpected error has occurred.")
         return err
 
-
 def get_con(credentials):
     return Connection(
         user=credentials["username"],
@@ -32,7 +31,6 @@ def get_con(credentials):
         database=credentials["dbname"],
         password=credentials["password"],
     )
-
 
 def select_table(con, table_name):
     query = f"SELECT * FROM {table_name}"
