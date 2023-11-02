@@ -28,9 +28,11 @@ jobs:
 
       - name: Make security-test
         run: make security-test
+  
 
       - name: Make run-flake
         run: make run-flake
+  #will fail as looking for a test directory but ours is called 'tests'
               
       - name: Make unit-test
         run: make unit-test
