@@ -4,6 +4,7 @@ import os
 import json
 from botocore.exceptions import ClientError
 from pg8000.native import Connection, InterfaceError, DatabaseError
+from src.extraction.sql2csv_convert import convert_to_csv
 
 
 def get_credentials(secret_name):
@@ -32,9 +33,11 @@ def get_con(credentials):
         password=credentials["password"],
     )
 
+
 def select_table(con, table_name):
     query = f"SELECT * FROM {table_name}"
     data = con.run(query)
+    print(data)
     return data
 
 
@@ -42,6 +45,14 @@ def select_table_headers(con, table_name):
     query = f"select column_name from INFORMATION_SCHEMA.COLUMNS where table_name = '{table_name}' ORDER BY ORDINAL_POSITION"
     data = con.run(query)
     return data
+
+
+def main():
+    credentials = get_credentials("OLTPCredentials")
+    con = get_con(credentials)
+    data = select_table(con, "department")
+    headers = select_table_headers(con, "department")
+    csv = convert_to_csv("department", data, headers)
 
 
 # con = get_con(credentials)
