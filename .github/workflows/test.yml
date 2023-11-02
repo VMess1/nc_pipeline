@@ -40,6 +40,8 @@ jobs:
       - name: Make check-coverage
         run: make check-coverage
 
+      - name: Make layer setup
+        run: make layer-setup
 
       - name: Make run-checks
         run: make run-checks
