@@ -5,6 +5,8 @@ import json
 from botocore.exceptions import ClientError
 from pg8000.native import Connection, InterfaceError, DatabaseError
 from src.extraction.sql2csv_convert import convert_to_csv
+from datetime import datetime
+from src.extraction.upload_to_s3 import upload_to_s3
 
 
 def get_credentials(secret_name):
@@ -38,7 +40,6 @@ def get_con(credentials):
 def select_table(con, table_name, last_extraction):
     query = f"SELECT * FROM {table_name} WHERE last_updated > '{last_extraction}'"
     data = con.run(query)
-    print(data)
     return data
 
 
@@ -51,9 +52,14 @@ def select_table_headers(con, table_name):
 def main():
     credentials = get_credentials("OLTPCredentials")
     con = get_con(credentials)
-    data = select_table(con, "department")
+    data = select_table(con, "department", datetime(2021, 10, 10, 11, 30, 30))
     headers = select_table_headers(con, "department")
     csv = convert_to_csv("department", data, headers)
+    return_message = upload_to_s3(csv)
+    print(return_message)
+
+
+main()
 
 
 # con = get_con(credentials)

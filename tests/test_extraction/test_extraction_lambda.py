@@ -58,7 +58,7 @@ class TestGetCredentials:
         output = get_credentials(secret_id)
         assert output == secret_values
 
-    def test_get_credentials(self, secrets):
+    def test_get_credentials_errors(self, secrets):
         secret_id = "test_secret"
         output = get_credentials(secret_id)
         assert output["Error"]["Code"] == "ResourceNotFoundException"
