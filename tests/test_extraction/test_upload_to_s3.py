@@ -18,7 +18,7 @@ def test_s3_upload():
 
 
 @mock_s3
-def test_errors_handled_correctly():
+def test_bucket_naming_errors_handled_correctly():
     conn = boto3.client("s3", region_name="eu-west-2")
     conn.create_bucket(
         Bucket="nc-group2-ingestion-bucket",
@@ -30,7 +30,7 @@ def test_errors_handled_correctly():
 
 
 @mock_s3
-def test_errors_handled_correct():
+def test_parameter_errors_handled_correctly():
     conn = boto3.client("s3", region_name="eu-west-2")
     conn.create_bucket(
         Bucket="nc-group3-ingestion-bucket",

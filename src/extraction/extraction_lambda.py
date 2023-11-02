@@ -52,7 +52,7 @@ def select_table_headers(con, table_name):
 def main():
     credentials = get_credentials("OLTPCredentials")
     con = get_con(credentials)
-    data = select_table(con, "department", datetime(2021, 10, 10, 11, 30, 30))
+    data = select_table(con, "department", datetime(2000, 10, 10, 11, 30, 30))
     headers = select_table_headers(con, "department")
     csv = convert_to_csv("department", data, headers)
     return_message = upload_to_s3(csv)
