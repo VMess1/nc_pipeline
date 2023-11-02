@@ -49,14 +49,25 @@ def select_table_headers(con, table_name):
     return data
 
 
-def main():
+def get_tables(con):
+    query = """SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES
+              WHERE table_schema='public' AND TABLE_TYPE = 'BASE TABLE';"""
+    return con.run(query)
+
+
+def main(event, context):
+    ssm = boto3.client("ssm", region_name="eu-west-2")
     credentials = get_credentials("OLTPCredentials")
     con = get_con(credentials)
-    data = select_table(con, "department", datetime(2000, 10, 10, 11, 30, 30))
-    headers = select_table_headers(con, "department")
-    csv = convert_to_csv("department", data, headers)
-    return_message = upload_to_s3(csv)
-    print(return_message)
+    last_extraction = ssm.get_parameter(name="last_extraction")
+    table_names = get_tables(con)
+    for table_name in table_names:
+        data = select_table(con, table_name, last_extraction)
+        if len(data) > 0:
+            ssm.put_parameter(name="last_extraction", value=datetime.now())
+            headers = select_table_headers(con, table_name)
+            csv = convert_to_csv(table_name, data, headers)
+            upload_to_s3(csv)
 
 
 main()

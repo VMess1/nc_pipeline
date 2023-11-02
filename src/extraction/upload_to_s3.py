@@ -10,8 +10,11 @@ Function returns status code and message.
 
 
 def upload_to_s3(csv_string):
+    table_name = csv_string.split("/n")[0]
     file_key = (
-        str(datetime.now().year)
+        table_name
+        + "/"
+        + str(datetime.now().year)
         + str(datetime.now().month)
         + str(datetime.now().day)
         + str(datetime.now().hour)
