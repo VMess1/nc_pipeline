@@ -14,7 +14,7 @@ resource "aws_s3_object" "lambda_code" {
 }
 
 resource "aws_s3_object" "layer_code" {
-  key = "ingestion_function/layer.zip"
-  source = "${path.module}/../src/extraction/terraform_test/layers/python"
+  key    = "ingestion_function/layer_code.zip"      #updating(function name)
+  source = "${path.module}/../layer_code.zip"  #update with proper name
   bucket = aws_s3_bucket.code_bucket.id
 }

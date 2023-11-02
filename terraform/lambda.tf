@@ -15,7 +15,6 @@ resource "aws_lambda_layer_version" "layer_dependencies" {
   s3_bucket = aws_s3_bucket.code_bucket.id
   s3_key = aws_s3_object.layer_code.key
   compatible_runtimes = ["python3.11"]
-  depends_on = [ aws_s3_object.layer_code ]
 }
 
 
