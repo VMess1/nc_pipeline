@@ -10,9 +10,12 @@ from src.extraction.extraction_lambda import (
     get_credentials,
     select_table,
     select_table_headers,
+    convert_to_csv,
+    upload_to_s3
 )
 from pg8000.native import Connection, InterfaceError, DatabaseError
-
+from moto import mock_s3
+from tests.test_extraction import strings
 
 load_dotenv()
 
@@ -106,7 +109,6 @@ class TestSelectFunctions:
         data = select_table(
             test_connection, "staff", datetime(2022, 10, 10, 11, 30, 30)
         )
-        print(data)
         assert data[0] == [
             1,
             "firstname-1",
@@ -135,6 +137,53 @@ class TestSelectFunctions:
 
     def test_select_table_headers_returns_staff_table_headers(self, test_connection):
         data = select_table_headers(test_connection, "staff")
-        print(data)
         assert data[0][0] == "staff_id"
         assert data[5][0] == "created_at"
+
+
+class TestSqlToCsv:
+    def test_returns_correct_string_for_csv(self, test_connection):
+        csv = "department\ndepartment_id, department_name, location, manager, created_at, last_updated\n9, departmentname-9, location-9, manager-9, 2023-10-10 11:30:30, 2025-10-10 11:30:30\n"
+        data = select_table(
+                test_connection, "department", datetime(2024, 10, 10, 11, 30, 30)
+            )
+        headers = select_table_headers(test_connection, "department")
+        result = convert_to_csv('department', data, headers)
+        
+        assert result == csv
+       
+
+class TestUploadToCsv:
+    @mock_s3
+    def test_s3_upload(self, test_connection):
+        conn = boto3.client("s3", region_name="eu-west-2")
+        conn.create_bucket(
+            Bucket="nc-group3-ingestion-bucket",
+            CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},
+        )
+        new_csv = strings.difference_1()
+        res = upload_to_s3(new_csv)
+        assert res == "file uploaded"
+
+
+    @mock_s3
+    def test_bucket_naming_errors_handled_correctly(self, test_connection):
+        conn = boto3.client("s3", region_name="eu-west-2")
+        conn.create_bucket(
+            Bucket="nc-group2-ingestion-bucket",
+            CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},
+        )
+        new_csv = strings.difference_1()
+        res = upload_to_s3(new_csv)
+        assert res == "The specified bucket does not exist"
+
+
+    @mock_s3
+    def test_parameter_errors_handled_correctly(self, test_connection):
+        conn = boto3.client("s3", region_name="eu-west-2")
+        conn.create_bucket(
+            Bucket="nc-group3-ingestion-bucket",
+            CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},
+        )
+        res = upload_to_s3(None)
+        assert 'Incorrect parameter type' in str(res)

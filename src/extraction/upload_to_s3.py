@@ -10,18 +10,19 @@ Function returns status code and message.
 
 
 def upload_to_s3(csv_string):
-    table_name = csv_string.split("/n")[0]
+    table_name = csv_string.split("\n")
     file_key = (
-        table_name
+        table_name[0]
         + "/"
         + str(datetime.now().year)
-        + str(datetime.now().month)
-        + str(datetime.now().day)
-        + str(datetime.now().hour)
-        + str(datetime.now().minute)
-        + str(datetime.now().second)
+        + str(datetime.now().strftime('%m'))
+        + str(datetime.now().strftime('%d'))
+        + str(datetime.now().strftime('%H'))
+        + str(datetime.now().strftime('%M'))
+        + str(datetime.now().strftime('%S'))
         + ".csv"
     )
+
 
     try:
         s3 = boto3.client("s3", region_name="eu-west-2")

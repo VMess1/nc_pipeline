@@ -22,4 +22,4 @@ def select_payment(con):
 
 
 con = get_con()
-pprint.pprint(select_payment(con))
+# pprint.pprint(select_payment(con))
