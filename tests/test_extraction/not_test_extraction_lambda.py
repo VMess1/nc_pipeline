@@ -6,13 +6,19 @@ import os
 from datetime import datetime
 import json
 from botocore.exceptions import ClientError
-from src.extraction.extraction_lambda import (
-    get_credentials,
-    select_table,
-    select_table_headers,
-    convert_to_csv,
-    upload_to_s3,
-    get_last_timestamp,
+from src.extraction.access_database import (
+    get_credentials, 
+    get_con, 
+    get_tables,
+    select_table, 
+    select_table_headers
+)
+from src.extraction.write_data import (
+    convert_to_csv, 
+    upload_to_s3
+)
+from src.extraction.store_timestamp import (
+    get_last_timestamp, 
     write_current_timestamp
 )
 from pg8000.native import Connection, InterfaceError, DatabaseError
