@@ -4,8 +4,3 @@ variable "lambda_ingestion" {
     default = "lambda_ingestion"
 }
 
-#Name for the second lambda function
-variable "lambda_transformation" {
-    type = string
-    default = "lambda_transformation"
-}

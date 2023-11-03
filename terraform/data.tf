@@ -27,11 +27,3 @@ data "archive_file" "requirements" {
   output_path = "${path.module}/../layer_code.zip"
 }
 
-#TRANSFORMATION LAMBDA
-#zips the lambda function ready for use
-# need function to implement
-# data "archive_file" "lambda" {
-#   type        = "zip"
-#   source_file = "${path.module}/..path to function"  #change this(function name)
-#   output_path = "${path.module}/../function.zip"  
-# }
