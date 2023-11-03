@@ -177,7 +177,8 @@ def main():
         if table_name[0][0] != '_':
             data = select_table(con, table_name[0], last_extraction)
             if len(data) > 0:
-                write_current_timestamp('last_extraction', last_extraction)
+                print(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+                write_current_timestamp('last_extraction', datetime.now())
                 headers = select_table_headers(con, table_name[0])
                 csv = convert_to_csv(table_name[0], data, headers)
                 upload_to_s3(csv)
