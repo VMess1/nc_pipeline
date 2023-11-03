@@ -68,3 +68,20 @@ resource "aws_iam_role_policy_attachment" "lambda_cw_policy_attachment" {
     role = aws_iam_role.lambda_ingestion_role.name
     policy_arn = aws_iam_policy.cw_policy.arn
 }
+
+data "aws_iam_policy_document" "ssm_document" {
+  statement {
+    actions = ["ssm:GetParameters", "ssm:GetParameter","ssm:PutParameter" ]
+    resources = ["arn:aws:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:*"]
+  }
+}
+# Attaches ssm policy document to policy
+resource "aws_iam_policy" "ssm_policy" {
+    name_prefix = "cw-policy-${var.lambda_ingestion}"
+    policy = data.aws_iam_policy_document.ssm_document.json
+}
+#attaches ssm policy to lambda_ingestion_roles
+resource "aws_iam_role_policy_attachment" "lambda_ssm_policy_attachment" {
+    role = aws_iam_role.lambda_ingestion_role.name
+    policy_arn = aws_iam_policy.ssm_policy.arn
+}
