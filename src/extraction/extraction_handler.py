@@ -47,4 +47,6 @@ def lambda_handler(event, context):
         return err
 
 
-lambda_handler({}, {})
+# Needs line 30 to be potentially moved out of loop
+
+

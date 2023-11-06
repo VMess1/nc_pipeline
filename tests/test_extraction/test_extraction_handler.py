@@ -2,6 +2,7 @@ from datetime import datetime
 from unittest.mock import patch
 from botocore.exceptions import ClientError
 import logging
+from moto import mock_logs
 from src.extraction.extraction_handler import lambda_handler
 # from src.extraction.access_database import (
 #     get_credentials,
@@ -49,3 +50,10 @@ def test_select_table_called_correctly(mock_timestamp, mock_tables, mock_con, mo
     mock_selection.assert_called_with('test_con', 'test_table', 'test_timestamp')
 
 
+# @patch("src.extraction.extraction_handler.logging.info")
+# @patch("src.extraction.extraction_handler.select_table", return_value=['test_data'])
+# def test_logs_current_datetime_to_cloudwatch_if_has_data(mock_select_table, mock_logging):
+#     lambda_handler({}, {})
+#     mock_logging.assert_called_with(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+#     print(dir(mock_logging.get_log_events))
+#     assert mock_logging.called == True
