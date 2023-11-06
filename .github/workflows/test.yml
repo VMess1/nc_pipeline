@@ -29,9 +29,6 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
-        
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
 
       - name: Setup- Python
         uses: actions/checkout@v4
@@ -50,12 +47,10 @@ jobs:
       - name: Make run-flake
         run: make run-flake
 
-      - name: Make TestDatabase
+      - name: Create Test Database
+        run: psql -h ${{env.TEST_HOST}} -U ${{ env.USER }} -d ${{ TEST_DATABASE }} -f tests/data/test-extraction.sql
         env:
-          USER: postgres
-          TEST_DATABASE: oltp_test
-          PASSWORD: postgres
-        run: make create-test-database
+          PGPASSWORD: ${{env.PASSWORD}}
               
       - name: Make unit-test
         run: make unit-test
