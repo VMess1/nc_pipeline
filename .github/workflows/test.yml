@@ -48,9 +48,10 @@ jobs:
         run: make run-flake
 
       - name: Create Test Database
-        run: psql -h ${{env.TEST_HOST}} -U ${{ env.USER }} -d ${{ env.TEST_DATABASE }} -f tests/data/test-extraction.sql
+        #run: psql -h ${{env.TEST_HOST}} -U ${{ env.USER }} -d ${{ env.TEST_DATABASE }} -f tests/data/test-extraction.sql
+        run: psql -h localhost -U postgres -d oltp_test -f tests/data/test-extraction.sql
         env:
-          PGPASSWORD: ${{env.PASSWORD}}
+          PGPASSWORD: postgres
               
       - name: Make unit-test
         run: make unit-test
