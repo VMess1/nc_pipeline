@@ -17,8 +17,6 @@ resource "aws_lambda_layer_version" "layer_dependencies" {
   compatible_runtimes = ["python3.11"]
 }
 
-
-
 #giving eventbridge permission to invoke lambda
 resource "aws_lambda_permission" "allow_eventbridge" {
   action         = "lambda:InvokeFunction"

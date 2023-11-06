@@ -1,7 +1,6 @@
 #!/bin/bash
 
-
-##Needs updating to correctly make the layers
+# Needs updating to correctly make the layers
 mkdir layers
 cp -r venv/lib/python3.11/site-packages/pg8000-1.30.2.dist-info layers/python
 cp -r venv/lib/python3.11/site-packages/asn1crypto layers/python
