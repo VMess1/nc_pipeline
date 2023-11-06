@@ -1,8 +1,9 @@
-from src.processing.processing_handler import read_csv
+from src.processing.processing_handler import read_csv, dim_remove_dates
 from moto import mock_s3
 import boto3
 # import pytest
 from tests.test_processing.strings import new_string
+import pandas as pd
 
 
 # @pytest.fixture(scope="function")
@@ -35,3 +36,22 @@ class TestReadCSV:
             Key="payment/20221103150000")
         data = read_csv(response['Body'])
         assert data.iloc[0]['payment_id'] == 2
+
+
+class TestDimRemoveDates:
+    def test_dates_are_removed_from_basic_tables(self):
+        test_dataframe = pd.DataFrame(data={
+            'currency_id': [1, 2, 3],
+            'currency_code': ['GBP', 'USD', 'EUR'],
+            'created_at': ['2022-11-03 14:20:49.962000',
+                           '2022-11-03 14:20:49.962000',
+                           '2022-11-03 14:20:49.962000'],
+            'last_updated': ['2022-11-03 14:20:49.962000',
+                             '2022-11-03 14:20:49.962000',
+                             '2022-11-03 14:20:49.962000']
+        })
+        expected_dataframe = pd.DataFrame(data={
+            'currency_id': [1, 2, 3],
+            'currency_code': ['GBP', 'USD', 'EUR']
+        })
+        assert dim_remove_dates(test_dataframe).equals(expected_dataframe)
