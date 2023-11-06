@@ -1,3 +1,4 @@
+#INGESTION LAMBDA
 # Setting up lambda role
 resource "aws_iam_role" "lambda_ingestion_role" {
     name_prefix = "role-${var.lambda_ingestion}"

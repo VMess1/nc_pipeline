@@ -1,3 +1,4 @@
+#INGESTION LAMBDA
 # set up buckets
 resource "aws_s3_bucket" "code_bucket" {
   bucket = "nc-group3-code-bucket"
@@ -18,3 +19,4 @@ resource "aws_s3_object" "layer_code" {
   source = "${path.module}/../layer_code.zip"  #update with proper name
   bucket = aws_s3_bucket.code_bucket.id
 }
+
