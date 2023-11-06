@@ -7,7 +7,7 @@ def get_last_timestamp(parameter_name):
     conn = boto3.client("ssm", region_name="eu-west-2")
     response = conn.get_parameter(Name=parameter_name)
     last_timestamp = response["Parameter"]["Value"]
-    return last_timestamp[:-7]
+    return last_timestamp
 
 
 def write_current_timestamp(parameter_name, current_time):
