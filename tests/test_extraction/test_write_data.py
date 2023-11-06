@@ -8,7 +8,6 @@ from datetime import datetime
 from pg8000.native import Connection
 from src.extraction.access_database import select_table, select_table_headers
 from src.extraction.write_data import convert_to_csv, upload_to_s3
-
 from tests.test_extraction import strings
 
 load_dotenv()
@@ -46,8 +45,6 @@ class TestSqlToCsv:
         )
         headers = select_table_headers(test_connection, "department")
         result = convert_to_csv("department", data, headers)
-        print(result)
-        print(csv)
         assert result == csv
 
 
@@ -74,8 +71,8 @@ class TestUploadToCsv:
         with pytest.raises(ClientError) as excinfo:
             upload_to_s3(new_csv)
         assert str(excinfo.value) == (
-            "An error occurred (NoSuchBucket) when calling the PutObject operation: "
-            + "The specified bucket does not exist"
+            "An error occurred (NoSuchBucket) when calling the PutObject "
+            + "operation: The specified bucket does not exist"
         )
 
     @mock_s3

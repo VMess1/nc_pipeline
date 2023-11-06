@@ -1,6 +1,5 @@
 from datetime import datetime
 from botocore.exceptions import ClientError
-from pg8000.native import InterfaceError, DatabaseError
 import logging
 from access_database import (
     get_credentials,
@@ -46,5 +45,6 @@ def lambda_handler(event, context):
     except Exception as err:
         logger.error(f"An unexpected error has occurred: {str(err)}")
         return err
+
 
 lambda_handler({}, {})

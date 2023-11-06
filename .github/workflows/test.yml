@@ -2,13 +2,10 @@ name: Terraform deploy
 on:
   push:
     branches:
-      - main
-# only runs when pushing code to main
-# can adapt to individual branch
-  
+      - "*"
+
 
 jobs:
-
   run-checks:
     runs-on: ubuntu-latest
     steps:
@@ -29,10 +26,8 @@ jobs:
       - name: Make security-test
         run: make security-test
   
-
       - name: Make run-flake
         run: make run-flake
-  #will fail as looking for a test directory but ours is called 'tests'
               
       - name: Make unit-test
         run: make unit-test
@@ -46,8 +41,6 @@ jobs:
       - name: Make run-checks
         run: make run-checks
 
-  #can seperate out make run-checks if we prefer
-  #doing all the unit-tests in 'make run-checks'
   
   deploy:
     runs-on: ubuntu-latest
@@ -62,7 +55,6 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-west-2
-    #
       
       - name: Setup terraform
         uses: hashicorp/setup-terraform@v2
