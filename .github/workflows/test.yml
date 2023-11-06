@@ -4,10 +4,10 @@ on:
     branches:
       - "*"
 
-# env:
-#   DB_HOST: localhost
-#   BD_USERNAME: database
-#   DB_PASSWORD: database
+env:
+  DB_HOST: localhost
+  BD_USERNAME: database
+  DB_PASSWORD: database
 
 
 jobs:
@@ -16,15 +16,12 @@ jobs:
     services:
       postgres:
         image: postgres
-
         env:
-          TEST_HOST: localhost
-          TEST_DATABASE: oltp_test
-          USER: test
-          PASSWORD: test
-         
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
         ports:
-          - 5432
+          -5432
+
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -53,7 +50,7 @@ jobs:
         run: make run-flake
 
       - name: Make TestDatabase
-        run: PASSWORD=test psql -f tests/data/test-extraction.sql
+        run: POSTGRES_PASSWORD=postgres psql -f tests/data/test-extraction.sql
               
       - name: Make unit-test
         run: make unit-test
