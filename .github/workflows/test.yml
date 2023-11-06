@@ -18,17 +18,18 @@ jobs:
         image: postgres
 
         env:
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_USER: postgres
-          POSTGRES_DB: postgres
-
+          TEST_HOST = 'localhost'
+          TEST_DATABASE = 'oltp_test'
+          USER = 'test'
+          PASSWORD = 'test'
+         
+        ports:
+          - 5432
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-        ports:
-          - 5432:5432
 
     steps:
       - name: Checkout Repo
@@ -52,7 +53,7 @@ jobs:
         run: make run-flake
 
       - name: Make TestDatabase
-        run: POSTGRES_PASSWORD=postgres psql -f tests/data/test-extraction.sql
+        run: PASSWORD='test' psql -f tests/data/test-extraction.sql
               
       - name: Make unit-test
         run: make unit-test
