@@ -1,16 +1,13 @@
-from moto import mock_secretsmanager, mock_ssm
+from moto import mock_secretsmanager
 from dotenv import load_dotenv
 import pytest
 import boto3
 import os
 from datetime import datetime
 import json
-from botocore.exceptions import ClientError
-from pg8000.native import Connection, InterfaceError, DatabaseError
+from pg8000.native import Connection
 from src.extraction.access_database import (
     get_credentials,
-    get_con,
-    get_tables,
     select_table,
     select_table_headers,
 )
@@ -54,7 +51,8 @@ class TestGetCredentials:
             "dbname": "test-database",
             "port": "2222",
         }
-        secrets.create_secret(Name=secret_id, SecretString=json.dumps(secret_values))
+        secrets.create_secret(Name=secret_id,
+                              SecretString=json.dumps(secret_values))
         output = get_credentials(secret_id)
         assert output == secret_values
 
@@ -130,7 +128,9 @@ class TestSelectFunctions:
         assert data[0][0] == "department_id"
         assert data[5][0] == "last_updated"
 
-    def test_select_table_headers_returns_staff_table_headers(self, test_connection):
+    def test_select_table_headers_returns_staff_table_headers(
+            self,
+            test_connection):
         data = select_table_headers(test_connection, "staff")
         assert data[0][0] == "staff_id"
         assert data[5][0] == "created_at"

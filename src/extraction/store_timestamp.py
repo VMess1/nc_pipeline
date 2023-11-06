@@ -1,5 +1,4 @@
 import boto3
-from datetime import datetime
 
 
 def get_last_timestamp(parameter_name):
@@ -15,6 +14,9 @@ def write_current_timestamp(parameter_name, current_time):
     formatted_time = current_time.isoformat(sep=" ", timespec="auto")
     conn = boto3.client("ssm", region_name="eu-west-2")
     response = conn.put_parameter(
-        Name=parameter_name, Value=formatted_time, Type="String", Overwrite=True
+        Name=parameter_name,
+        Value=formatted_time,
+        Type="String",
+        Overwrite=True
     )
     return response
