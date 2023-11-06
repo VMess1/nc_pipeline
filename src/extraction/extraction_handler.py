@@ -1,6 +1,7 @@
 from datetime import datetime 
 from botocore.exceptions import ClientError
 from pg8000.native import InterfaceError, DatabaseError
+import logging
 from src.extraction.access_database import (
     get_credentials, 
     get_con, 
@@ -17,6 +18,9 @@ from src.extraction.store_timestamp import (
     write_current_timestamp
 )
 
+logger = logging.getLogger('LPY1Logger')
+logger.setLevel(logging.INFO)
+
 def lambda_handler(event, context):
     try:
         credentials = get_credentials("OLTPCredentials")
@@ -27,29 +31,22 @@ def lambda_handler(event, context):
             if table_name[0][0] != '_':
                 data = select_table(con, table_name[0], last_extraction)
                 if len(data) > 0:
-                    print(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+                    logger.info(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
                     write_current_timestamp('last_extraction', datetime.now())
                     headers = select_table_headers(con, table_name[0])
                     csv = convert_to_csv(table_name[0], data, headers)
                     upload_to_s3(csv)
     except ClientError as err:
         if err.response["Error"]["Code"] == "ResourceNotFoundException":
-            # change to logger
-            print("Credentials not found.")
-            return err.response
+            logger.error("Credentials not found.")
         if err.response["Error"]["Code"] == "InternalServiceError":
-            # change to logger
-            print("Internal service error detected.")
-            return err.response
+            logger.error("Internal service error detected.")
         if err.response["Error"]["Code"] == "NoSuchBucket":
-            # change to logger
-            print("Bucket not found.")
-            return err.response["Error"]["Message"]
+            logger.error("Bucket not found.")
         if err.response["Error"]["Code"] == "InternalServiceError":
-            print("Internal service error detected.")
+            logger.error("Internal service error detected.")
     except TypeError as err:
-        return f'Incorrect parameter type: {err}'
+        logger.error(f'Incorrect parameter type: {err}')
     except Exception as err:
-        # change to logger
-        print(f"An unexpected error has occurred: {str(err)}")
+        logger.error(f"An unexpected error has occurred: {str(err)}")
         return err
