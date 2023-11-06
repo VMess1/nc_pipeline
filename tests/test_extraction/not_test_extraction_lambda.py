@@ -7,28 +7,22 @@ from datetime import datetime
 import json
 from botocore.exceptions import ClientError
 from src.extraction.access_database import (
-    get_credentials, 
-    get_con, 
+    get_credentials,
+    get_con,
     get_tables,
-    select_table, 
-    select_table_headers
+    select_table,
+    select_table_headers,
 )
-from src.extraction.write_data import (
-    convert_to_csv, 
-    upload_to_s3
-)
-from src.extraction.store_timestamp import (
-    get_last_timestamp, 
-    write_current_timestamp
-)
+from src.extraction.write_data import convert_to_csv, upload_to_s3
+from src.extraction.store_timestamp import get_last_timestamp, write_current_timestamp
 from pg8000.native import Connection, InterfaceError, DatabaseError
 from moto import mock_s3
 from tests.test_extraction import strings
 
 
-'''
+"""
 TESTING SUITE FOR EXTRACTION LAMBDA FUNCTION
-'''
+"""
 
 
 load_dotenv()
@@ -45,7 +39,7 @@ def aws_credentials():
     os.environ["AWS_DEFAULT_REGION"] = "eu-west-2"
 
 
-'''Mocked connection to test database'''
+"""Mocked connection to test database"""
 
 
 @pytest.fixture(scope="function")
@@ -58,7 +52,7 @@ def test_connection():
     )
 
 
-'''Mocked client for secrets manager'''
+"""Mocked client for secrets manager"""
 
 
 @pytest.fixture(scope="function")
@@ -67,7 +61,7 @@ def secrets(aws_credentials):
         yield boto3.client("secretsmanager", region_name="eu-west-2")
 
 
-'''Mocked client for ssm'''
+"""Mocked client for ssm"""
 
 
 @pytest.fixture(scope="function")
@@ -87,8 +81,7 @@ class TestGetCredentials:
             "dbname": "test-database",
             "port": "2222",
         }
-        secrets.create_secret(Name=secret_id,
-                              SecretString=json.dumps(secret_values))
+        secrets.create_secret(Name=secret_id, SecretString=json.dumps(secret_values))
         output = get_credentials(secret_id)
         assert output == secret_values
 
@@ -121,8 +114,7 @@ class TestSelectFunctions:
             datetime(2023, 10, 10, 11, 30, 30),
         ]
 
-    def test_select_table_returns_only_new_rows(
-            self, test_connection):
+    def test_select_table_returns_only_new_rows(self, test_connection):
         data = select_table(
             test_connection, "department", datetime(2024, 10, 10, 11, 30, 30)
         )
@@ -165,8 +157,7 @@ class TestSelectFunctions:
         assert data[0][0] == "department_id"
         assert data[5][0] == "last_updated"
 
-    def test_select_table_headers_returns_staff_table_headers(
-            self, test_connection):
+    def test_select_table_headers_returns_staff_table_headers(self, test_connection):
         data = select_table_headers(test_connection, "staff")
         assert data[0][0] == "staff_id"
         assert data[5][0] == "created_at"
@@ -181,7 +172,7 @@ class TestSqlToCsv:
             test_connection, "department", datetime(2024, 10, 10, 11, 30, 30)
         )
         headers = select_table_headers(test_connection, "department")
-        result = convert_to_csv('department', data, headers)
+        result = convert_to_csv("department", data, headers)
 
         assert result == csv
 
@@ -217,7 +208,7 @@ class TestUploadToCsv:
             CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},
         )
         res = upload_to_s3(None)
-        assert 'Incorrect parameter type' in str(res)
+        assert "Incorrect parameter type" in str(res)
 
 
 class TestGetLastTimestamp:
@@ -243,17 +234,13 @@ class TestGetLastTimestamp:
 
 
 class TestWriteCurrentTimestamp:
-    def test_returns_correct_status_response_when_successful(
-            self, mock_params
-    ):
+    def test_returns_correct_status_response_when_successful(self, mock_params):
         test_name = "Test-parameter"
         test_value = datetime(2025, 10, 10, 11, 30, 30)
         response = write_current_timestamp(test_name, test_value)
         assert response["ResponseMetadata"]["HTTPStatusCode"] == 200
 
-        output = mock_params.get_parameter(
-            Name=test_name
-        )["Parameter"]["Value"]
+        output = mock_params.get_parameter(Name=test_name)["Parameter"]["Value"]
         assert output == "2025-10-10 11:30:30"
 
     def test_overwrites_existing_parameter(self, mock_params):
@@ -264,7 +251,5 @@ class TestWriteCurrentTimestamp:
         response = write_current_timestamp(test_name, test_value_2)
         assert response["ResponseMetadata"]["HTTPStatusCode"] == 200
 
-        output = mock_params.get_parameter(
-            Name=test_name
-        )["Parameter"]["Value"]
+        output = mock_params.get_parameter(Name=test_name)["Parameter"]["Value"]
         assert output == "1999-04-10 06:30:30"

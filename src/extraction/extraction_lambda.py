@@ -32,8 +32,6 @@
 #         return err
 
 
-
-
 # def convert_to_csv(table_name, data, headers):
 #     '''converts returned sql data to csv string'''
 #     the_goods = ''
@@ -52,13 +50,10 @@
 #     return the_goods
 
 
-
-
-
 # def upload_to_s3(csv_string):
 #     '''uploads csv string to s3 ingestion bucket'''
 #     try:
-        
+
 #     except ClientError as err:
 #         print(err.response["Error"]["Code"])
 #         if err.response["Error"]["Code"] == "NoSuchBucket":
@@ -74,14 +69,12 @@
 #         return err
 
 
-
-
-'''
+"""
 Obtains credentials, establishes connection, gets timestamp of last extraction.
 Obtains tables of database. For each table, gets column names and new data.
 If there is new data, timestamp is updated to ssm, data is converted to csv
 and uploaded to s3.
-'''
+"""
 
 
 # def main():

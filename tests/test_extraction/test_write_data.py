@@ -6,18 +6,13 @@ from botocore.exceptions import ClientError
 import os
 from datetime import datetime
 from pg8000.native import Connection
-from src.extraction.access_database import (
-    select_table, 
-    select_table_headers
-)
-from src.extraction.write_data import (
-    convert_to_csv, 
-    upload_to_s3
-)
+from src.extraction.access_database import select_table, select_table_headers
+from src.extraction.write_data import convert_to_csv, upload_to_s3
 
 from tests.test_extraction import strings
 
 load_dotenv()
+
 
 @pytest.fixture(scope="function")
 def aws_credentials():
@@ -40,15 +35,17 @@ def test_connection():
 
 class TestSqlToCsv:
     def test_returns_correct_string_for_csv(self, test_connection):
-        csv = ("department\ndepartment_id, department_name, location, " + 
-               "manager, created_at, last_updated\n" + 
-               "9, departmentname-9, location-9, manager-9, " + 
-               "2023-10-10 11:30:30, 2025-10-10 11:30:30\n")
+        csv = (
+            "department\ndepartment_id, department_name, location, "
+            + "manager, created_at, last_updated\n"
+            + "9, departmentname-9, location-9, manager-9, "
+            + "2023-10-10 11:30:30, 2025-10-10 11:30:30\n"
+        )
         data = select_table(
             test_connection, "department", datetime(2024, 10, 10, 11, 30, 30)
         )
         headers = select_table_headers(test_connection, "department")
-        result = convert_to_csv('department', data, headers)
+        result = convert_to_csv("department", data, headers)
         print(result)
         print(csv)
         assert result == csv
@@ -66,7 +63,6 @@ class TestUploadToCsv:
         res = upload_to_s3(new_csv)
         assert res == "file uploaded"
 
-
     @mock_s3
     def test_bucket_naming_errors_handled_correctly(self, test_connection):
         conn = boto3.client("s3", region_name="eu-west-2")
@@ -77,8 +73,10 @@ class TestUploadToCsv:
         new_csv = strings.difference_1()
         with pytest.raises(ClientError) as excinfo:
             upload_to_s3(new_csv)
-        assert str(excinfo.value) == ("An error occurred (NoSuchBucket) when calling the PutObject operation: " + 
-        "The specified bucket does not exist")
+        assert str(excinfo.value) == (
+            "An error occurred (NoSuchBucket) when calling the PutObject operation: "
+            + "The specified bucket does not exist"
+        )
 
     @mock_s3
     def test_parameter_errors_handled_correctly(self, test_connection):
@@ -90,6 +88,3 @@ class TestUploadToCsv:
         with pytest.raises(TypeError) as excinfo:
             upload_to_s3(None)
         assert str(excinfo.value) == "Incorrect csv formatting."
-
-
-

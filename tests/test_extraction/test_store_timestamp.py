@@ -4,10 +4,8 @@ import boto3
 import os
 from datetime import datetime
 from botocore.exceptions import ClientError
-from src.extraction.store_timestamp import (
-    get_last_timestamp, 
-    write_current_timestamp
-)
+from src.extraction.store_timestamp import get_last_timestamp, write_current_timestamp
+
 
 @pytest.fixture(scope="function")
 def aws_credentials():
@@ -48,17 +46,13 @@ class TestGetLastTimestamp:
 
 
 class TestWriteCurrentTimestamp:
-    def test_returns_correct_status_response_when_successful(
-            self, mock_params
-    ):
+    def test_returns_correct_status_response_when_successful(self, mock_params):
         test_name = "Test-parameter"
         test_value = datetime(2025, 10, 10, 11, 30, 30)
         response = write_current_timestamp(test_name, test_value)
         assert response["ResponseMetadata"]["HTTPStatusCode"] == 200
 
-        output = mock_params.get_parameter(
-            Name=test_name
-        )["Parameter"]["Value"]
+        output = mock_params.get_parameter(Name=test_name)["Parameter"]["Value"]
         assert output == "2025-10-10 11:30:30"
 
     def test_overwrites_existing_parameter(self, mock_params):
@@ -69,7 +63,5 @@ class TestWriteCurrentTimestamp:
         response = write_current_timestamp(test_name, test_value_2)
         assert response["ResponseMetadata"]["HTTPStatusCode"] == 200
 
-        output = mock_params.get_parameter(
-            Name=test_name
-        )["Parameter"]["Value"]
+        output = mock_params.get_parameter(Name=test_name)["Parameter"]["Value"]
         assert output == "1999-04-10 06:30:30"

@@ -8,14 +8,15 @@ import json
 from botocore.exceptions import ClientError
 from pg8000.native import Connection, InterfaceError, DatabaseError
 from src.extraction.access_database import (
-    get_credentials, 
-    get_con, 
+    get_credentials,
+    get_con,
     get_tables,
-    select_table, 
-    select_table_headers
+    select_table,
+    select_table_headers,
 )
 
 load_dotenv()
+
 
 @pytest.fixture(scope="function")
 def aws_credentials():
@@ -24,6 +25,7 @@ def aws_credentials():
     os.environ["AWS_SECURITY_TOKEN"] = "test"
     os.environ["AWS_SESSION_TOKEN"] = "test"
     os.environ["AWS_DEFAULT_REGION"] = "eu-west-2"
+
 
 @pytest.fixture(scope="function")
 def test_connection():
@@ -34,10 +36,12 @@ def test_connection():
         password=os.environ["PASSWORD"],
     )
 
+
 @pytest.fixture(scope="function")
 def secrets(aws_credentials):
     with mock_secretsmanager():
         yield boto3.client("secretsmanager", region_name="eu-west-2")
+
 
 class TestGetCredentials:
     def test_get_credentials(self, secrets):
@@ -50,8 +54,7 @@ class TestGetCredentials:
             "dbname": "test-database",
             "port": "2222",
         }
-        secrets.create_secret(Name=secret_id,
-                              SecretString=json.dumps(secret_values))
+        secrets.create_secret(Name=secret_id, SecretString=json.dumps(secret_values))
         output = get_credentials(secret_id)
         assert output == secret_values
 
@@ -84,8 +87,7 @@ class TestSelectFunctions:
             datetime(2023, 10, 10, 11, 30, 30),
         ]
 
-    def test_select_table_returns_only_new_rows(
-            self, test_connection):
+    def test_select_table_returns_only_new_rows(self, test_connection):
         data = select_table(
             test_connection, "department", datetime(2024, 10, 10, 11, 30, 30)
         )
@@ -128,8 +130,7 @@ class TestSelectFunctions:
         assert data[0][0] == "department_id"
         assert data[5][0] == "last_updated"
 
-    def test_select_table_headers_returns_staff_table_headers(
-            self, test_connection):
+    def test_select_table_headers_returns_staff_table_headers(self, test_connection):
         data = select_table_headers(test_connection, "staff")
         assert data[0][0] == "staff_id"
         assert data[5][0] == "created_at"
