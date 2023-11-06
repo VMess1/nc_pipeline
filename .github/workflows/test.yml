@@ -4,10 +4,10 @@ on:
     branches:
       - "*"
 
-env:
-  DB_HOST: localhost
-  BD_USERNAME: database
-  DB_PASSWORD: database
+# env:
+#   DB_HOST: localhost
+#   BD_USERNAME: database
+#   DB_PASSWORD: database
 
 
 jobs:
