@@ -28,6 +28,9 @@ jobs:
   
       - name: Make run-flake
         run: make run-flake
+
+      - name: Make TestDatabase
+        run: make create-test-database
               
       - name: Make unit-test
         run: make unit-test
