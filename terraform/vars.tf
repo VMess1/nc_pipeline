@@ -3,3 +3,4 @@ variable "lambda_ingestion" {
     type = string
     default = "lambda_ingestion"
 }
+

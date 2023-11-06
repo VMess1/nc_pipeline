@@ -1,3 +1,4 @@
+#INGESTION LAMBDA
 # Setting up lambda role
 resource "aws_iam_role" "lambda_ingestion_role" {
     name_prefix = "role-${var.lambda_ingestion}"
@@ -84,8 +85,8 @@ resource "aws_iam_policy" "ssm_policy" {
 resource "aws_iam_role_policy_attachment" "lambda_ssm_policy_attachment" {
     role = aws_iam_role.lambda_ingestion_role.name
     policy_arn = aws_iam_policy.ssm_policy.arn
-}
 
+}
 # Policy document for connecting to secrets manager for credentials
 data "aws_iam_policy_document" "secrets_document" {
   statement {
