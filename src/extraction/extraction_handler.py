@@ -2,15 +2,15 @@ from datetime import datetime
 from botocore.exceptions import ClientError
 from pg8000.native import InterfaceError, DatabaseError
 import logging
-from src.extraction.access_database import (
+from access_database import (
     get_credentials,
     get_con,
     get_tables,
     select_table,
     select_table_headers,
 )
-from src.extraction.write_data import convert_to_csv, upload_to_s3
-from src.extraction.store_timestamp import get_last_timestamp, write_current_timestamp
+from write_data import convert_to_csv, upload_to_s3
+from store_timestamp import get_last_timestamp, write_current_timestamp
 
 logger = logging.getLogger("LPY1Logger")
 logger.setLevel(logging.INFO)
@@ -46,3 +46,5 @@ def lambda_handler(event, context):
     except Exception as err:
         logger.error(f"An unexpected error has occurred: {str(err)}")
         return err
+
+lambda_handler({}, {})
