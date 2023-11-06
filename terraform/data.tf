@@ -20,7 +20,6 @@ data "archive_file" "lambda" {
   output_path = "${path.module}/../function.zip"  
 }
 
-
 data "archive_file" "requirements" {
   type = "zip"
   source_dir = "${path.module}/../layers"
