@@ -85,4 +85,24 @@ resource "aws_iam_policy" "ssm_policy" {
 resource "aws_iam_role_policy_attachment" "lambda_ssm_policy_attachment" {
     role = aws_iam_role.lambda_ingestion_role.name
     policy_arn = aws_iam_policy.ssm_policy.arn
+
+}
+# Policy document for connecting to secrets manager for credentials
+data "aws_iam_policy_document" "secrets_document" {
+  statement {
+    actions = ["secretsmanager:GetSecretValue"]
+    resources = ["arn:aws:secretsmanager:eu-west-2:871796615077:secret:OLTPCredentials-XrEKin"]
+  }
+}
+
+# Attaches secrets policy document to policy
+resource "aws_iam_policy" "secrets_policy" {
+    name_prefix = "secrets-policy-${var.lambda_ingestion}"
+    policy = data.aws_iam_policy_document.secrets_document.json
+}
+
+#attaches secrets policy to lambda_ingestion_roles
+resource "aws_iam_role_policy_attachment" "lambda_secrets_policy_attachment" {
+    role = aws_iam_role.lambda_ingestion_role.name
+    policy_arn = aws_iam_policy.secrets_policy.arn
 }

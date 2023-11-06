@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# Sets up the layers folder ready for deploying via terraform to AWS
 mkdir layers
 mkdir layers/python
 cp -r venv/lib/python3.11/site-packages/asn1crypto layers/python
