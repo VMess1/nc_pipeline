@@ -27,10 +27,10 @@ def aws_credentials():
 @pytest.fixture(scope="function")
 def test_connection():
     return Connection(
-        user=os.environ["USER"],
+        user=os.environ["POSTGRES_USER"],
         host="localhost",
-        database=os.environ["TEST_DATABASE"],
-        password=os.environ["PASSWORD"],
+        database=os.environ["POSTGRES_DB"],
+        password=os.environ["POSTGRES_PASSWORD"],
     )
 
 
