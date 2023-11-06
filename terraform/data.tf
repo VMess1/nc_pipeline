@@ -5,18 +5,18 @@ data "aws_caller_identity" "current" {}
 data "aws_region" "current" {}
 
 #zips the lambda function ready for use
-data "archive_file" "lambda" {
-  type        = "zip"
-  source_file = "${path.module}/../src/tftest/testfunc.py"  #change this(function name)
-  output_path = "${path.module}/../function.zip"  
-}
-
-# Uncomment when ready to test the main function
 # data "archive_file" "lambda" {
 #   type        = "zip"
-#   source_file = "${path.module}/../src/extraction/extraction_lambda.py"  #change this(function name)
+#   source_file = "${path.module}/../src/tftest/testfunc.py"  #change this(function name)
 #   output_path = "${path.module}/../function.zip"  
 # }
+
+# Uncomment when ready to test the main function
+data "archive_file" "lambda" {
+  type        = "zip"
+  source_file = "${path.module}/../src/extraction/extraction_lambda.py"  #change this(function name)
+  output_path = "${path.module}/../function.zip"  
+}
 
 
 data "archive_file" "requirements" {
