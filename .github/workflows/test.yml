@@ -14,7 +14,7 @@ jobs:
         env:
           POSTGRES_PASSWORD: postgres
           POSTGRES_USER: postgres
-          POSTGRES_DB: postgres
+          POSTGRES_DB: oltp_test
 
         options: >-
           --health-cmd pg_isready
@@ -48,6 +48,10 @@ jobs:
         run: make run-flake
 
       - name: Make TestDatabase
+        env:
+          USER: postgres
+          TEST_DATABASE: oltp_test
+          PASSWORD: postgres
         run: make create-test-database
               
       - name: Make unit-test
