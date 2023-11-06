@@ -18,10 +18,10 @@ jobs:
         image: postgres
 
         env:
-          TEST_HOST = 'localhost'
-          TEST_DATABASE = 'oltp_test'
-          USER = 'test'
-          PASSWORD = 'test'
+          TEST_HOST: localhost
+          TEST_DATABASE: oltp_test
+          USER: test
+          PASSWORD: test
          
         ports:
           - 5432
@@ -53,7 +53,7 @@ jobs:
         run: make run-flake
 
       - name: Make TestDatabase
-        run: PASSWORD='test' psql -f tests/data/test-extraction.sql
+        run: PASSWORD=test psql -f tests/data/test-extraction.sql
               
       - name: Make unit-test
         run: make unit-test
