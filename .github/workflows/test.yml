@@ -4,10 +4,32 @@ on:
     branches:
       - "*"
 
+env:
+  DB_HOST: localhost
+  BD_USERNAME: database
+  DB_PASSWORD: database
+
 
 jobs:
   run-checks:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres
+
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_DB: postgres
+
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
@@ -30,7 +52,7 @@ jobs:
         run: make run-flake
 
       - name: Make TestDatabase
-        run: make create-test-database
+        run: POSTGRES_PASSWORD=postgres psql -f tests/data/test-extraction.sql
               
       - name: Make unit-test
         run: make unit-test

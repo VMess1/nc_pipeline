@@ -65,8 +65,8 @@ layer-setup:
 	$(call execute_in_env, ./setup.sh)
 
 ## Setup TestDatabase for testing
-create-test-database:
-	$(call execute_in_env, psql -f tests/data/test-extraction.sql)
+# create-test-database:
+# 	$(call execute_in_env, psql -f tests/data/test-extraction.sql)
 
 
 # Build / Run
