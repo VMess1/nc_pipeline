@@ -142,7 +142,7 @@ def get_last_timestamp(parameter_name):
         Name=parameter_name
     )
     last_timestamp = response['Parameter']['Value']
-    return datetime.strptime(last_timestamp, '%Y-%m-%d %H:%M:%S')
+    return last_timestamp[:-7]
 
 
 '''Writes the current time to AWS parameters'''
@@ -177,8 +177,8 @@ def main():
         if table_name[0][0] != '_':
             data = select_table(con, table_name[0], last_extraction)
             if len(data) > 0:
-                print(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-                write_current_timestamp('last_extraction', datetime.now())
+                datestamp = datetime.now().replace(microsecond=0)
+                write_current_timestamp('last_extraction', datestamp)
                 headers = select_table_headers(con, table_name[0])
                 csv = convert_to_csv(table_name[0], data, headers)
                 upload_to_s3(csv)
