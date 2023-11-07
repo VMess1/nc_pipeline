@@ -60,9 +60,9 @@ coverage:
 dev-setup: bandit safety flake coverage
 
 ## Setups layers for dependencies
-layer-setup:
-	$(call execute_in_env, chmod u+x setup.sh)
-	$(call execute_in_env, ./setup.sh)
+# layer-setup:
+# 	$(call execute_in_env, chmod u+x setup.sh)
+# 	$(call execute_in_env, ./setup.sh)
 
 # Build / Run
 

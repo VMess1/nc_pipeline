@@ -38,6 +38,14 @@ jobs:
       - name: Install requirements
         run: make requirements
 
+      - name: Install Dependencies
+        run: |
+          mkdir -p layer_contents
+          pip install -r requirements.txt -t layer_contents
+      
+      - name: Zip Layer Contents
+        run: zip -r layer_code.zip layer_contents
+
       - name: Make dev-setup
         run: make dev-setup
 
