@@ -76,8 +76,12 @@ jobs:
               
       - name: Make unit-test
         run: make unit-test
-        # env:
-        #   PGPASSWORD: postgres
+        env:
+           PGPASSWORD: postgres
+           POSTGRES_USER: postgres
+           POSTGRES_DB: oltp_test
+
+
       
       - name: Make check-coverage
         run: make check-coverage
