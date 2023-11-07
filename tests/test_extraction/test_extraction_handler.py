@@ -97,3 +97,30 @@ def test_upload_to_s3_called_correctly(mock_selection, mock_tables, mock_csv, mo
 #     mock_logging.assert_called_with(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 #     print(dir(mock_logging.get_log_events))
 #     assert mock_logging.called == True
+
+
+LOGGER = logging.getLogger(__name__)
+@patch("src.extraction.extraction_handler.get_credentials", return_value=500)
+def test_logs_correct_message_if_TypeError(mock_credentials, caplog):
+    lambda_handler({}, {})
+    assert "Incorrect parameter type:" in caplog.text
+
+
+@patch("src.extraction.extraction_handler.get_credentials")
+def test_logs_correct_err_message_if_resource_not_found(mock_credentials, caplog):
+    mock_credentials.side_effect = ClientError(
+        error_response={"Error": {"Code": "ResourceNotFoundException"}},
+        operation_name="ClientError"        
+    )
+    lambda_handler({}, {})
+    assert "Credentials not found." in caplog.text
+
+
+@patch("src.extraction.extraction_handler.get_credentials")
+def test_logs_correct_message_if_bucket_not_found(mock_credentials, caplog):
+    mock_credentials.side_effect = ClientError(
+        error_response={"Error": {"Code": "NoSuchBucket"}},
+        operation_name="ClientError"        
+    )
+    lambda_handler({}, {})
+    assert "Bucket not found." in caplog.text
