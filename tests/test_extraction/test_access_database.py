@@ -30,7 +30,7 @@ def test_connection():
         user=os.environ["USER"],
         host="localhost",
         database=os.environ["TEST_DATABASE"],
-        # password=os.environ["PASSWORD"],
+        password=os.environ["PASSWORD"],
     )
 
 

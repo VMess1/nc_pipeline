@@ -82,7 +82,7 @@ jobs:
            POSTGRES_DB: oltp_test
            TEST_DATABASE: oltp_test
            PASSWORD: postgres
-           USER: anything
+           USER: postgres
 
 
       
