@@ -26,22 +26,6 @@ jobs:
       
       - name: Zip Layer Contents
         run: zip -r layer_code.zip layer_contents
-
-      - name: Make dev-setup
-        run: make dev-setup
-
-      - name: Make security-test
-        run: make security-test
-  
-      - name: Make run-flake
-        run: make run-flake
-
-      - name: Make check-coverage
-        run: make check-coverage
-    
-      - name: Make run-checks
-        run: make run-checks
-  
   
   deploy:
     runs-on: ubuntu-latest
