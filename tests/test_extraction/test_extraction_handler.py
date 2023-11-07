@@ -1,11 +1,9 @@
-from datetime import datetime
 from unittest.mock import patch
 from botocore.exceptions import ClientError
+from re import search
 import logging
 import os
 import pytest
-from freezegun import freeze_time
-from moto import mock_logs
 from src.extraction.extraction_handler import lambda_handler
 
 
@@ -80,23 +78,22 @@ def test_upload_to_s3_called_correctly(mock_selection, mock_tables, mock_csv, mo
     mock_upload.assert_called_with('test_csv')
 
 
-# @patch("src.extraction.extraction_handler.write_current_timestamp")
-# @patch("src.extraction.extraction_handler.get_tables", return_value=[['_']])
-# @freeze_time("2022-01-01")
-# def test_write_current_timestamp_called_correctly(mock_table , mock_write):
-#     lambda_handler({}, {})
-#     mock_write.assert_called_with('last_extraction', "2022-01-01")
+@patch("src.extraction.extraction_handler.write_current_timestamp")
+@patch("src.extraction.extraction_handler.get_tables", return_value=[['_']])
+def test_write_current_timestamp_called_correctly(mock_table , mock_write):
+    lambda_handler({}, {})
+    assert mock_write.call_args.args[0] == 'last_extraction'
+    regex = r'\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}'
+    assert search(regex, str(mock_write.call_args.args[1])) is not None
 
 
-
-# @patch("src.extraction.extraction_handler.logging.info")
-# @patch("src.extraction.extraction_handler.select_table", return_value=['test_data'])
-# @patch("src.extraction.extraction_handler.get_tables", return_value=[['test_table_name']])
-# def test_logs_current_datetime_to_cloudwatch_if_has_data(mock_tables, mock_select_table, mock_logging):
-#     lambda_handler({}, {})
-#     mock_logging.assert_called_with(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-#     print(dir(mock_logging.get_log_events))
-#     assert mock_logging.called == True
+@patch("src.extraction.extraction_handler.logger.info")
+@patch("src.extraction.extraction_handler.select_table", return_value=['test_data'])
+@patch("src.extraction.extraction_handler.get_tables", return_value=[['test_table_name']])
+def test_logs_current_datetime_to_cloudwatch_if_has_data(mock_tables, mock_select_table, mock_logging):
+    lambda_handler({}, {})
+    regex = r'\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}'
+    assert search(regex, str(mock_logging.call_args)) is not None
 
 
 LOGGER = logging.getLogger(__name__)
@@ -124,3 +121,13 @@ def test_logs_correct_message_if_bucket_not_found(mock_credentials, caplog):
     )
     lambda_handler({}, {})
     assert "Bucket not found." in caplog.text
+
+
+@patch("src.extraction.extraction_handler.get_credentials")
+def test_logs_correct_message_if_internal_service_error(mock_credentials, caplog):
+    mock_credentials.side_effect = ClientError(
+        error_response={"Error": {"Code": "InternalServiceError"}},
+        operation_name="ClientError"        
+    )
+    lambda_handler({}, {})
+    assert "Internal service error detected." in caplog.text
