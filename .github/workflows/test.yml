@@ -58,6 +58,10 @@ jobs:
           psql -h $TEST_HOST -U $USER -d $TEST_DATABASE -f tests/data/test-extraction.sql
         env:
           PGPASSWORD: postgres
+              PGPASSWORD: postgres
+              PGHOST: localhost
+              PGUSER: postgres
+              PGDATABASE: oltp_test
               
       - name: Make unit-test
         run: make unit-test
