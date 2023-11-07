@@ -78,11 +78,19 @@ jobs:
       # - name: Activate Virtual Environment
       #   run: source myenv/bin/activate
 
-      - name: Make layer setup
-        run: make layer-setup
+      # - name: Make layer setup
+      #   run: make layer-setup
     
       - name: Make run-checks
         run: make run-checks
+        env:
+          PGPASSWORD: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_DB: oltp_test
+          TEST_DATABASE: oltp_test
+          PASSWORD: postgres
+          USER: postgres
+
 
   
   deploy:
