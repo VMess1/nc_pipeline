@@ -80,6 +80,13 @@ jobs:
 
       - name: Make layer setup
         run: make layer-setup
+        env:
+          PGPASSWORD: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_DB: oltp_test
+          TEST_DATABASE: oltp_test
+          PASSWORD: postgres
+          USER: postgres
 
       - name: Make run-checks
         run: make run-checks
