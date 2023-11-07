@@ -25,6 +25,6 @@ data "archive_file" "lambda" {
 
 
 resource "aws_lambda_layer_version" "my_layer" {
-  filename   = "${path.module}/../layer_code.zip"
+  filename   = "./layer_code.zip"
   layer_name = "my-layer"
 }
