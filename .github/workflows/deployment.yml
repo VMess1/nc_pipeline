@@ -1,0 +1,131 @@
+# name: Terraform deploy
+# on:
+#   push:
+#     branches:
+#       - "*"
+
+# jobs:
+#   run-checks:
+#     runs-on: ubuntu-latest
+#     services:
+#       postgres:
+#         image: postgres
+
+#         env:
+#           POSTGRES_PASSWORD: postgres
+#           POSTGRES_USER: postgres
+#           POSTGRES_DB: oltp_test
+
+#         options: >-
+#           --health-cmd pg_isready
+#           --health-interval 10s
+#           --health-timeout 5s
+#           --health-retries 5
+
+#         ports:
+#           - 5432:5432
+
+
+#     steps:
+#       - name: Checkout Repo
+#         uses: actions/checkout@v4
+
+#       - name: Setup- Python
+#         uses: actions/checkout@v4
+#         with: 
+#           python-version: '3.11'
+      
+#       - name: Install requirements
+#         run: make requirements
+
+#       - name: Install Dependencies
+#         run: |
+#           mkdir -p layer_contents
+#           pip install -r requirements.txt -t layer_contents
+      
+#       - name: Zip Layer Contents
+#         run: zip -r layer_code.zip layer_contents
+
+#       - name: Make dev-setup
+#         run: make dev-setup
+
+#       - name: Make security-test
+#         run: make security-test
+  
+#       - name: Make run-flake
+#         run: make run-flake
+
+#       - name: Create Test Database
+#         run: psql -h localhost -U postgres -d oltp_test -f tests/data/test-extraction.sql
+#         env:
+#           PGPASSWORD: postgres
+              
+#       - name: Make unit-test
+#         run: make unit-test
+#         env:
+#           PGPASSWORD: postgres
+#           POSTGRES_USER: postgres
+#           POSTGRES_DB: oltp_test
+#           TEST_DATABASE: oltp_test
+#           PASSWORD: postgres
+#           USER: postgres
+
+#       - name: Make check-coverage
+#         run: make check-coverage
+#         env:
+#           PGPASSWORD: postgres
+#           POSTGRES_USER: postgres
+#           POSTGRES_DB: oltp_test
+#           TEST_DATABASE: oltp_test
+#           PASSWORD: postgres
+#           USER: postgres
+      
+#       # - name: Set up Virtual Environment
+#       #   run: python -m venv myenv
+
+#       # - name: Activate Virtual Environment
+#       #   run: source myenv/bin/activate
+
+#       # - name: Make layer setup
+#       #   run: make layer-setup
+    
+#       - name: Make run-checks
+#         run: make run-checks
+#         env:
+#           PGPASSWORD: postgres
+#           POSTGRES_USER: postgres
+#           POSTGRES_DB: oltp_test
+#           TEST_DATABASE: oltp_test
+#           PASSWORD: postgres
+#           USER: postgres
+
+
+  
+  deploy:
+    runs-on: ubuntu-latest
+    needs: run-checks
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+      
+      - name: Configure AWS CLI
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-2
+      
+      - name: Setup terraform
+        uses: hashicorp/setup-terraform@v2
+
+      - name: Terraform init
+        working-directory: terraform
+        run: terraform init
+
+      - name: Terraform plan
+        working-directory: terraform
+        run: terraform plan
+
+      - name: Terraform apply
+        working-directory: terraform
+        run: terraform apply -auto-approve
