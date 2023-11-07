@@ -62,7 +62,7 @@ dev-setup: bandit safety flake coverage
 ## Setups layers for dependencies
 layer-setup:
 	$(call execute_in_env, chmod u+x setup.sh)
-	$(call execute_in_env, ./setup.sh)
+	$(call execute_in_env, export PYTHONPATH=${PYTHONPATH} && ./setup.sh)
 
 # Build / Run
 
