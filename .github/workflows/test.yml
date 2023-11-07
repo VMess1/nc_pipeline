@@ -68,8 +68,8 @@ jobs:
         # run: |
         #   source $GITHUB_WORKSPACE/.env  # Source the copied .env file to set environment variables
         #   psql -h $TEST_HOST -U $USER -d $TEST_DATABASE -f tests/data/test-extraction.sql
-        # env:
-        #   PGPASSWORD: postgres
+        env:
+          PGPASSWORD: postgres
         #   PGHOST: localhost
         #   PGUSER: postgres
         #   PGDATABASE: oltp_test
