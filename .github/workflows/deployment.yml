@@ -1,105 +1,44 @@
-# name: Terraform deploy
-# on:
-#   push:
-#     branches:
-#       - "*"
+name: Terraform deploy
+on:
+  push:
+    branches:
+      - "*"
 
-# jobs:
-#   run-checks:
-#     runs-on: ubuntu-latest
-#     services:
-#       postgres:
-#         image: postgres
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
 
-#         env:
-#           POSTGRES_PASSWORD: postgres
-#           POSTGRES_USER: postgres
-#           POSTGRES_DB: oltp_test
-
-#         options: >-
-#           --health-cmd pg_isready
-#           --health-interval 10s
-#           --health-timeout 5s
-#           --health-retries 5
-
-#         ports:
-#           - 5432:5432
-
-
-#     steps:
-#       - name: Checkout Repo
-#         uses: actions/checkout@v4
-
-#       - name: Setup- Python
-#         uses: actions/checkout@v4
-#         with: 
-#           python-version: '3.11'
+      - name: Setup- Python
+        uses: actions/checkout@v4
+        with: 
+          python-version: '3.11'
       
-#       - name: Install requirements
-#         run: make requirements
+      - name: Install requirements
+        run: make requirements
 
-#       - name: Install Dependencies
-#         run: |
-#           mkdir -p layer_contents
-#           pip install -r requirements.txt -t layer_contents
+      - name: Install Dependencies
+        run: |
+          mkdir -p layer_contents
+          pip install -r requirements.txt -t layer_contents
       
-#       - name: Zip Layer Contents
-#         run: zip -r layer_code.zip layer_contents
+      - name: Zip Layer Contents
+        run: zip -r layer_code.zip layer_contents
 
-#       - name: Make dev-setup
-#         run: make dev-setup
+      - name: Make dev-setup
+        run: make dev-setup
 
-#       - name: Make security-test
-#         run: make security-test
+      - name: Make security-test
+        run: make security-test
   
-#       - name: Make run-flake
-#         run: make run-flake
+      - name: Make run-flake
+        run: make run-flake
 
-#       - name: Create Test Database
-#         run: psql -h localhost -U postgres -d oltp_test -f tests/data/test-extraction.sql
-#         env:
-#           PGPASSWORD: postgres
-              
-#       - name: Make unit-test
-#         run: make unit-test
-#         env:
-#           PGPASSWORD: postgres
-#           POSTGRES_USER: postgres
-#           POSTGRES_DB: oltp_test
-#           TEST_DATABASE: oltp_test
-#           PASSWORD: postgres
-#           USER: postgres
-
-#       - name: Make check-coverage
-#         run: make check-coverage
-#         env:
-#           PGPASSWORD: postgres
-#           POSTGRES_USER: postgres
-#           POSTGRES_DB: oltp_test
-#           TEST_DATABASE: oltp_test
-#           PASSWORD: postgres
-#           USER: postgres
-      
-#       # - name: Set up Virtual Environment
-#       #   run: python -m venv myenv
-
-#       # - name: Activate Virtual Environment
-#       #   run: source myenv/bin/activate
-
-#       # - name: Make layer setup
-#       #   run: make layer-setup
+      - name: Make check-coverage
+        run: make check-coverage
     
-#       - name: Make run-checks
-#         run: make run-checks
-#         env:
-#           PGPASSWORD: postgres
-#           POSTGRES_USER: postgres
-#           POSTGRES_DB: oltp_test
-#           TEST_DATABASE: oltp_test
-#           PASSWORD: postgres
-#           USER: postgres
-
-
+      - name: Make run-checks
+        run: make run-checks
+  
   
   deploy:
     runs-on: ubuntu-latest
