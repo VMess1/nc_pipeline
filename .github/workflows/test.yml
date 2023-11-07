@@ -7,23 +7,23 @@ on:
 jobs:
   run-checks:
     runs-on: ubuntu-latest
-    # services:
-    #   postgres:
-    #     image: postgres
+    services:
+      postgres:
+        image: postgres
 
-    #     env:
-    #       POSTGRES_PASSWORD: postgres
-    #       POSTGRES_USER: postgres
-    #       # POSTGRES_DB: oltp_test
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_DB: oltp_test
 
-    #     options: >-
-    #       --health-cmd pg_isready
-    #       --health-interval 10s
-    #       --health-timeout 5s
-    #       --health-retries 5
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
-    #     ports:
-    #       - 5432:5432
+        ports:
+          - 5432:5432
 
 
     steps:
@@ -47,10 +47,6 @@ jobs:
       - name: Make run-flake
         run: make run-flake
 
-      - name: Copy .env file
-        run: cp nc_pipleine/.env .env
-        working-directory: ${{ github.workspace }}
-
       # - name: Make envfile
       #   uses: SpicyPizza/create-envfile@v2.0
       #   with:
@@ -67,8 +63,8 @@ jobs:
     
 
       - name: Create Test Database
-        run: psql -h ${{env.TEST_HOST}} -U ${{env.USER}} -d ${{env.TEST_DATABASE}} -f tests/data/test-extraction.sql
-        #run: psql -h localhost -U postgres -d oltp_test -f tests/data/test-extraction.sql
+        #run: psql -h ${{env.TEST_HOST}} -U ${{env.USER}} -d ${{env.TEST_DATABASE}} -f tests/data/test-extraction.sql
+        run: psql -h localhost -U postgres -d oltp_test -f tests/data/test-extraction.sql
         # run: |
         #   source $GITHUB_WORKSPACE/.env  # Source the copied .env file to set environment variables
         #   psql -h $TEST_HOST -U $USER -d $TEST_DATABASE -f tests/data/test-extraction.sql
