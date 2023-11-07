@@ -77,17 +77,24 @@ jobs:
       - name: Make unit-test
         run: make unit-test
         env:
-           PGPASSWORD: postgres
-           POSTGRES_USER: postgres
-           POSTGRES_DB: oltp_test
-           TEST_DATABASE: oltp_test
-           PASSWORD: postgres
-           USER: postgres
+          PGPASSWORD: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_DB: oltp_test
+          TEST_DATABASE: oltp_test
+          PASSWORD: postgres
+          USER: postgres
 
 
       
       - name: Make check-coverage
         run: make check-coverage
+        env:
+          PGPASSWORD: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_DB: oltp_test
+          TEST_DATABASE: oltp_test
+          PASSWORD: postgres
+          USER: postgres
 
       - name: Make layer setup
         run: make layer-setup
