@@ -48,7 +48,7 @@ jobs:
         run: make run-flake
 
       - name: Copy .env file
-        run: cp .env .env
+        run: cp nc_pipleine/.env .env
         working-directory: ${{ github.workspace }}
 
       # - name: Make envfile
