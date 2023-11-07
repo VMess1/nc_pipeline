@@ -47,32 +47,10 @@ jobs:
       - name: Make run-flake
         run: make run-flake
 
-      # - name: Make envfile
-      #   uses: SpicyPizza/create-envfile@v2.0
-      #   with:
-      #     envkey_TEST_USER: postgres
-      #     envkey_TEST_PASSWORD: postgres
-      #     envkey_TEST_HOST: localhost
-      #     envkey_TEST_DATABASE: oltp_test
-
-      # - name: Replicate .env for Workflow
-      #   run: |
-      #     echo "TEST_USER=postgres" >> .env
-      #     echo "TEST_PASSWORD=postgres" >> .env
-      #     echo "TEST_"
-    
-
       - name: Create Test Database
-        #run: psql -h ${{env.TEST_HOST}} -U ${{env.USER}} -d ${{env.TEST_DATABASE}} -f tests/data/test-extraction.sql
         run: psql -h localhost -U postgres -d oltp_test -f tests/data/test-extraction.sql
-        # run: |
-        #   source $GITHUB_WORKSPACE/.env  # Source the copied .env file to set environment variables
-        #   psql -h $TEST_HOST -U $USER -d $TEST_DATABASE -f tests/data/test-extraction.sql
         env:
           PGPASSWORD: postgres
-        #   PGHOST: localhost
-        #   PGUSER: postgres
-        #   PGDATABASE: oltp_test
               
       - name: Make unit-test
         run: make unit-test
@@ -83,9 +61,7 @@ jobs:
           TEST_DATABASE: oltp_test
           PASSWORD: postgres
           USER: postgres
-
-
-      
+          
       - name: Make check-coverage
         run: make check-coverage
         env:

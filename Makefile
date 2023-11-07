@@ -64,11 +64,6 @@ layer-setup:
 	$(call execute_in_env, chmod u+x setup.sh)
 	$(call execute_in_env, ./setup.sh)
 
-# Setup TestDatabase for testing
-# create-test-database:
-# 	$(call execute_in_env, PGPASSWORD=postgres psql -f tests/data/test-extraction.sql)
-
-
 # Build / Run
 
 ## Run the security test (bandit + safety)
