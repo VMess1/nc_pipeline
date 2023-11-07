@@ -34,6 +34,12 @@ jobs:
         uses: actions/checkout@v4
         with: 
           python-version: '3.11'
+
+      - name: Set up Virtual Environment
+        run: python -m venv venv
+
+      - name: Activate Virtual Environment
+        run: source venv/bin/activate
       
       - name: Install requirements
         run: make requirements
@@ -72,11 +78,11 @@ jobs:
           PASSWORD: postgres
           USER: postgres
       
-      - name: Set up Virtual Environment
-        run: python -m venv myenv
+      # - name: Set up Virtual Environment
+      #   run: python -m venv myenv
 
-      - name: Activate Virtual Environment
-        run: source myenv/bin/activate
+      # - name: Activate Virtual Environment
+      #   run: source myenv/bin/activate
 
       - name: Make layer setup
         run: make layer-setup
