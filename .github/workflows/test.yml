@@ -61,7 +61,7 @@ jobs:
           TEST_DATABASE: oltp_test
           PASSWORD: postgres
           USER: postgres
-          
+
       - name: Make check-coverage
         run: make check-coverage
         env:
@@ -71,6 +71,12 @@ jobs:
           TEST_DATABASE: oltp_test
           PASSWORD: postgres
           USER: postgres
+      
+      - name: Set up Virtual Environment
+        run: python -m venv myenv
+
+      - name: Activate Virtual Environment
+        run: source myenv/bin/activate
 
       - name: Make layer setup
         run: make layer-setup
