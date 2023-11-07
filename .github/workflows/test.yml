@@ -80,6 +80,7 @@ jobs:
            PGPASSWORD: postgres
            POSTGRES_USER: postgres
            POSTGRES_DB: oltp_test
+           TEST_DATABASE: oltp_test
 
 
       
