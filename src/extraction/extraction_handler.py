@@ -26,11 +26,11 @@ def lambda_handler(event, context):
                 data = select_table(con, table_name[0], last_extraction)
                 if len(data) > 0:
                     logger.info(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-                    datestamp = datetime.now().replace(microsecond=0)
-                    write_current_timestamp('last_extraction', datestamp)
                     headers = select_table_headers(con, table_name[0])
                     csv = convert_to_csv(table_name[0], data, headers)
                     upload_to_s3(csv)
+        datestamp = datetime.now().replace(microsecond=0)
+        write_current_timestamp('last_extraction', datestamp)
     except ClientError as err:
         if err.response["Error"]["Code"] == "ResourceNotFoundException":
             logger.error("Credentials not found.")
@@ -38,8 +38,6 @@ def lambda_handler(event, context):
             logger.error("Internal service error detected.")
         if err.response["Error"]["Code"] == "NoSuchBucket":
             logger.error("Bucket not found.")
-        if err.response["Error"]["Code"] == "InternalServiceError":
-            logger.error("Internal service error detected.")
     except TypeError as err:
         logger.error(f"Incorrect parameter type: {err}")
     except Exception as err:

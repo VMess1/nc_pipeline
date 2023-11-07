@@ -9,6 +9,7 @@ resource "aws_lambda_function" "lambda_ingestion" {
     handler = "extraction_handler.lambda_handler"
     runtime = "python3.11"
     layers = [aws_lambda_layer_version.layer_dependencies.arn]
+    timeout=60
 }
 
 # lambda dependencies
