@@ -7,7 +7,7 @@ resource "aws_s3_bucket" "transformation_bucket" {
 }
 
 resource "aws_s3_object" "lambda_code_2" {
-  key    = "transformation_function/function.zip"      #updating(function name)
-  source = "${path.module}/../function.zip"  #update with proper name
+  key    = "transformation_function/function2.zip"
+  source = "${path.module}/../function2.zip"
   bucket = aws_s3_bucket.code_bucket_2.id
 }
