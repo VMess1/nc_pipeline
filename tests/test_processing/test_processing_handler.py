@@ -10,7 +10,11 @@ from io import BytesIO
 from dataframes import currency_dataframe_transformed
 import logging
 from testfixtures import LogCapture
+from botocore.exceptions import ClientError
 
+logger = logging.getLogger('test')
+logger.setLevel(logging.INFO)
+logger.propagate = True
 
 @pytest.fixture(scope="function")
 def aws_credentials():
@@ -36,12 +40,13 @@ def mock_buckets(aws_credentials):
         yield conn
 
 
-@pytest.fixture(scope='function')
-def mock_logger():
-    with LogCapture():
-        logger = logging.getLogger()
-        # logger.setLevel(logging.INFO)
-        return logger
+# @pytest.fixture(scope='function')
+# def mock_logger():
+#     #with LogCapture():
+#     logger = logging.getLogger('test')
+#     logger.setLevel(logging.INFO)
+#     logger.propagate = True
+#     return logger
 
 
 class TestBasicTableFunctionality:
@@ -68,16 +73,31 @@ class TestBasicTableFunctionality:
 # LOGGER = logging.getLogger(__name__)
 
 
-# class TestErrorHandling:
-#     def test_ingestion_bucket_not_found(
-#             self, mock_logger, monkeypatch, caplog):
-#         def mock_get():
-#             return mock_logger
-#         monkeypatch.setattr(logging, 'getLogger', mock_get)
-#         test_event = {'table_list': ['currency'],
-#                    'timestamp': 20221103150000}
-#         # response = main(test_event, None)
-#         assert "Bucket not found." in caplog.text
+class TestErrorHandling:
+    # def test_ingestion_bucket_not_found(
+    #         self, mock_logger, monkeypatch, caplog):
+    #     def mock_get():
+    #         print('The mock logger is returned')
+    #         return mock_logger
+    #     monkeypatch.setattr(logging, 'getLogger', mock_get)
+    #     test_event = {'table_list': ['currency'],
+    #                'timestamp': 20221103150000}
+    #     mock_get.side_effect=ClientError(
+    #         error_response={"Error": {"Code": "NoSuchBucket"}},
+    #         operation_name="ClientError"
+    #         )
+    #     main(test_event, None)
+    #     print(caplog.text, '<<<< caplog.text')
+    #     assert "Bucket not found." in caplog.text
+    
+    # def test_ingestion_bucket_not_found(self, caplog):
+    #     test_event = {'table_list': ['currency'],
+    #                'timestamp': 20221103150000}
+    #     with caplog.at_level(logging.INFO):
+    #         main(test_event, None)
+    #         print(dir(caplog))
+    #         print(caplog.records, '<<<< caplog.text')
+    #         assert "Bucket not found." in caplog.records
 
-#     def test_transformation_bucket_not_found(self):
-#         pass
+    def test_transformation_bucket_not_found(self):
+        pass
