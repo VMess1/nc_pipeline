@@ -8,6 +8,8 @@ import os
 from tests.test_processing.strings import currency_string
 from io import BytesIO
 from dataframes import currency_dataframe_transformed
+import logging
+from testfixtures import LogCapture
 
 
 @pytest.fixture(scope="function")
@@ -34,6 +36,14 @@ def mock_buckets(aws_credentials):
         yield conn
 
 
+@pytest.fixture(scope='function')
+def mock_logger():
+    with LogCapture():
+        logger = logging.getLogger()
+        # logger.setLevel(logging.INFO)
+        return logger
+
+
 class TestBasicTableFunctionality:
     def test_currency_table_update_is_processed(
             self, mock_buckets, monkeypatch):
@@ -55,10 +65,18 @@ class TestBasicTableFunctionality:
         expected_output = currency_dataframe_transformed()
         assert output.equals(expected_output)
 
+# LOGGER = logging.getLogger(__name__)
+
 
 class TestErrorHandling:
-    def test_ingestion_bucket_not_found(self):
-        pass
+    def test_ingestion_bucket_not_found(
+            self, mock_logger, monkeypatch, caplog):
+        def mock_get():
+            return mock_logger
+        monkeypatch.setattr(logging, 'getLogger', mock_get)
+        test_event = {'table_list': ['currency'], 'timestamp': 20221103150000}
+        # response = main(test_event, None)
+        assert "Bucket not found." in caplog.text
 
     def test_transformation_bucket_not_found(self):
         pass
