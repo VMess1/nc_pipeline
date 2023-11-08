@@ -1,13 +1,11 @@
 import pandas as pd
-import boto3
 from io import BytesIO
 
 
-def get_csv_data(table, timestamp):
-    client = boto3.client('s3', region_name="eu-west-2")
+def get_csv_data(client, table, timestamp):
     response = client.get_object(
         Bucket="nc-group3-ingestion-bucket",
-        Key=f'{table}/{timestamp}')
+        Key=f'{table}/{table}{timestamp}.csv')
     return response
 
 
@@ -17,7 +15,7 @@ def read_csv(file_name):
 
 
 def write_to_bucket(client, table_name, df, timestamp):
-    file_key = table_name + '/' + table_name + timestamp + '.parquet'
+    file_key = table_name + '/' + table_name + str(timestamp) + '.parquet'
     out_buffer = BytesIO()
     df.to_parquet(out_buffer, index=False)
     out_buffer.seek(0)

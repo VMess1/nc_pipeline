@@ -82,3 +82,11 @@ def difference_2():
      552548.62, 2, 3, False, 2022-11-04, 67305075,
      31622269\n"""
     return payment_result
+
+
+def currency_string():
+    return '''currency_id,currency_code,created_at,last_updated\n
+    1,GBP,2022-11-03 14:20:52,2022-11-03 14:20:52\n
+    2,USD,2022-11-03 14:20:52,2022-11-03 14:20:52\n
+    3,EUR,2022-11-03 14:20:52,2022-11-03 14:20:52\n
+    '''

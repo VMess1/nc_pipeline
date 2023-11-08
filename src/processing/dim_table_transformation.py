@@ -2,9 +2,10 @@ import pandas as pd
 
 
 def dim_remove_dates(data):
-    data.drop('created_at', inplace=True, axis=1)
-    data.drop('last_updated', inplace=True, axis=1)
-    return data
+    transformed_data = data.drop(columns="created_at", inplace=False, axis=1)
+    transformed_data = transformed_data.drop(
+        columns='last_updated', inplace=False, axis=1)
+    return transformed_data
 
 
 def dim_join_department(staff_data, departments_data, timestamp):
