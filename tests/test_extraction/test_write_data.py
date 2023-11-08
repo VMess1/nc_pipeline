@@ -6,7 +6,7 @@ from botocore.exceptions import ClientError
 import os
 from datetime import datetime
 from pg8000.native import Connection
-from src.extraction.access_database import select_table, select_table_headers
+from src.extraction.read_database import select_table, select_table_headers
 from src.extraction.write_data import convert_to_csv, upload_to_s3
 from tests.test_extraction import strings
 
@@ -56,8 +56,9 @@ class TestUploadToCsv:
             Bucket="nc-group3-ingestion-bucket",
             CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},
         )
+        test_datestamp = '2023-11-08 09:59:24'
         new_csv = strings.difference_1()
-        res = upload_to_s3(new_csv)
+        res = upload_to_s3(test_datestamp, new_csv)
         assert res == "file uploaded"
 
     @mock_s3
@@ -67,9 +68,10 @@ class TestUploadToCsv:
             Bucket="nc-group2-ingestion-bucket",
             CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},
         )
+        test_datestamp = '2023-11-08 09:59:24'
         new_csv = strings.difference_1()
         with pytest.raises(ClientError) as excinfo:
-            upload_to_s3(new_csv)
+            upload_to_s3(test_datestamp, new_csv)
         assert str(excinfo.value) == (
             "An error occurred (NoSuchBucket) when calling the PutObject "
             + "operation: The specified bucket does not exist"
@@ -82,6 +84,7 @@ class TestUploadToCsv:
             Bucket="nc-group3-ingestion-bucket",
             CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},
         )
+        test_datestamp = '2023-11-08 09:59:24'
         with pytest.raises(TypeError) as excinfo:
-            upload_to_s3(None)
+            upload_to_s3(test_datestamp, None)
         assert str(excinfo.value) == "Incorrect csv formatting."
