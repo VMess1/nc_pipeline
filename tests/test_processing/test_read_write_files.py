@@ -51,10 +51,10 @@ class TestReadCSV:
         mock_csv_bucket.put_object(
             Bucket="nc-group3-ingestion-bucket",
             Body=new_string(),
-            Key='payment/20221103150000')
+            Key='payment/20221103150000.csv')
         response = mock_csv_bucket.get_object(
             Bucket="nc-group3-ingestion-bucket",
-            Key="payment/20221103150000")
+            Key="payment/20221103150000.csv")
         data = read_csv(response['Body'])
         assert data.iloc[0]['payment_id'] == 2
 

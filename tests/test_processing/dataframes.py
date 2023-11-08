@@ -12,3 +12,10 @@ def currency_dataframe():
                          '2022-11-03 14:20:49.962000',
                          '2022-11-03 14:20:49.962000']
     })
+
+
+def currency_dataframe_transformed():
+    return pd.DataFrame(data={
+        'currency_id': [1, 2, 3],
+        'currency_code': ['GBP', 'USD', 'EUR']
+    })
