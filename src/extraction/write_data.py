@@ -20,7 +20,7 @@ def convert_to_csv(table_name, data, headers):
     return the_goods
 
 
-def upload_to_s3(csv_string):
+def upload_to_s3(datestamp, csv_string):
     """uploads csv string to s3 ingestion bucket"""
     if not isinstance(csv_string, str):
         raise TypeError("Incorrect csv formatting.")
@@ -28,13 +28,9 @@ def upload_to_s3(csv_string):
         table_name = csv_string.split("\n")
         file_key = (
             table_name[0]
-            + "/"
-            + str(datetime.now().year)
-            + str(datetime.now().strftime("%m"))
-            + str(datetime.now().strftime("%d"))
-            + str(datetime.now().strftime("%H"))
-            + str(datetime.now().strftime("%M"))
-            + str(datetime.now().strftime("%S"))
+            + '/'
+            + table_name[0]
+            + datestamp.replace('-', '').replace(':', '').replace(' ', '')
             + ".csv"
         )
         s3 = boto3.client("s3", region_name="eu-west-2")

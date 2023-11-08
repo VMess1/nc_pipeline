@@ -1,7 +1,7 @@
 from datetime import datetime
 from botocore.exceptions import ClientError
 import logging
-from src.extraction.access_database import (
+from src.extraction.read_database import (
     get_credentials,
     get_con,
     get_tables,
@@ -18,6 +18,7 @@ logger.setLevel(logging.INFO)
 def lambda_handler(event, context):
     try:
         credentials = get_credentials("OLTPCredentials")
+        datestamp = datetime.now().replace(microsecond=0)
         con = get_con(credentials)
         last_extraction = get_last_timestamp("last_extraction")
         table_names = get_tables(con)
@@ -28,8 +29,7 @@ def lambda_handler(event, context):
                     logger.info(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
                     headers = select_table_headers(con, table_name[0])
                     csv = convert_to_csv(table_name[0], data, headers)
-                    upload_to_s3(csv)
-        datestamp = datetime.now().replace(microsecond=0)
+                    upload_to_s3(datestamp, csv)        
         write_current_timestamp('last_extraction', datestamp)
     except ClientError as err:
         if err.response["Error"]["Code"] == "ResourceNotFoundException":

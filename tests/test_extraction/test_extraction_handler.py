@@ -75,7 +75,9 @@ def test_convert_to_csv_called_correctly(mock_selection, mock_tables, mock_heade
 @patch("src.extraction.extraction_handler.select_table", return_value=['test_data'])
 def test_upload_to_s3_called_correctly(mock_selection, mock_tables, mock_csv, mock_upload):
     lambda_handler({}, {})
-    mock_upload.assert_called_with('test_csv')
+    assert mock_upload.call_args.args[1] == 'test_csv'
+    regex = r'\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}'
+    assert search(regex, str(mock_upload.call_args.args[0])) is not None
 
 
 @patch("src.extraction.extraction_handler.write_current_timestamp")
