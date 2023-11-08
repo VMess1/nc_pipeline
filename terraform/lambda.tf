@@ -10,6 +10,7 @@ resource "aws_lambda_function" "lambda_ingestion" {
     runtime = "python3.11"
     # source_code_hash = data.archive_file.lambda.output_base64sha256
     layers = [aws_lambda_layer_version.layer_dependencies.arn]
+    timeout=60
 }
 
 # lambda dependencies

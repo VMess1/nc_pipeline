@@ -6,7 +6,7 @@ import os
 from datetime import datetime
 import json
 from pg8000.native import Connection
-from src.extraction.access_database import (
+from src.extraction.read_database import (
     get_credentials,
     select_table,
     select_table_headers,
