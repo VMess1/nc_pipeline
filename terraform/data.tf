@@ -7,6 +7,6 @@ data "aws_region" "current" {}
 #INGESTION LAMBDA
 data "archive_file" "lambda" {
   type        = "zip"
-  source_dir = "${path.module}/../src/extraction/" 
+  source_file = "${path.module}/../src/extraction/extraction_handler.py" 
   output_path = "${path.module}/../function.zip"  
 }
