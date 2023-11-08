@@ -8,6 +8,7 @@ resource "aws_lambda_function" "lambda_ingestion" {
     s3_key = aws_s3_object.lambda_code.key
     handler = "extraction_handler.lambda_handler"
     runtime = "python3.11"
+    # source_code_hash = data.archive_file.lambda.output_base64sha256
     layers = [aws_lambda_layer_version.layer_dependencies.arn]
 }
 
@@ -26,9 +27,3 @@ resource "aws_lambda_permission" "allow_eventbridge" {
   principal      = "events.amazonaws.com"
   source_arn     = aws_cloudwatch_event_rule.event_rule.arn
 }
-
-
-
-
-
-

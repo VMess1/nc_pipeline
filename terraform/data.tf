@@ -10,18 +10,3 @@ data "archive_file" "lambda" {
   source_dir = "${path.module}/../src/extraction/" 
   output_path = "${path.module}/../function.zip"  
 }
-
-
-
-# data "archive_file" "requirements" {
-#    type = "zip"
-#    source_dir = "${path.module}/../layers"
-#    output_path = "${path.module}/../layer_code.zip"
-#  }
-
-
-resource "aws_lambda_layer_version" "my_layer" {
-  #filename   = "${path.module}/../layer_code.zip"
-  filename ="./layer_code.zip"
-  layer_name = "my-layer"
-}
