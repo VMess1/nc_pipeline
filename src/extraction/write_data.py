@@ -1,5 +1,4 @@
 import boto3
-from datetime import datetime
 
 
 def convert_to_csv(table_name, data, headers):

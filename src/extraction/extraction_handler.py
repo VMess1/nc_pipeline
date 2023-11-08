@@ -9,7 +9,8 @@ from src.extraction.read_database import (
     select_table_headers,
 )
 from src.extraction.write_data import convert_to_csv, upload_to_s3
-from src.extraction.store_timestamp import get_last_timestamp, write_current_timestamp
+from src.extraction.store_timestamp import (get_last_timestamp,
+                                            write_current_timestamp)
 
 logger = logging.getLogger("LPY1Logger")
 logger.setLevel(logging.INFO)
@@ -29,7 +30,7 @@ def lambda_handler(event, context):
                     logger.info(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
                     headers = select_table_headers(con, table_name[0])
                     csv = convert_to_csv(table_name[0], data, headers)
-                    upload_to_s3(datestamp, csv)        
+                    upload_to_s3(datestamp, csv)
         write_current_timestamp('last_extraction', datestamp)
     except ClientError as err:
         if err.response["Error"]["Code"] == "ResourceNotFoundException":
@@ -43,8 +44,3 @@ def lambda_handler(event, context):
     except Exception as err:
         logger.error(f"An unexpected error has occurred: {str(err)}")
         return err
-
-
-# Needs line 30 to be potentially moved out of loop
-
-
