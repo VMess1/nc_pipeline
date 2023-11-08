@@ -1,15 +1,15 @@
 from datetime import datetime
 from botocore.exceptions import ClientError
 import logging
-from src.extraction.read_database import (
+from read_database import (
     get_credentials,
     get_con,
     get_tables,
     select_table,
     select_table_headers,
 )
-from src.extraction.write_data import convert_to_csv, upload_to_s3
-from src.extraction.store_timestamp import (get_last_timestamp,
+from write_data import convert_to_csv, upload_to_s3
+from store_timestamp import (get_last_timestamp,
                                             write_current_timestamp)
 
 logger = logging.getLogger("LPY1Logger")
@@ -30,7 +30,7 @@ def lambda_handler(event, context):
                     logger.info(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
                     headers = select_table_headers(con, table_name[0])
                     csv = convert_to_csv(table_name[0], data, headers)
-                    upload_to_s3(datestamp, csv)
+                    upload_to_s3(str(datestamp), csv)
         write_current_timestamp('last_extraction', datestamp)
     except ClientError as err:
         if err.response["Error"]["Code"] == "ResourceNotFoundException":
