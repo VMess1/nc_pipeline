@@ -18,15 +18,7 @@ jobs:
       
       - name: Install requirements
         run: make requirements
-
-      - name: Install Dependencies
-        run: |
-          mkdir -p layer_contents
-          pip install -r requirements.txt -t layer_contents
-      
-      - name: Zip Layer Contents
-        run: zip -r terraform/layer_code.zip layer_contents
-      
+            
       - name: Configure AWS CLI
         uses: aws-actions/configure-aws-credentials@v4
         with:
