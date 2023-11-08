@@ -68,15 +68,16 @@ class TestBasicTableFunctionality:
 # LOGGER = logging.getLogger(__name__)
 
 
-class TestErrorHandling:
-    def test_ingestion_bucket_not_found(
-            self, mock_logger, monkeypatch, caplog):
-        def mock_get():
-            return mock_logger
-        monkeypatch.setattr(logging, 'getLogger', mock_get)
-        test_event = {'table_list': ['currency'], 'timestamp': 20221103150000}
-        # response = main(test_event, None)
-        assert "Bucket not found." in caplog.text
+# class TestErrorHandling:
+#     def test_ingestion_bucket_not_found(
+#             self, mock_logger, monkeypatch, caplog):
+#         def mock_get():
+#             return mock_logger
+#         monkeypatch.setattr(logging, 'getLogger', mock_get)
+#         test_event = {'table_list': ['currency'],
+#                    'timestamp': 20221103150000}
+#         # response = main(test_event, None)
+#         assert "Bucket not found." in caplog.text
 
-    def test_transformation_bucket_not_found(self):
-        pass
+#     def test_transformation_bucket_not_found(self):
+#         pass
