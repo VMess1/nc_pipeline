@@ -19,4 +19,3 @@ resource "aws_s3_object" "layer_code" {
   source = "${path.module}/../aws_utils/layer_code.zip"   #update with proper 
   bucket = aws_s3_bucket.code_bucket.id
 }
-
