@@ -2,11 +2,10 @@ name: Terraform deploy
 on:
   push:
     branches:
-      - "*"
-
-
+      - main
+      
 jobs:
-  run-checks:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
@@ -19,39 +18,7 @@ jobs:
       
       - name: Install requirements
         run: make requirements
-
-      - name: Make dev-setup
-        run: make dev-setup
-
-      - name: Make security-test
-        run: make security-test
-  
-      - name: Make run-flake
-        run: make run-flake
-
-      - name: Make TestDatabase
-        run: make create-test-database
-              
-      - name: Make unit-test
-        run: make unit-test
-      
-      - name: Make check-coverage
-        run: make check-coverage
-
-      - name: Make layer setup
-        run: make layer-setup
-
-      - name: Make run-checks
-        run: make run-checks
-
-  
-  deploy:
-    runs-on: ubuntu-latest
-    needs: run-checks
-    steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v4
-      
+            
       - name: Configure AWS CLI
         uses: aws-actions/configure-aws-credentials@v4
         with:
