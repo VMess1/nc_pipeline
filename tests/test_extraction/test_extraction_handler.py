@@ -1,8 +1,8 @@
+import logging
+import unittest
 from unittest.mock import patch, MagicMock
 from botocore.exceptions import ClientError
 from datetime import datetime
-import logging
-import unittest
 from src.extraction.extraction_handler import lambda_handler
 
 
@@ -30,6 +30,9 @@ class TestLambdaHandlerCallsFuncsCorrectly(unittest.TestCase):
                         mock_convert_to_csv, mock_upload_to_s3,
                         mock_write_timestamp, mock_datetime, mock_get_logger
                         ):
+        """Test checks that the lambda_handler function, which is the main
+        function deployed to AWS lambda calls all of the util functions
+        correctly and with the correct returned parameters"""
         mock_log = MagicMock()
         mock_get_logger.return_value = mock_log
         mock_datetime.now.return_value = datetime(2000, 1, 1, 11, 0, 0)
@@ -69,6 +72,9 @@ class TestLambdaHandlerErrorHandling:
            return_value=500)
     def test_logs_correct_message_if_TypeError(self, mock_credentials,
                                                caplog):
+        """Checks to see if TypeError message is correctly returned if
+        a TypeError occurs in the main lambda handler"""
+        mock_credentials.side_effect = TypeError
         lambda_handler({}, {})
         assert "Incorrect parameter type:" in caplog.text
 
@@ -78,6 +84,8 @@ class TestLambdaHandlerErrorHandling:
             mock_credentials,
             caplog
             ):
+        """Checks to see if correct ClientError message given if a
+        ResourceNotFound error occurs in the main lambda handler"""
         mock_credentials.side_effect = ClientError(
             error_response={"Error": {"Code": "ResourceNotFoundException"}},
             operation_name="ClientError"
@@ -88,6 +96,8 @@ class TestLambdaHandlerErrorHandling:
     @patch("src.extraction.extraction_handler.get_credentials")
     def test_logs_correct_message_if_bucket_not_found(self, mock_credentials,
                                                       caplog):
+        """Checks to see if correct ClientError message given if a NoSuchBucket
+         error occurs in the main lambda handler"""
         mock_credentials.side_effect = ClientError(
             error_response={"Error": {"Code": "NoSuchBucket"}},
             operation_name="ClientError"
@@ -101,6 +111,8 @@ class TestLambdaHandlerErrorHandling:
                                             mock_credentials,
                                             caplog
                                             ):
+        """Checks to see if correct ClientError message given if an
+        InternalServiceError occurs in the main lambda handler"""
         mock_credentials.side_effect = ClientError(
             error_response={"Error": {"Code": "InternalServiceError"}},
             operation_name="ClientError"
@@ -108,16 +120,30 @@ class TestLambdaHandlerErrorHandling:
         lambda_handler({}, {})
         assert "Internal service error detected." in caplog.text
 
+    @patch("src.extraction.extraction_handler.get_credentials")
+    def test_logs_correct_message_if_Exception_error(
+                                            self,
+                                            mock_credentials,
+                                            caplog
+                                            ):
+        """Checks to see if correct Exception message if the lambda
+        handler runs into any other type of error"""
+        mock_credentials.side_effect = Exception
+        lambda_handler({}, {})
+        assert "An unexpected error has occurred:" in caplog.text
 
-# @patch("src.extraction.extraction_handler.logger.info")
-# @patch("src.extraction.extraction_handler.select_table",
-#        return_value=['test_data'])
-# @patch("src.extraction.extraction_handler.get_tables",
-#        return_value=[['test_table_name']])
-# def test_logs_current_datetime_to_cloudwatch_if_has_data(
-#               mock_tables,
-#               mock_select_table,
-#               mock_logging):
-#     lambda_handler({}, {})
-#     regex = r'\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}'
-#     assert search(regex, str(mock_logging.call_args)) is not None
+
+class TestLoggingInLambdaHandler(unittest.TestCase):
+    @patch("src.extraction.extraction_handler.logger.info")
+    @patch("src.extraction.extraction_handler.select_table",
+           return_value=['test_data'])
+    @patch("src.extraction.extraction_handler.get_tables",
+           return_value=[['test_table_name']])
+    def test_logs_current_datetime_to_cloudwatch_if_has_data(
+                self,
+                mock_tables,
+                mock_select_table,
+                mock_logging):
+        lambda_handler({}, {})
+        regex = r'\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}'
+        self.assertRegex(str(mock_logging.call_args), regex)
