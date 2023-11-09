@@ -47,6 +47,8 @@ def main(event, context):
             new_table_name = 'dim_design'
             dim_design = dim_remove_dates(df)
             write_to_bucket(s3, new_table_name, dim_design, last_time_stamp)
+        elif table_name == 'staff':
+            new_table_name = 'dim_staff'
             # elif table_name == 'department':
             #     staff_table_data = get_csv_data('staff', time_stamp)
             #     dim_staff = dim_join_department(staff_table_data)

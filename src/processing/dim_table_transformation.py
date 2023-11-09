@@ -8,11 +8,14 @@ def dim_remove_dates(data):
     return transformed_data
 
 
-def dim_join_department(staff_data, departments_data, timestamp):
-    result = pd.merge(staff_data, departments_data, on="department_id")
+def dim_join_department(staff_data, departments_data):
+    new_staff_data = dim_remove_dates(staff_data.copy())
+    new_departments_data = dim_remove_dates(departments_data.copy())
+    result = pd.merge(new_staff_data, new_departments_data, on="department_id")
 
-    # new_df = staff_data.set_index('department_id').join(
-    # departments_data.set_index('department_id'))
+    result = result.drop(columns=['manager', 'department_id'],
+                         axis=1)
+
     return result
 
 
