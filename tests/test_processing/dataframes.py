@@ -1,4 +1,5 @@
 import pandas as pd
+import datetime
 
 
 def currency_dataframe():
@@ -127,4 +128,89 @@ def dim_location_dataframe():
         'postal_code': ['28441', '28441', '28441'],
         'country': ['Turkey1', 'Turkey', 'Turkey'],
         'phone': ['1803 637401', '1803 637401', '1803 637401']
+    })
+
+
+def sales_order_dataframe():
+    return pd.DataFrame(
+        data={
+            'sales_order_id': [
+                5136,
+                5137,
+                5138],
+            'created_at': [
+                pd.Timestamp('2022-01-01T12'),
+                pd.Timestamp('2022-02-01T12'),
+                pd.Timestamp('2022-03-01T12')],
+            'last_updated': [
+                pd.Timestamp('2022-01-01T12'),
+                pd.Timestamp('2022-02-01T12'),
+                pd.Timestamp('2022-03-01T12')],
+            'design_id': [
+                51,
+                52,
+                53],
+            'staff_id': [
+                1,
+                2,
+                3],
+            'counterparty_id': [
+                1,
+                2,
+                3],
+            'units_sold': [
+                1,
+                1,
+                1],
+            'unit_price': [
+                9.99,
+                10.99,
+                11.99],
+            'currency_id': [
+                1,
+                1,
+                1],
+            'agreed_delivery_date': [
+                '2022-01-01',
+                '2022-02-01',
+                '2022-03-01'],
+            'agreed_payment_date': [
+                '2022-01-01',
+                '2022-02-01',
+                '2022-03-01'],
+            'agreed_delivery_location_id': [
+                1,
+                2,
+                3]})
+
+
+def fact_sales_dataframe():
+    return pd.DataFrame(data={
+        'sales_record_id': [0, 1, 2],
+        'sales_order_id': [5136, 5137, 5138],
+        'created_date': [datetime.date(2022, 1, 1),
+                         datetime.date(2022, 2, 1),
+                         datetime.date(2022, 3, 1)],
+        'created_time': [datetime.time(12, 0, 0),
+                         datetime.time(12, 0, 0),
+                         datetime.time(12, 0, 0)],
+        'last_updated_date': [datetime.date(2022, 1, 1),
+                              datetime.date(2022, 2, 1),
+                              datetime.date(2022, 3, 1)],
+        'last_updated_time': [datetime.time(12, 0, 0),
+                              datetime.time(12, 0, 0),
+                              datetime.time(12, 0, 0)],
+        'design_id': [51, 52, 53],
+        'sales_staff_id': [1, 2, 3],
+        'counterparty_id': [1, 2, 3],
+        'units_sold': [1, 1, 1],
+        'unit_price': [9.99, 10.99, 11.99],
+        'currency_id': [1, 1, 1],
+        'agreed_delivery_date': [datetime.date(2022, 1, 1),
+                                 datetime.date(2022, 2, 1),
+                                 datetime.date(2022, 3, 1)],
+        'agreed_payment_date': [datetime.date(2022, 1, 1),
+                                datetime.date(2022, 2, 1),
+                                datetime.date(2022, 3, 1)],
+        'agreed_delivery_location_id': [1, 2, 3]
     })
