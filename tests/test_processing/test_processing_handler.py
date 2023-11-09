@@ -9,7 +9,11 @@ from tests.test_processing.strings import currency_string
 from io import BytesIO
 from dataframes import currency_dataframe_transformed
 import logging
-from testfixtures import LogCapture
+from botocore.exceptions import ClientError
+
+logger = logging.getLogger('test')
+logger.setLevel(logging.INFO)
+logger.propagate = True
 
 
 @pytest.fixture(scope="function")
@@ -37,11 +41,25 @@ def mock_buckets(aws_credentials):
 
 
 @pytest.fixture(scope='function')
-def mock_logger():
-    with LogCapture():
-        logger = logging.getLogger()
-        # logger.setLevel(logging.INFO)
-        return logger
+def mock_missing_csv_bucket(aws_credentials):
+    with mock_s3():
+        conn = boto3.client("s3", region_name="eu-west-2")
+        conn.create_bucket(
+            Bucket="nc-group3-transformation-bucket",
+            CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},
+        )
+        yield conn
+
+
+@pytest.fixture(scope='function')
+def mock_missing_parquet_bucket(aws_credentials):
+    with mock_s3():
+        conn = boto3.client("s3", region_name="eu-west-2")
+        conn.create_bucket(
+            Bucket="nc-group3-ingestion-bucket",
+            CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},
+        )
+        yield conn
 
 
 class TestBasicTableFunctionality:
@@ -55,8 +73,12 @@ class TestBasicTableFunctionality:
         mock_buckets.put_object(Bucket='nc-group3-ingestion-bucket',
                                 Body=currency_string(),
                                 Key='currency/currency20221103150000.csv')
-
-        test_event = {'table_list': ['currency'], 'timestamp': 20221103150000}
+        test_event = {'Records': [{
+            's3': {
+                'bucket': {'name': 'nc-group3-ingestion-bucket'},
+                'object': {'key': 'currency/currency20221103150000.csv'}
+            }
+        }]}
         main(test_event, None)
         response = mock_buckets.get_object(
             Bucket='nc-group3-transformation-bucket',
@@ -68,16 +90,106 @@ class TestBasicTableFunctionality:
 # LOGGER = logging.getLogger(__name__)
 
 
-# class TestErrorHandling:
-#     def test_ingestion_bucket_not_found(
-#             self, mock_logger, monkeypatch, caplog):
-#         def mock_get():
-#             return mock_logger
-#         monkeypatch.setattr(logging, 'getLogger', mock_get)
-#         test_event = {'table_list': ['currency'],
-#                    'timestamp': 20221103150000}
-#         # response = main(test_event, None)
-#         assert "Bucket not found." in caplog.text
+class TestErrorHandling:
+    def test_ingestion_bucket_not_found(
+            self, mock_missing_csv_bucket,
+            monkeypatch, caplog
+    ):
+        def mock_get():
+            return mock_missing_csv_bucket
+        monkeypatch.setattr(
+            'src.processing.processing_handler.get_client',
+            mock_get)
+        test_event = {'Records': [{
+            's3': {
+                'bucket': {'name': 'nc-group3-ingestion-bucket'},
+                'object': {'key': 'currency/currency20221103150000.csv'}
+            }
+        }]}
+        with caplog.at_level(logging.INFO):
+            main(test_event, None)
+            expected = "Bucket not found: nc-group3-ingestion-bucket"
+            assert expected in caplog.text
 
-#     def test_transformation_bucket_not_found(self):
-#         pass
+    def test_transformation_bucket_not_found(
+            self, mock_missing_parquet_bucket,
+            monkeypatch, caplog
+    ):
+        def mock_get():
+            mock_missing_parquet_bucket.put_object(
+                Bucket='nc-group3-ingestion-bucket',
+                Body=currency_string(),
+                Key='currency/currency20221103150000.csv'
+            )
+            return mock_missing_parquet_bucket
+        monkeypatch.setattr(
+            'src.processing.processing_handler.get_client',
+            mock_get
+        )
+        test_event = {'Records': [{
+            's3': {
+                'bucket': {'name': 'nc-group3-ingestion-bucket'},
+                'object': {'key': 'currency/currency20221103150000.csv'}
+            }
+        }]}
+        with caplog.at_level(logging.INFO):
+            main(test_event, None)
+            expected = "Bucket not found: nc-group3-transformation-bucket"
+            assert expected in caplog.text
+
+    def test_handler_logs_internal_service_errors(
+            self, mock_buckets,
+            monkeypatch, caplog
+    ):
+        def mock_get():
+            response = {"Error": {"Code": "InternalServiceError"}}
+            error = ClientError(response, 'test')
+            raise error
+        monkeypatch.setattr(
+            'src.processing.processing_handler.get_client',
+            mock_get
+        )
+        test_event = {'Records': [{
+            's3': {
+                'bucket': {'name': 'nc-group3-ingestion-bucket'},
+                'object': {'key': 'currency/currency20221103150000.csv'}
+            }
+        }]}
+        with caplog.at_level(logging.INFO):
+            main(test_event, None)
+            expected = "Internal service error detected."
+            assert expected in caplog.text
+
+    def test_handler_logs_error_for_incorrect_file_type(
+            self, mock_buckets,
+            monkeypatch, caplog
+    ):
+        def mock_get():
+            return mock_buckets
+        monkeypatch.setattr(
+            'src.processing.processing_handler.get_client',
+            mock_get
+        )
+        test_event = {'Records': [{
+            's3': {
+                'bucket': {'name': 'nc-group3-ingestion-bucket'},
+                'object': {'key': 'currency/currency20221103150000.txt'}
+            }
+        }]}
+        with caplog.at_level(logging.INFO):
+            main(test_event, None)
+            expected = "Incorrect parameter type: File type is not csv."
+            assert expected in caplog.text
+
+    # def test_file_not_found_error_returned_for_missing_csv_file(
+    #         self, mock_buckets, monkeypatch, caplog):
+    #     def mock_get():
+    #         return mock_buckets
+    #     monkeypatch.setattr(
+    #         'src.processing.processing_handler.get_client',
+    #         mock_get)
+    #   test_event = {'table_list': ['currency'], 'timestamp': 20221103150000}
+    #     with caplog.at_level(logging.INFO):
+    #         main(test_event, None)
+    #         expected = ""
+    #         assert expected in caplog.text

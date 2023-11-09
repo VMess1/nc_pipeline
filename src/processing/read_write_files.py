@@ -2,10 +2,10 @@ import pandas as pd
 from io import BytesIO
 
 
-def get_csv_data(client, table, timestamp):
+def get_csv_data(client, filepath):
     response = client.get_object(
         Bucket="nc-group3-ingestion-bucket",
-        Key=f'{table}/{table}{timestamp}.csv')
+        Key=filepath)
     return response
 
 
