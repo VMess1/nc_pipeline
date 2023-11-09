@@ -22,18 +22,18 @@ def test_get_credentials_called_correctly(mock_credentials):
     mock_credentials.assert_called_with('OLTPCredentials')
 
 
+@patch("src.extraction.extraction_handler.get_last_timestamp")
+def test_get_last_timestamp_called_correctly(mock_credentials):
+    lambda_handler({}, {})
+    mock_credentials.assert_called_with('last_extraction')
+
+
 @patch("src.extraction.extraction_handler.get_con")
 @patch("src.extraction.extraction_handler.get_credentials",
        return_value='test_credentials')
 def test_get_con_called_correctly(mock_credentials, mock_con):
     lambda_handler({}, {})
     mock_con.assert_called_with('test_credentials')
-
-
-@patch("src.extraction.extraction_handler.get_last_timestamp")
-def test_get_last_timestamp_called_correctly(mock_credentials):
-    lambda_handler({}, {})
-    mock_credentials.assert_called_with('last_extraction')
 
 
 @patch("src.extraction.extraction_handler.get_tables")

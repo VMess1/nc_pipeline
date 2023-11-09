@@ -10,7 +10,7 @@ from src.extraction.read_database import (
 )
 from src.extraction.write_data import convert_to_csv, upload_to_s3
 from src.extraction.store_timestamp import (get_last_timestamp,
-                             write_current_timestamp)
+                                            write_current_timestamp)
 
 logger = logging.getLogger("LPY1Logger")
 logger.setLevel(logging.INFO)
