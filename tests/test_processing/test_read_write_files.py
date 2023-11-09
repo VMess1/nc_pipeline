@@ -4,7 +4,7 @@ import pandas as pd
 import pytest
 import os
 from src.processing.read_write_files import (
-    read_csv, write_to_bucket
+    get_csv_data, write_to_bucket
 )
 from tests.test_processing.strings import new_string
 from dataframes import currency_dataframe
@@ -43,19 +43,21 @@ def mock_parquet_bucket(aws_credentials):
 
 
 class TestReadCSV:
-    def test_csv_is_read(self):
-        output = read_csv('tests/test_processing/test_payment.csv')
-        assert output.iloc[1]['payment_id'] == 2
+    # def test_csv_is_read(self):
+    #     output = read_csv('tests/test_processing/test_payment.csv')
+    #     assert output.iloc[1]['payment_id'] == 2
 
     def test_csv_is_read_from_s3(self, mock_csv_bucket):
         mock_csv_bucket.put_object(
             Bucket="nc-group3-ingestion-bucket",
             Body=new_string(),
-            Key='payment/20221103150000.csv')
-        response = mock_csv_bucket.get_object(
-            Bucket="nc-group3-ingestion-bucket",
-            Key="payment/20221103150000.csv")
-        data = read_csv(response['Body'])
+            Key='payment/payment20221103150000.csv')
+        # response = mock_csv_bucket.get_object(
+        #     Bucket="nc-group3-ingestion-bucket",
+        #     Key="payment/20221103150000.csv")
+        data = get_csv_data(mock_csv_bucket,
+                            "nc-group3-ingestion-bucket",
+                            'payment/payment20221103150000.csv')
         assert data.iloc[0]['payment_id'] == 2
 
 
@@ -75,12 +77,12 @@ class TestWriteToBucket:
     ):
         test_df = currency_dataframe()
         write_to_bucket(
-            mock_parquet_bucket, 'currency',
+            mock_parquet_bucket, 'dim_currency',
             test_df, '20221103142049962000'
         )
         response = mock_parquet_bucket.get_object(
             Bucket="nc-group3-transformation-bucket",
-            Key="currency/currency20221103142049962000.parquet"
+            Key="dim_currency/dim_currency20221103142049962000.parquet"
         )
 
         output = pd.read_parquet(BytesIO(response['Body'].read()))
