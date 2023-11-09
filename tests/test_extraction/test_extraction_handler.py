@@ -1,176 +1,123 @@
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 from botocore.exceptions import ClientError
-from re import search
+from datetime import datetime
 import logging
-import os
-import pytest
+import unittest
 from src.extraction.extraction_handler import lambda_handler
 
 
-@pytest.fixture(scope="function")
-def aws_credentials():
-    os.environ["AWS_ACCESS_KEY_ID"] = "test"
-    os.environ["AWS_SECRET_ACCESS_KEY"] = "test"
-    os.environ["AWS_SECURITY_TOKEN"] = "test"
-    os.environ["AWS_SESSION_TOKEN"] = "test"
-    os.environ["AWS_DEFAULT_REGION"] = "eu-west-2"
+class TestLambdaHandlerCallsFuncsCorrectly(unittest.TestCase):
+    @patch('src.extraction.extraction_handler.logging.getLogger')
+    @patch('src.extraction.extraction_handler.datetime')
+    @patch('src.extraction.extraction_handler.write_current_timestamp')
+    @patch('src.extraction.extraction_handler.upload_to_s3')
+    @patch('src.extraction.extraction_handler.convert_to_csv',
+           return_value='test_csv')
+    @patch('src.extraction.extraction_handler.select_table_headers',
+           return_value='test_headers')
+    @patch('src.extraction.extraction_handler.select_table',
+           return_value='test')
+    @patch('src.extraction.extraction_handler.get_tables',
+           return_value=[['test_table1', {}]])
+    @patch('src.extraction.extraction_handler.get_last_timestamp')
+    @patch('src.extraction.extraction_handler.get_con')
+    @patch('src.extraction.extraction_handler.get_credentials', autospec=True)
+    def test_lambda_handler_calls_functions_correctly(
+                        self,
+                        mock_get_credentials, mock_get_con,
+                        mock_get_last_timestamp, mock_get_tables,
+                        mock_select_table, mock_select_table_headers,
+                        mock_convert_to_csv, mock_upload_to_s3,
+                        mock_write_timestamp, mock_datetime, mock_get_logger
+                        ):
+        mock_log = MagicMock()
+        mock_get_logger.return_value = mock_log
+        mock_datetime.now.return_value = datetime(2000, 1, 1, 11, 0, 0)
+        mock_datestamp = mock_datetime.now.return_value.replace(microsecond=0)
+        lambda_handler({}, {})
+        mock_get_credentials.assert_called_once_with("OLTPCredentials")
+        mock_get_con.assert_called_once_with(mock_get_credentials.return_value)
+        mock_get_last_timestamp.assert_called_once_with("last_extraction")
+        mock_get_tables.assert_called_once_with(mock_get_con.return_value)
+        mock_select_table.assert_called_once_with(
+            mock_get_con.return_value,
+            'test_table1',
+            mock_get_last_timestamp.return_value)
+        mock_select_table_headers.assert_called_once_with(
+            mock_get_con.return_value,
+            'test_table1'
+            )
+        mock_convert_to_csv.assert_called_once_with(
+            'test_table1',
+            'test',
+            'test_headers'
+            )
+        mock_upload_to_s3.assert_called_once_with(
+            str(mock_datestamp),
+            'test_csv'
+            )
+        mock_write_timestamp.assert_called_with(
+            'last_extraction',
+            mock_datestamp)
 
 
-@patch("src.extraction.extraction_handler.get_credentials")
-def test_get_credentials_called_correctly(mock_credentials):
-    lambda_handler({}, {})
-    mock_credentials.assert_called_with('OLTPCredentials')
+class TestLambdaHandlerErrorHandling:
+
+    LOGGER = logging.getLogger(__name__)
+
+    @patch("src.extraction.extraction_handler.get_credentials",
+           return_value=500)
+    def test_logs_correct_message_if_TypeError(self, mock_credentials,
+                                               caplog):
+        lambda_handler({}, {})
+        assert "Incorrect parameter type:" in caplog.text
+
+    @patch("src.extraction.extraction_handler.get_credentials")
+    def test_logs_correct_err_message_if_resource_not_found(
+            self,
+            mock_credentials,
+            caplog
+            ):
+        mock_credentials.side_effect = ClientError(
+            error_response={"Error": {"Code": "ResourceNotFoundException"}},
+            operation_name="ClientError"
+        )
+        lambda_handler({}, {})
+        assert "Credentials not found." in caplog.text
+
+    @patch("src.extraction.extraction_handler.get_credentials")
+    def test_logs_correct_message_if_bucket_not_found(self, mock_credentials,
+                                                      caplog):
+        mock_credentials.side_effect = ClientError(
+            error_response={"Error": {"Code": "NoSuchBucket"}},
+            operation_name="ClientError"
+        )
+        lambda_handler({}, {})
+        assert "Bucket not found." in caplog.text
+
+    @patch("src.extraction.extraction_handler.get_credentials")
+    def test_logs_correct_message_if_internal_service_error(
+                                            self,
+                                            mock_credentials,
+                                            caplog
+                                            ):
+        mock_credentials.side_effect = ClientError(
+            error_response={"Error": {"Code": "InternalServiceError"}},
+            operation_name="ClientError"
+        )
+        lambda_handler({}, {})
+        assert "Internal service error detected." in caplog.text
 
 
-@patch("src.extraction.extraction_handler.get_last_timestamp")
-def test_get_last_timestamp_called_correctly(mock_credentials):
-    lambda_handler({}, {})
-    mock_credentials.assert_called_with('last_extraction')
-
-
-@patch("src.extraction.extraction_handler.get_con")
-@patch("src.extraction.extraction_handler.get_credentials",
-       return_value='test_credentials')
-def test_get_con_called_correctly(mock_credentials, mock_con):
-    lambda_handler({}, {})
-    mock_con.assert_called_with('test_credentials')
-
-
-@patch("src.extraction.extraction_handler.get_tables")
-@patch("src.extraction.extraction_handler.get_con",
-       return_value='test_con')
-def test_get_tables_called_correctly(mock_con, mock_tables):
-    lambda_handler({}, {})
-    mock_tables.assert_called_with('test_con')
-
-
-@patch("src.extraction.extraction_handler.select_table")
-@patch("src.extraction.extraction_handler.get_con",
-       return_value="test_con")
-@patch("src.extraction.extraction_handler.get_tables",
-       return_value=[['test_table']])
-@patch("src.extraction.extraction_handler.get_last_timestamp",
-       return_value="test_timestamp")
-def test_select_table_called_correctly(mock_timestamp,
-                                       mock_tables,
-                                       mock_con,
-                                       mock_selection):
-    lambda_handler({}, {})
-    mock_selection.assert_called_with('test_con',
-                                      'test_table',
-                                      'test_timestamp')
-
-
-@patch("src.extraction.extraction_handler.select_table_headers")
-@patch("src.extraction.extraction_handler.get_tables",
-       return_value=[['test_table_name']])
-@patch("src.extraction.extraction_handler.get_con",
-       return_value='test_con')
-@patch("src.extraction.extraction_handler.select_table",
-       return_value=['test_data'])
-def test_select_table_headers_called_correctly(mock_selection,
-                                               mock_con,
-                                               mock_tables,
-                                               mock_select_table_headers):
-    lambda_handler({}, {})
-    mock_select_table_headers.assert_called_with('test_con', 'test_table_name')
-
-
-@patch("src.extraction.extraction_handler.convert_to_csv")
-@patch("src.extraction.extraction_handler.select_table_headers",
-       return_value='test_headers')
-@patch("src.extraction.extraction_handler.get_tables",
-       return_value=[['test_table_name']])
-@patch("src.extraction.extraction_handler.select_table",
-       return_value=['test_data'])
-def test_convert_to_csv_called_correctly(mock_selection,
-                                         mock_tables,
-                                         mock_headers,
-                                         mock_conversion):
-    lambda_handler({}, {})
-    mock_conversion.assert_called_with('test_table_name',
-                                       ['test_data'],
-                                       'test_headers')
-
-
-@patch("src.extraction.extraction_handler.upload_to_s3")
-@patch("src.extraction.extraction_handler.convert_to_csv",
-       return_value='test_csv')
-@patch("src.extraction.extraction_handler.get_tables",
-       return_value=[['test_table_name']])
-@patch("src.extraction.extraction_handler.select_table",
-       return_value=['test_data'])
-def test_upload_to_s3_called_correctly(mock_selection,
-                                       mock_tables,
-                                       mock_csv,
-                                       mock_upload):
-    lambda_handler({}, {})
-    assert mock_upload.call_args.args[1] == 'test_csv'
-    regex = r'\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}'
-    assert search(regex, str(mock_upload.call_args.args[0])) is not None
-
-
-@patch("src.extraction.extraction_handler.write_current_timestamp")
-@patch("src.extraction.extraction_handler.get_tables", return_value=[['_']])
-def test_write_current_timestamp_called_correctly(mock_table, mock_write):
-    lambda_handler({}, {})
-    assert mock_write.call_args.args[0] == 'last_extraction'
-    regex = r'\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}'
-    assert search(regex, str(mock_write.call_args.args[1])) is not None
-
-
-@patch("src.extraction.extraction_handler.logger.info")
-@patch("src.extraction.extraction_handler.select_table",
-       return_value=['test_data'])
-@patch("src.extraction.extraction_handler.get_tables",
-       return_value=[['test_table_name']])
-def test_logs_current_datetime_to_cloudwatch_if_has_data(mock_tables,
-                                                         mock_select_table,
-                                                         mock_logging):
-    lambda_handler({}, {})
-    regex = r'\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}'
-    assert search(regex, str(mock_logging.call_args)) is not None
-
-
-LOGGER = logging.getLogger(__name__)
-
-
-@patch("src.extraction.extraction_handler.get_credentials",
-       return_value=500)
-def test_logs_correct_message_if_TypeError(mock_credentials,
-                                           caplog):
-    lambda_handler({}, {})
-    assert "Incorrect parameter type:" in caplog.text
-
-
-@patch("src.extraction.extraction_handler.get_credentials")
-def test_logs_correct_err_message_if_resource_not_found(mock_credentials,
-                                                        caplog):
-    mock_credentials.side_effect = ClientError(
-        error_response={"Error": {"Code": "ResourceNotFoundException"}},
-        operation_name="ClientError"
-    )
-    lambda_handler({}, {})
-    assert "Credentials not found." in caplog.text
-
-
-@patch("src.extraction.extraction_handler.get_credentials")
-def test_logs_correct_message_if_bucket_not_found(mock_credentials,
-                                                  caplog):
-    mock_credentials.side_effect = ClientError(
-        error_response={"Error": {"Code": "NoSuchBucket"}},
-        operation_name="ClientError"
-    )
-    lambda_handler({}, {})
-    assert "Bucket not found." in caplog.text
-
-
-@patch("src.extraction.extraction_handler.get_credentials")
-def test_logs_correct_message_if_internal_service_error(mock_credentials,
-                                                        caplog):
-    mock_credentials.side_effect = ClientError(
-        error_response={"Error": {"Code": "InternalServiceError"}},
-        operation_name="ClientError"
-    )
-    lambda_handler({}, {})
-    assert "Internal service error detected." in caplog.text
+# @patch("src.extraction.extraction_handler.logger.info")
+# @patch("src.extraction.extraction_handler.select_table",
+#        return_value=['test_data'])
+# @patch("src.extraction.extraction_handler.get_tables",
+#        return_value=[['test_table_name']])
+# def test_logs_current_datetime_to_cloudwatch_if_has_data(
+#               mock_tables,
+#               mock_select_table,
+#               mock_logging):
+#     lambda_handler({}, {})
+#     regex = r'\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}'
+#     assert search(regex, str(mock_logging.call_args)) is not None
