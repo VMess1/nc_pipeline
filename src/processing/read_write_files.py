@@ -18,19 +18,21 @@ def get_csv_data(client, target_bucket, filepath):
 # output -> department dataframe form the sample DB
 
 def compile_full_csv_table(client, target_bucket, table_name):
-    file_list = client.list_objects(Bucket=target_bucket, 
-                                    Prefix=f'{table_name}/')
-    print(dir(file_list))
-    print(file_list.items())
-    data_rows = []
-    for filepath in file_list:
-        data_rows.append(get_csv_data(client, target_bucket, filepath))
-    data = pd.concat(data_rows)
-    
+
     def extract_timestamp(filepath):
         timestamp = re.findall(r'\d{14,}', filepath)[0]
         return int(timestamp)
-    data.sort(key=extract_timestamp)
+    
+    response = client.list_objects(Bucket=target_bucket, 
+                                    Prefix=f'{table_name}/')
+    file_list = [obj['Key'] for obj in response['Contents']]   
+    file_list.sort(key=extract_timestamp)
+
+    data_rows = []
+    for filepath in file_list:
+        data_rows.append(get_csv_data(client, target_bucket, filepath))
+    data = pd.concat(data_rows, ignore_index=True)
+    print(data)
     return data.drop_duplicates(subset=[f'{table_name}_id'], keep='last')
 
 def write_to_bucket(client, table_name, df, timestamp):

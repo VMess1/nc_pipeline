@@ -63,33 +63,33 @@ class TestReadCSV:
 class TestCompileFullCsvTable:
     def test_data_includes_all_csv_files_in_directory(self, mock_csv_bucket):
         test_data_1 = (
-            'item_id, item_name, created_at, last_updated\n' +
-            '1, name_1, 2022-12-12 15:15:15, 2022-12-12 15:15:15\n'
-            '2, name_2, 2022-12-12 15:15:15, 2022-12-12 15:15:15'
+            'item_id,item_name,created_at,last_updated\n' +
+            '1,name_1,2022-12-12 15:15:15,2022-12-12 15:15:15\n'
+            '2,name_2,2022-12-12 15:15:15,2022-12-12 15:15:15'
         )
         test_data_2 = (
-            'item_id, item_name, created_at, last_updated\n' +
-            '3, name_3, 2023-12-12 15:15:15, 2023-12-12 15:15:15'
+            'item_id,item_name,created_at,last_updated\n' +
+            '3,name_3,2023-12-12 15:15:15,2023-12-12 15:15:15'
             )
         test_data_3 = (
-            'item_id, item_name, created_at, last_updated\n' +
-            '4, name_4, 2024-12-12 15:15:15, 2024-12-12 15:15:15'
+            'item_id,item_name,created_at,last_updated\n' +
+            '4,name_4,2024-12-12 15:15:15,2024-12-12 15:15:15'
             )
         mock_csv_bucket.put_object(
             Bucket="nc-group3-ingestion-bucket",
             Body=test_data_1,
-            Key='test/test20221212151515.csv')
+            Key='item/item20221212151515.csv')
         mock_csv_bucket.put_object(
             Bucket="nc-group3-ingestion-bucket",
             Body=test_data_2,
-            Key='test/test20231212151515.csv')
+            Key='item/item20231212151515.csv')
         mock_csv_bucket.put_object(
             Bucket="nc-group3-ingestion-bucket",
             Body=test_data_3,
-            Key='test/test20241212151515.csv')
+            Key='item/item20241212151515.csv')
         test_expected = pd.DataFrame(data={
             'item_id': [1, 2, 3, 4],
-            'item_name': ['item_1', 'item_2', 'item_3', 'item_4'],
+            'item_name': ['name_1', 'name_2', 'name_3', 'name_4'],
             'created_at': ['2022-12-12 15:15:15', '2022-12-12 15:15:15',
                             '2023-12-12 15:15:15', '2024-12-12 15:15:15'],
             'last_updated': ['2022-12-12 15:15:15', '2022-12-12 15:15:15',
@@ -98,7 +98,7 @@ class TestCompileFullCsvTable:
 
         output = compile_full_csv_table(mock_csv_bucket,
                                         "nc-group3-ingestion-bucket",
-                                        'test')
+                                        'item')
         assert output.equals(test_expected)
         
 
