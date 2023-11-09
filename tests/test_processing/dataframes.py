@@ -17,5 +17,8 @@ def currency_dataframe():
 def currency_dataframe_transformed():
     return pd.DataFrame(data={
         'currency_id': [1, 2, 3],
-        'currency_code': ['GBP', 'USD', 'EUR']
+        'currency_code': ['GBP', 'USD', 'EUR'],
+        'currency_name': ['British Pound Sterling',
+                          'United States Dollar',
+                          'Euro']
     })

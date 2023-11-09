@@ -82,10 +82,47 @@ class TestBasicTableFunctionality:
         main(test_event, None)
         response = mock_buckets.get_object(
             Bucket='nc-group3-transformation-bucket',
-            Key='currency/currency20221103150000.parquet')
+            Key='dim_currency/dim_currency20221103150000.parquet')
         output = pd.read_parquet(BytesIO(response['Body'].read()))
         expected_output = currency_dataframe_transformed()
         assert output.equals(expected_output)
+
+
+class TestWarning:
+    def test_invalid_currency_code_logs_warning(self, mock_buckets,
+                                                monkeypatch, caplog):
+        def mock_get_csv_data(*args):
+            return pd.DataFrame(data={
+                'currency_id': [1, 2, 3],
+                'currency_code': ['GBP', 'USD', 'ABC'],
+                'created_at': ['2022-11-03 14:20:49.962000',
+                               '2022-11-03 14:20:49.962000',
+                               '2022-11-03 14:20:49.962000'],
+                'last_updated': ['2022-11-03 14:20:49.962000',
+                                 '2022-11-03 14:20:49.962000',
+                                 '2022-11-03 14:20:49.962000']
+            })
+        monkeypatch.setattr(
+            'src.processing.processing_handler.get_csv_data',
+            mock_get_csv_data)
+
+        def mock_get():
+            return mock_buckets
+        monkeypatch.setattr(
+            'src.processing.processing_handler.get_client',
+            mock_get)
+
+        test_event = {'Records': [{
+            's3': {
+                'bucket': {'name': 'nc-group3-ingestion-bucket'},
+                'object': {'key': 'currency/currency20221103150000.csv'}
+            }
+        }]}
+        with caplog.at_level(logging.INFO):
+            main(test_event, None)
+            expected = ('Invalid currency code detected in file: ' +
+                        'currency/currency20221103150000.csv')
+            assert expected in caplog.text
 
 # LOGGER = logging.getLogger(__name__)
 
