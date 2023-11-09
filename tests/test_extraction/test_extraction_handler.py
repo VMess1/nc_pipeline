@@ -6,7 +6,7 @@ from datetime import datetime
 from src.extraction.extraction_handler import lambda_handler
 
 
-class TestLambdaHandlerCallsFuncsCorrectly(unittest.TestCase):
+class TestLambdaHandlerFunctionality(unittest.TestCase):
     @patch('src.extraction.extraction_handler.logging.getLogger')
     @patch('src.extraction.extraction_handler.datetime')
     @patch('src.extraction.extraction_handler.write_current_timestamp')
@@ -133,17 +133,30 @@ class TestLambdaHandlerErrorHandling:
         assert "An unexpected error has occurred:" in caplog.text
 
 
-class TestLoggingInLambdaHandler(unittest.TestCase):
-    @patch("src.extraction.extraction_handler.logger.info")
-    @patch("src.extraction.extraction_handler.select_table",
-           return_value=['test_data'])
-    @patch("src.extraction.extraction_handler.get_tables",
-           return_value=[['test_table_name']])
-    def test_logs_current_datetime_to_cloudwatch_if_has_data(
-                self,
-                mock_tables,
-                mock_select_table,
-                mock_logging):
-        lambda_handler({}, {})
-        regex = r'\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}'
-        self.assertRegex(str(mock_logging.call_args), regex)
+class TestLambdaHandler(unittest.TestCase):
+
+    @patch('src.extraction.extraction_handler.upload_to_s3')
+    @patch('src.extraction.extraction_handler.convert_to_csv',
+           return_value='test_csv')
+    @patch('src.extraction.extraction_handler.select_table_headers',
+           return_value='test_headers')
+    @patch('src.extraction.extraction_handler.select_table',
+           return_value='test')
+    @patch('src.extraction.extraction_handler.get_tables',
+           return_value=[['test_table1', {}]])
+    @patch('src.extraction.extraction_handler.get_last_timestamp',
+           return_value='fake_stamp')
+    @patch('src.extraction.extraction_handler.get_con')
+    @patch('src.extraction.extraction_handler.get_credentials', autospec=True)
+    def test_logging_info(self, mock_credentials, mock_con, mock_get_timestamp,
+                          mock_get_tables, mock_select_table,
+                          mock_select_table_headers,
+                          mock_convert_to_s3,
+                          mock_upload_to_s3
+                          ):
+        with patch("src.extraction.extraction_handler.datetime") as mock_dt:
+            mock_dt.now.return_value = datetime(2000, 1, 1, 12, 0, 0)
+            with patch("src.extraction.extraction_handler.logger") as mock_log:
+                lambda_handler({}, {})
+        expected_log_message = "2000-01-01 12:00:00"
+        mock_log.info.assert_called_with(expected_log_message)
