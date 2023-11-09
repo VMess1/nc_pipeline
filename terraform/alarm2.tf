@@ -1,9 +1,8 @@
-
 #ClientError alarm filter
 resource "aws_cloudwatch_log_metric_filter" "ClientError" {
-    name           = "Ingestion function Client Error"
+    name           = "Transformation function Client Error"
     pattern        = "ClientError"
-    log_group_name = "/aws/lambda/lambda_ingestion"
+    log_group_name = "/aws/lambda/lambda_transformation"
     metric_transformation {
         name      = "loggingClienterror"
         namespace = "Errors"
@@ -13,7 +12,7 @@ resource "aws_cloudwatch_log_metric_filter" "ClientError" {
 
 #ClientError alarm
 resource "aws_cloudwatch_metric_alarm" "ClientError_alarm" {
-  alarm_name                = "Ingestion function Client error alarm"
+  alarm_name                = "Transformation function Client error alarm"
   comparison_operator       = "GreaterThanOrEqualToThreshold"
   evaluation_periods        = 1
   metric_name               = "loggingClienterror"
@@ -26,9 +25,9 @@ resource "aws_cloudwatch_metric_alarm" "ClientError_alarm" {
 
  #ExceptionError alarm filter
 resource "aws_cloudwatch_log_metric_filter" "ExceptionError" {
-    name           = "Ingestion function Exception Error"
+    name           = "Transformation function Exception Error"
     pattern        = "Exception"
-    log_group_name = "/aws/lambda/lambda_ingestion"
+    log_group_name = "/aws/lambda/lambda_transformation"
     metric_transformation {
         name      = "loggingExceptionerror"
         namespace = "Errors"
@@ -38,7 +37,7 @@ resource "aws_cloudwatch_log_metric_filter" "ExceptionError" {
 
 #Exception alarm
 resource "aws_cloudwatch_metric_alarm" "ExceptionError_alarm" {
-  alarm_name                = "Ingestion function Exception error alarm"
+  alarm_name                = "Transformation function Exception error alarm"
   comparison_operator       = "GreaterThanOrEqualToThreshold"
   evaluation_periods        = 1
   metric_name               = "loggingExceptionerror"
@@ -51,9 +50,9 @@ resource "aws_cloudwatch_metric_alarm" "ExceptionError_alarm" {
 
  #TypeError alarm filter
 resource "aws_cloudwatch_log_metric_filter" "TypeError" {
-    name           = "Ingestion function TypeError"
+    name           = "Transformation function TypeError"
     pattern        = "TypeError"
-    log_group_name = "/aws/lambda/lambda_ingestion"
+    log_group_name = "/aws/lambda/lambda_transformation"
     metric_transformation {
         name      = "loggingTypeError"
         namespace = "Errors"
@@ -63,7 +62,7 @@ resource "aws_cloudwatch_log_metric_filter" "TypeError" {
 
 #TypeError alarm
 resource "aws_cloudwatch_metric_alarm" "TypeError_alarm" {
-  alarm_name                = "Ingestion function TypeError alarm"
+  alarm_name                = "Transformation function TypeError alarm"
   comparison_operator       = "GreaterThanOrEqualToThreshold"
   evaluation_periods        = 1
   metric_name               = "loggingTypeError"
@@ -73,18 +72,4 @@ resource "aws_cloudwatch_metric_alarm" "TypeError_alarm" {
   threshold                 = 1
   alarm_actions             = ["arn:aws:sns:eu-west-2:858570386577:test-error-alerts"]
  }
-
-#Execution Time Error
-resource "aws_cloudwatch_metric_alarm" "alert_code_execution_errors" {
-  alarm_name                = "terraform-test-code-execution-error"
-  comparison_operator       = "GreaterThanOrEqualToThreshold"
-  evaluation_periods        = 1
-  metric_name               = "Duration"
-  namespace                 = "AWS/Lambda"
-  period                    = 30
-  statistic                 = "Maximum"
-  threshold                 = 60000
-  unit                      = "Milliseconds"
-  alarm_description         = "Code Execution Error Count Exceeded Threshold of 1"
-  alarm_actions             = ["arn:aws:sns:eu-west-2:858570386577:test-error-alerts"]
-}
+ 
