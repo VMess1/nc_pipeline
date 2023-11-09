@@ -37,14 +37,16 @@ def test_get_last_timestamp_called_correctly(mock_credentials):
 
 
 @patch("src.extraction.extraction_handler.get_tables")
-@patch("src.extraction.extraction_handler.get_con", return_value='test_con')
+@patch("src.extraction.extraction_handler.get_con",
+       return_value='test_con')
 def test_get_tables_called_correctly(mock_con, mock_tables):
     lambda_handler({}, {})
     mock_tables.assert_called_with('test_con')
 
 
 @patch("src.extraction.extraction_handler.select_table")
-@patch("src.extraction.extraction_handler.get_con", return_value="test_con")
+@patch("src.extraction.extraction_handler.get_con",
+       return_value="test_con")
 @patch("src.extraction.extraction_handler.get_tables",
        return_value=[['test_table']])
 @patch("src.extraction.extraction_handler.get_last_timestamp",
@@ -153,7 +155,8 @@ def test_logs_correct_err_message_if_resource_not_found(mock_credentials,
 
 
 @patch("src.extraction.extraction_handler.get_credentials")
-def test_logs_correct_message_if_bucket_not_found(mock_credentials, caplog):
+def test_logs_correct_message_if_bucket_not_found(mock_credentials,
+                                                  caplog):
     mock_credentials.side_effect = ClientError(
         error_response={"Error": {"Code": "NoSuchBucket"}},
         operation_name="ClientError"
