@@ -3,7 +3,8 @@ from dataframes import currency_dataframe
 
 from src.processing.dim_table_transformation import (
     dim_remove_dates,
-    dim_insert_currency_name
+    dim_insert_currency_name,
+    dim_join_department
 )
 
 
@@ -100,3 +101,37 @@ class TestDimInsertCurrencyName:
         output = dim_insert_currency_name(test_input)
         assert output is not test_input
         assert test_input.equals(test_expected_input)
+
+
+class TestDimJoinDepartmentId:
+    def test_merges_2_tables_and_drop_2_tables(self):
+        test_staff_table = pd.DataFrame(data={
+            'staff_id': [1, 2, 3],
+            'first_name': ['A', 'B', 'C'],
+            'last_name': ['X', 'Y', 'Z'],
+            'department_id': [3, 2, 1],
+            'created_at': ['2022-12-12 15:15:15', '2023-12-12 15:15:15',
+                           '2030-12-12 15:15:15'],
+            'last_updated': ['2022-12-12 15:15:15', '2023-12-12 15:15:15',
+                             '2030-12-12 15:15:15']
+        })
+        test_department_table = pd.DataFrame(data={
+            'department_id': [1, 2, 3],
+            'department_name': ['E', 'F', 'G'],
+            'loctation': ['Luton', 'Wales', 'Essex'],
+            'manager': ['Bob', 'Caron', 'Jeff'],
+            'created_at': ['2022-12-12 15:15:15', '2023-12-12 15:15:15',
+                           '2030-12-12 15:15:15'],
+            'last_updated': ['2022-12-12 15:15:15', '2023-12-12 15:15:15',
+                             '2030-12-12 15:15:15']
+        })
+
+        test_expected = pd.DataFrame(data={
+            'staff_id': [1, 2, 3],
+            'first_name': ['A', 'B', 'C'],
+            'last_name': ['X', 'Y', 'Z'],
+            'department_name': ['G', 'F', 'E'],
+            'loctation': ['Essex', 'Wales', 'Luton']
+        })
+        output = dim_join_department(test_staff_table, test_department_table)
+        assert output.equals(test_expected)
