@@ -1,5 +1,6 @@
 from src.processing.processing_handler import (
-    main)  # ,  write_to_bucket)  # , dim_join_department
+    main)
+# from src.processing.dim_table_transformation import dim_date_tf
 from moto import mock_s3
 import boto3
 import pytest
@@ -10,6 +11,7 @@ from io import BytesIO
 from dataframes import currency_dataframe_transformed
 import logging
 from botocore.exceptions import ClientError
+
 
 logger = logging.getLogger('test')
 logger.setLevel(logging.INFO)
@@ -73,6 +75,9 @@ class TestBasicTableFunctionality:
         mock_buckets.put_object(Bucket='nc-group3-ingestion-bucket',
                                 Body=currency_string(),
                                 Key='currency/currency20221103150000.csv')
+        # mock_buckets.put_object(Bucket='nc-group3-transformation-bucket',
+        #                         Body=currency_string(),
+        #                         Key='dim_currency/dim_currency20221103150000.parquet')
         test_event = {'Records': [{
             's3': {
                 'bucket': {'name': 'nc-group3-ingestion-bucket'},
@@ -122,9 +127,8 @@ class TestWarning:
             main(test_event, None)
             expected = ('Invalid currency code detected in file: ' +
                         'currency/currency20221103150000.csv')
+            main(test_event, None)
             assert expected in caplog.text
-
-# LOGGER = logging.getLogger(__name__)
 
 
 class TestErrorHandling:
@@ -230,3 +234,24 @@ class TestErrorHandling:
     #         main(test_event, None)
     #         expected = ""
     #         assert expected in caplog.text
+
+
+# class TestDateTable:
+#     def test_date_table_is_only_built_once(self, mock_buckets, monkeypatch):
+
+#         def mock_get():
+#             return mock_buckets
+#         monkeypatch.setattr(
+#             'src.processing.processing_handler.get_client',
+#             mock_get)
+#         test_event = {'Records': [{
+#             's3': {
+#                 'bucket': {'name': 'nc-group3-ingestion-bucket'},
+#        'object': {'key': 'sales_order/sales_order20221103150000.csv'}
+#             }
+#         }]}
+
+# with patch('src.processing.processing_handler.dim_date_tf') as mock_dim_date:
+#             main(test_event, None)
+#             main(test_event, None)
+#         mock_dim_date.assert_called_once()

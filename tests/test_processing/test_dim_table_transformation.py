@@ -1,10 +1,17 @@
 import pandas as pd
-from dataframes import currency_dataframe
+from dataframes import (currency_dataframe,
+                        counterparty_dataframe,
+                        address_dataframe,
+                        dim_counterparty_dataframe,
+                        dim_location_dataframe)
 
 from src.processing.dim_table_transformation import (
     dim_remove_dates,
     dim_insert_currency_name,
-    dim_join_department
+    dim_join_department,
+    join_address,
+    dim_locationtf,
+    dim_date_tf
 )
 
 
@@ -16,46 +23,6 @@ class TestDimRemoveDates:
             'currency_code': ['GBP', 'USD', 'EUR']
         })
         assert dim_remove_dates(test_dataframe).equals(expected_dataframe)
-
-    # def test_join(self):
-    #     test_df_department = pd.DataFrame(data={
-    #         'department_id': [1, 2, 3],
-    #         'department_name': ['Sales', 'Purchasing', 'Production'],
-    #         'location': ['Manchester', 'Manchester', 'Leeds'],
-    #         'manager': ['Richard Roma', 'Naomi Lapaglia', 'Chester Ming'],
-    #         'created_at': ['2022-11-03 14:20:49.962000',
-    # '2022-11-03 14:20:49.962000', '2022-11-03 14:20:49.962000'],
-    #         'last_updated': ['2022-11-03 14:20:49.962000',
-    # '2022-11-03 14:20:49.962000', '2022-11-03 14:20:49.962000']
-    #     })
-    #     test_df_staff = pd.DataFrame(data={
-    #         'staff_id': [1, 2, 3],
-    #         'first_name': ['Jeremie', 'Deron', 'Jeanette'],
-    #         'last_name': ['Franey', 'Beier', 'Erdman'],
-    #         'department_id': [2, 3, 2],
-    #         'email_address': ['jeremie.franey@terrifictotes.com',
-    #  'deron.beier@terrifictotes.com', 'jeanette.erdman@terrifictotes.com'],
-    #         'created_at': ['2022-11-03 14:20:49.962000',
-    #  '2022-11-03 14:20:49.962000', '2022-11-03 14:20:49.962000'],
-    #         'last_updated': ['2022-11-03 14:20:49.962000',
-    #  '2022-11-03 14:20:49.962000', '2022-11-03 14:20:49.962000']
-    #     })
-    #     test_df_dim_staff = pd.DataFrame(data={
-    #         'staff_id': [1, 2, 3],
-    #         'first_name': ['Jeremie', 'Deron', 'Jeanette'],
-    #         'last_name': ['Franey', 'Beier', 'Erdman'],
-    #         'department_id': [2, 3, 2],
-    #         'email_address': ['jeremie.franey@terrifictotes.com',
-    #  'deron.beier@terrifictotes.com', 'jeanette.erdman@terrifictotes.com'],
-    #         'created_at': ['2022-11-03 14:20:49.962000',
-    #  '2022-11-03 14:20:49.962000', '2022-11-03 14:20:49.962000'],
-    #         'last_updated': ['2022-11-03 14:20:49.962000',
-    #  '2022-11-03 14:20:49.962000', '2022-11-03 14:20:49.962000'],
-
-    #     })
-
-    #     res = dim_join_department(test_df_staff, test_df_department)
-    #     pprint(res)
 
 
 class TestDimInsertCurrencyName:
@@ -135,3 +102,62 @@ class TestDimJoinDepartmentId:
         })
         output = dim_join_department(test_staff_table, test_department_table)
         assert output.equals(test_expected)
+
+
+class TestCounterParty:
+    def test_counterparty_address_tables_are_joined_correctly(self):
+        test_counterparty = counterparty_dataframe()
+        test_address = address_dataframe()
+        test_transformed = dim_counterparty_dataframe()
+        actual = join_address(test_counterparty, test_address)
+        assert actual.equals(test_transformed)
+
+    def test_data_is_not_mutated_by_join_address(self):
+        test_counterparty = counterparty_dataframe()
+        test_address = address_dataframe()
+        join_address(test_counterparty, test_address)
+        original_counterparty = counterparty_dataframe()
+        original_address = address_dataframe()
+        assert test_counterparty.equals(original_counterparty)
+        assert test_address.equals(original_address)
+
+
+class TestLocation:
+    def test_location_table_is_formed_correctly(self):
+        test_address = address_dataframe()
+        test_transformed = dim_locationtf(test_address)
+        actual = dim_location_dataframe()
+        assert actual.equals(test_transformed)
+
+    def test_data_is_not_mutated_by_dim_location(self):
+        test_address = address_dataframe()
+        dim_locationtf(test_address)
+        original_address = address_dataframe()
+        assert test_address.equals(original_address)
+
+
+class TestDimDate:
+    def test_start_date_of_dim_date_is_1_1_2020(self):
+        test_df = dim_date_tf()
+        assert test_df.iloc[0]['date_id'] == pd.Timestamp(
+            year=2020, month=1, day=1)
+
+    def test_first_row_has_appropriate_info(self):
+        test_df = dim_date_tf()
+        assert test_df.iloc[0]['year'] == 2020
+        assert test_df.iloc[0]['month'] == 1
+        assert test_df.iloc[0]['day'] == 1
+        assert test_df.iloc[0]['day_of_week'] == 2
+        assert test_df.iloc[0]['day_name'] == "Wednesday"
+        assert test_df.iloc[0]['month_name'] == "January"
+        assert test_df.iloc[0]['quarter'] == 1
+
+    def test_last_row_has_appropriate_info(self):
+        test_df = dim_date_tf()
+        assert test_df.iloc[10957]['year'] == 2049
+        assert test_df.iloc[10957]['month'] == 12
+        assert test_df.iloc[10957]['day'] == 31
+        assert test_df.iloc[10957]['day_of_week'] == 4
+        assert test_df.iloc[10957]['day_name'] == "Friday"
+        assert test_df.iloc[10957]['month_name'] == "December"
+        assert test_df.iloc[10957]['quarter'] == 4
