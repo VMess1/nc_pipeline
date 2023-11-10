@@ -1,5 +1,6 @@
 import boto3
 
+
 def get_last_timestamp(parameter_name):
     """Returns the last time at which the AWS lambda was triggered."""
     conn = boto3.client("ssm", region_name="eu-west-2")

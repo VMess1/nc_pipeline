@@ -20,3 +20,22 @@ def get_con(credentials):
         database=credentials["dbname"],
         password=credentials["password"],
     )
+
+
+def create_insert_statement(table_name, dataframe):
+    column_list = dataframe.columns.tolist()
+
+    def list_to_string(list): return (
+        '(' + ', '.join([str(i) for i in list]) + ')')
+    column_string = list_to_string(column_list)
+    values = dataframe.values.tolist()
+    values_list = [list_to_string(item) for item in values]
+    insert = (
+        f'INSERT INTO {table_name} \n'
+        f'{column_string} \n'
+        'VALUES \n'
+    )
+    for item in values_list:
+        insert += item + '\n'
+
+    return insert + ';'

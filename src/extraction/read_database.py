@@ -24,7 +24,7 @@ def get_con(credentials):
 
 def get_tables(con):
     """returns table names"""
-    
+
     query = """SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES
               WHERE table_schema='public' AND TABLE_TYPE = 'BASE TABLE';"""
     return con.run(query)
@@ -41,7 +41,7 @@ def select_table_headers(con, table_name):
 
 def select_table(con, table_name, last_extraction):
     """returns all rows from the named table that have been updated"""
-    
+
     query = f"""SELECT * FROM {table_name}
     WHERE last_updated > TIMESTAMP '{last_extraction}';"""
     data = con.run(query)
