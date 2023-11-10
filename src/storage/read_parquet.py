@@ -29,9 +29,15 @@ def get_parquet_data(client, target_bucket, filepath):
 
 
 def compile_parquet_data(client, target_bucket, table_name, timestamp):
-    '''Compiles parquet files into a dataframe and removes duplicates'''
+    '''Compiles parquet files, if there are new ones, into a dataframe
+    or returns an empty list if no new files'''
     file_list = get_file_list(client, target_bucket, table_name, timestamp)
     data_rows = []
-    for filepath in file_list:
-        data_rows.append(get_parquet_data(client, target_bucket, filepath))
-    return pd.concat(data_rows, axis=0, ignore_index=True)
+    if file_list:
+        for filepath in file_list:
+            data = get_parquet_data(client, target_bucket, filepath)
+            if not data.empty:
+                data_rows.append(data)
+        return pd.concat(data_rows, axis=0, ignore_index=True)
+    else:
+        return data_rows
