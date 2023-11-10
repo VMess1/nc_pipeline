@@ -1,6 +1,5 @@
 from src.processing.processing_handler import (
     main)
-# from src.processing.dim_table_transformation import dim_date_tf
 from moto import mock_s3
 import boto3
 import pytest
