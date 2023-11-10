@@ -50,7 +50,7 @@ resource "aws_iam_role_policy_attachment" "lambda_cw_policy_attachment2" {
 # Policy document for allowing lambda to put data into s3 bucket and read from
 data "aws_iam_policy_document" "s3_document_2" {
   statement {
-    actions = ["s3:PutObject"]
+    actions = ["s3:PutObject", "s3:GetObject"]
     resources = ["${aws_s3_bucket.transformation_bucket.arn}/*"]
   }
   statement {

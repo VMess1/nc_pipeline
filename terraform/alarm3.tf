@@ -1,8 +1,8 @@
 # #ClientError alarm filter
-# resource "aws_cloudwatch_log_metric_filter" "ClientError2" {
-#     name           = "Transformation function Client Error"
+# resource "aws_cloudwatch_log_metric_filter" "ClientError3" {
+#     name           = "Warehouse function Client Error"
 #     pattern        = "ClientError"
-#     log_group_name = "/aws/lambda/lambda_transformation"
+#     log_group_name = "/aws/lambda/lambda_warehouse"
 #     metric_transformation {
 #         name      = "loggingClienterror"
 #         namespace = "Errors"
@@ -11,8 +11,8 @@
 # }
 
 # #ClientError alarm
-# resource "aws_cloudwatch_metric_alarm" "ClientError_alarm2" {
-#   alarm_name                = "Transformation function Client error alarm"
+# resource "aws_cloudwatch_metric_alarm" "ClientError_alarm3" {
+#   alarm_name                = "Warehouse function Client error alarm"
 #   comparison_operator       = "GreaterThanOrEqualToThreshold"
 #   evaluation_periods        = 1
 #   metric_name               = "loggingClienterror"
@@ -24,10 +24,10 @@
 #  }
 
 #  #ExceptionError alarm filter
-# resource "aws_cloudwatch_log_metric_filter" "ExceptionError2" {
-#     name           = "Transformation function Exception Error"
+# resource "aws_cloudwatch_log_metric_filter" "ExceptionError3" {
+#     name           = "Warehouse function Exception Error"
 #     pattern        = "Exception"
-#     log_group_name = "/aws/lambda/lambda_transformation"
+#     log_group_name = "/aws/lambda/lambda_warehouse"
 #     metric_transformation {
 #         name      = "loggingExceptionerror"
 #         namespace = "Errors"
@@ -36,8 +36,8 @@
 # }
 
 # #Exception alarm
-# resource "aws_cloudwatch_metric_alarm" "ExceptionError_alarm2" {
-#   alarm_name                = "Transformation function Exception error alarm"
+# resource "aws_cloudwatch_metric_alarm" "ExceptionError_alarm3" {
+#   alarm_name                = "Warehouse function Exception error alarm"
 #   comparison_operator       = "GreaterThanOrEqualToThreshold"
 #   evaluation_periods        = 1
 #   metric_name               = "loggingExceptionerror"
@@ -49,10 +49,10 @@
 #  }
 
 #  #TypeError alarm filter
-# resource "aws_cloudwatch_log_metric_filter" "TypeError2" {
-#     name           = "Transformation function TypeError"
+# resource "aws_cloudwatch_log_metric_filter" "TypeError3" {
+#     name           = "Warehouse function TypeError"
 #     pattern        = "TypeError"
-#     log_group_name = "/aws/lambda/lambda_transformation"
+#     log_group_name = "/aws/lambda/lambda_warehouse"
 #     metric_transformation {
 #         name      = "loggingTypeError"
 #         namespace = "Errors"
@@ -61,8 +61,8 @@
 # }
 
 # #TypeError alarm
-# resource "aws_cloudwatch_metric_alarm" "TypeError_alarm2" {
-#   alarm_name                = "Transformation function TypeError alarm"
+# resource "aws_cloudwatch_metric_alarm" "TypeError_alarm3" {
+#   alarm_name                = "Warehouse function TypeError alarm"
 #   comparison_operator       = "GreaterThanOrEqualToThreshold"
 #   evaluation_periods        = 1
 #   metric_name               = "loggingTypeError"
