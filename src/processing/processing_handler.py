@@ -27,6 +27,9 @@ def get_client():
     return s3
 
 
+COUNT = 0
+
+
 def main(event, context):
     '''Checks parquet bucket for directories.
     If dim_date is not a directory, the table is created.
@@ -52,6 +55,8 @@ def main(event, context):
             new_table_name = 'dim_date'
             dim_date = dim_date_tf()
             write_to_bucket(s3, new_table_name, dim_date, last_time_stamp)
+            global COUNT
+            COUNT += 1
 
         if table_name == 'currency':
             new_table_name = 'dim_currency'

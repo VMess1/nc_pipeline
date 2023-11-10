@@ -64,6 +64,30 @@ def mock_missing_parquet_bucket(aws_credentials):
         yield conn
 
 
+class TestDateTable:
+    def test_date_table_is_only_built_once(self, mock_buckets, monkeypatch):
+
+        def mock_get():
+            return mock_buckets
+        monkeypatch.setattr(
+            'src.processing.processing_handler.get_client',
+            mock_get)
+        mock_buckets.put_object(Bucket='nc-group3-ingestion-bucket',
+                                Body=currency_string(),
+                                Key='currency/currency20221103150000.csv')
+        test_event = {'Records': [{
+            's3': {
+                'bucket': {'name': 'nc-group3-ingestion-bucket'},
+                'object': {'key': 'currency/currency20221103150000.csv'}
+            }
+        }]}
+
+        main(test_event, None)
+        main(test_event, None)
+        from src.processing.processing_handler import (COUNT)
+        assert COUNT == 1
+
+
 class TestBasicTableFunctionality:
     def test_currency_table_update_is_processed(
             self, mock_buckets, monkeypatch):
@@ -75,9 +99,6 @@ class TestBasicTableFunctionality:
         mock_buckets.put_object(Bucket='nc-group3-ingestion-bucket',
                                 Body=currency_string(),
                                 Key='currency/currency20221103150000.csv')
-        # mock_buckets.put_object(Bucket='nc-group3-transformation-bucket',
-        #                         Body=currency_string(),
-        #                         Key='dim_currency/dim_currency20221103150000.parquet')
         test_event = {'Records': [{
             's3': {
                 'bucket': {'name': 'nc-group3-ingestion-bucket'},
@@ -234,24 +255,3 @@ class TestErrorHandling:
     #         main(test_event, None)
     #         expected = ""
     #         assert expected in caplog.text
-
-
-# class TestDateTable:
-#     def test_date_table_is_only_built_once(self, mock_buckets, monkeypatch):
-
-#         def mock_get():
-#             return mock_buckets
-#         monkeypatch.setattr(
-#             'src.processing.processing_handler.get_client',
-#             mock_get)
-#         test_event = {'Records': [{
-#             's3': {
-#                 'bucket': {'name': 'nc-group3-ingestion-bucket'},
-#        'object': {'key': 'sales_order/sales_order20221103150000.csv'}
-#             }
-#         }]}
-
-# with patch('src.processing.processing_handler.dim_date_tf') as mock_dim_date:
-#             main(test_event, None)
-#             main(test_event, None)
-#         mock_dim_date.assert_called_once()
