@@ -39,3 +39,7 @@ def create_insert_statement(table_name, dataframe):
         insert += item + '\n'
 
     return insert + ';'
+
+
+def run_insert_query(client, query):
+    client.run(query)

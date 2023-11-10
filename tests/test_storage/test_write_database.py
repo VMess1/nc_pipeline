@@ -8,7 +8,14 @@ import json
 from pg8000.native import Connection
 from src.storage.write_database import (
     get_credentials,
-    create_insert_statement
+    create_insert_statement,
+    run_insert_query
+)
+from tests.test_storage.seed_data import (
+    get_create_location_query,
+    get_create_sales_query,
+    get_seed_location_query,
+    get_seed_sales_query
 )
 
 load_dotenv()
@@ -28,9 +35,20 @@ def test_connection():
     return Connection(
         user=os.environ["USER"],
         host="localhost",
-        database=os.environ["TEST_DATABASE"],
+        database=os.environ["TEST_DATA_WAREHOUSE"],
         password=os.environ["PASSWORD"],
     )
+
+
+@pytest.fixture(scope="function")
+def seeded_connection(test_connection):
+    test_connection.run("DROP TABLE IF EXISTS test_fact_sales_order;")
+    test_connection.run("DROP TABLE IF EXISTS test_dim_location;")
+    test_connection.run(get_create_location_query())
+    test_connection.run(get_create_sales_query())
+    test_connection.run(get_seed_location_query())
+    test_connection.run(get_seed_sales_query())
+    return test_connection
 
 
 @pytest.fixture(scope="function")
@@ -83,3 +101,19 @@ class TestCreateInsertStatement:
             'country_3, 1803 637401)\n;'
         )
         assert output == test_expected
+
+
+class TestRunInsertQuery:
+    def test_updates_dim_table_with_new_records(self, seeded_connection):
+        test_query = (
+            "INSERT INTO test_dim_location \n"
+            "(location_id, address_line_1, address_line_2, district, "
+            "city, postal_code, country, phone) \n" "VALUES \n"
+            "(4, 'street_4', 'place_4', 'district_4', 'city_4', 'D444DD', "
+            "'country_4', '1803 637401'),\n"
+            "(5, 'street_5', NULL, 'district_5', 'city_4', 'E555EE', "
+            "'country_5', '1803 637401');\n"
+        )
+        run_insert_query(seeded_connection, test_query)
+        result = seeded_connection.run('SELECT * FROM test_dim_location;')
+        print(result)
