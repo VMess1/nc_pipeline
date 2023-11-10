@@ -29,21 +29,21 @@ resource "aws_lambda_permission" "allow_eventbridge" {
   source_arn     = aws_cloudwatch_event_rule.event_rule.arn
 }
 
-# NEEDS TO BE PUT IN WHEN TRANSFORMATION LAMBDA READY
-#giving the ingestion s3 bucket permission to trigger the transformation lambda
-# resource "aws_lambda_permission" "s3_trigger" {
-#   statement_id  = "AllowExecutionFromS3"
-#   action        = "lambda:InvokeFunction"
-#   function_name = aws_lambda_function.lambda_transformation.arn
-#   principal     = "s3.amazonaws.com"
-#   source_arn = aws_s3_bucket.ingestion_bucket.arn
-# }
 
-# #creates the trigger for the transformation lambda
-# resource "aws_s3_bucket_notification" "ingestion_bucket_notification" {
-#   bucket = aws_s3_bucket.ingestion_bucket.id
-#   lambda_function {
-#     lambda_function_arn = aws_lambda_function.lambda_transformation.arn
-#     events              = ["s3:ObjectCreated:*"]
-#   }
-# }
+#giving the ingestion s3 bucket permission to trigger the transformation lambda
+resource "aws_lambda_permission" "s3_trigger" {
+  statement_id  = "AllowExecutionFromS3"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.lambda_transformation.arn
+  principal     = "s3.amazonaws.com"
+  source_arn = aws_s3_bucket.ingestion_bucket.arn
+}
+
+#creates the trigger for the transformation lambda
+resource "aws_s3_bucket_notification" "ingestion_bucket_notification" {
+  bucket = aws_s3_bucket.ingestion_bucket.id
+  lambda_function {
+    lambda_function_arn = aws_lambda_function.lambda_transformation.arn
+    events              = ["s3:ObjectCreated:*"]
+  }
+}

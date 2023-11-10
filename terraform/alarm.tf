@@ -1,9 +1,14 @@
+#Create log group for first lambda alerts
+resource "aws_cloudwatch_log_group" "lambda1" {
+  name = "lambda_ingestion_errors"
+}
+
 
 #ClientError alarm filter
 resource "aws_cloudwatch_log_metric_filter" "ClientError" {
     name           = "Ingestion function Client Error"
     pattern        = "ClientError"
-    log_group_name = "/aws/lambda/lambda_ingestion"
+    log_group_name = aws_cloudwatch_log_group.lambda1.name
     metric_transformation {
         name      = "loggingClienterror"
         namespace = "Errors"
@@ -28,7 +33,7 @@ resource "aws_cloudwatch_metric_alarm" "ClientError_alarm" {
 resource "aws_cloudwatch_log_metric_filter" "ExceptionError" {
     name           = "Ingestion function Exception Error"
     pattern        = "Exception"
-    log_group_name = "/aws/lambda/lambda_ingestion"
+    log_group_name = aws_cloudwatch_log_group.lambda1.name
     metric_transformation {
         name      = "loggingExceptionerror"
         namespace = "Errors"
@@ -53,7 +58,7 @@ resource "aws_cloudwatch_metric_alarm" "ExceptionError_alarm" {
 resource "aws_cloudwatch_log_metric_filter" "TypeError" {
     name           = "Ingestion function TypeError"
     pattern        = "TypeError"
-    log_group_name = "/aws/lambda/lambda_ingestion"
+    log_group_name = aws_cloudwatch_log_group.lambda1.name
     metric_transformation {
         name      = "loggingTypeError"
         namespace = "Errors"
