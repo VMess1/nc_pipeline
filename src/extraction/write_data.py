@@ -8,13 +8,13 @@ def convert_to_csv(table_name, data, headers):
         if index == len(headers) - 1:
             the_goods += f"{collumn[0]}\n"
         else:
-            the_goods += f"{collumn[0]},"
+            the_goods += f"{collumn[0]};"
     for index, datum in enumerate(data):
         for index, dat in enumerate(datum):
             if index == len(datum) - 1:
                 the_goods += f"{dat}\n"
             else:
-                the_goods += f"{dat},"
+                the_goods += f"{dat};"
     return the_goods
 
 
