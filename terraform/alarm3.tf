@@ -1,8 +1,13 @@
+# #Create log group for third lambda alerts
+# resource "aws_cloudwatch_log_group" "lambda3" {
+#   name = "lambda_warehouse_errors"
+# }
+
 # #ClientError alarm filter
 # resource "aws_cloudwatch_log_metric_filter" "ClientError3" {
 #     name           = "Warehouse function Client Error"
 #     pattern        = "ClientError"
-#     log_group_name = "/aws/lambda/lambda_warehouse"
+#     log_group_name = aws_cloudwatch_log_group.lambda3.name
 #     metric_transformation {
 #         name      = "loggingClienterror"
 #         namespace = "Errors"
@@ -27,7 +32,7 @@
 # resource "aws_cloudwatch_log_metric_filter" "ExceptionError3" {
 #     name           = "Warehouse function Exception Error"
 #     pattern        = "Exception"
-#     log_group_name = "/aws/lambda/lambda_warehouse"
+#     log_group_name = aws_cloudwatch_log_group.lambda3.name
 #     metric_transformation {
 #         name      = "loggingExceptionerror"
 #         namespace = "Errors"
@@ -52,7 +57,7 @@
 # resource "aws_cloudwatch_log_metric_filter" "TypeError3" {
 #     name           = "Warehouse function TypeError"
 #     pattern        = "TypeError"
-#     log_group_name = "/aws/lambda/lambda_warehouse"
+#     log_group_name = aws_cloudwatch_log_group.lambda3.name
 #     metric_transformation {
 #         name      = "loggingTypeError"
 #         namespace = "Errors"
