@@ -5,7 +5,7 @@ import os
 from datetime import datetime
 from botocore.exceptions import ClientError
 from src.storage.store_timestamp import (get_last_timestamp,
-                                            write_current_timestamp)
+                                         write_current_timestamp)
 
 
 @pytest.fixture(scope="function")
@@ -70,5 +70,5 @@ class TestWriteCurrentTimestamp:
 
         output = mock_params.get_parameter(
             Name=test_name
-            )["Parameter"]["Value"]
+        )["Parameter"]["Value"]
         assert output == "1999-04-10 06:30:30"
