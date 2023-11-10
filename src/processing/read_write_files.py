@@ -11,6 +11,18 @@ def get_csv_data(client, target_bucket, filepath):
     return pd.read_csv(response['Body'])
 
 
+def check_transformation_bucket(client, target_bucket):
+    '''returns a list of directories in transformation bucket'''
+    response = client.list_objects(Bucket=target_bucket)
+    table_list = []
+    if 'Contents' in response:
+        response_list = [obj['Key'] for obj in response['Contents']]
+        for i in response_list:
+            table_list.append(i.split('/')[0])
+
+    return table_list
+
+
 def compile_full_csv_table(client, target_bucket, table_name):
     '''Compiles csv files into a dataframe and removes duplicate'''
     def extract_timestamp(filepath):

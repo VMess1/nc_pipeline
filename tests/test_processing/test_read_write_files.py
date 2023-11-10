@@ -4,8 +4,10 @@ import pandas as pd
 import pytest
 import os
 from src.processing.read_write_files import (
-    get_csv_data, write_to_bucket, compile_full_csv_table
-)
+    get_csv_data,
+    write_to_bucket,
+    compile_full_csv_table,
+    check_transformation_bucket)
 from tests.test_processing.strings import new_string
 from dataframes import currency_dataframe
 from io import BytesIO
@@ -170,3 +172,19 @@ class TestWriteToBucket:
         output = pd.read_parquet(BytesIO(response['Body'].read()))
 
         assert output.equals(currency_dataframe())
+
+
+class TestParquetChecker:
+    def test_gives_list_of_directories(self, mock_parquet_bucket):
+        mock_parquet_bucket.put_object(
+            Bucket='nc-group3-transformation-bucket',
+            Body='string',
+            Key='fact_sales_order/fact_sales_order20221103150000.parquet')
+        mock_parquet_bucket.put_object(
+            Bucket='nc-group3-transformation-bucket',
+            Body='string',
+            Key='dim_currency/dim_currency20221103150000.parquet')
+        expected = ['dim_currency', 'fact_sales_order']
+        output = check_transformation_bucket(
+            mock_parquet_bucket, 'nc-group3-transformation-bucket')
+        assert output == expected

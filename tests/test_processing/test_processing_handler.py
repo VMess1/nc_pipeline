@@ -1,5 +1,6 @@
 from src.processing.processing_handler import (
-    main)  # ,  write_to_bucket)  # , dim_join_department
+    main)
+# from src.processing.dim_table_transformation import dim_date_tf
 from moto import mock_s3
 import boto3
 import pytest
@@ -10,6 +11,7 @@ from io import BytesIO
 from dataframes import currency_dataframe_transformed
 import logging
 from botocore.exceptions import ClientError
+
 
 logger = logging.getLogger('test')
 logger.setLevel(logging.INFO)
@@ -60,6 +62,30 @@ def mock_missing_parquet_bucket(aws_credentials):
             CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},
         )
         yield conn
+
+
+class TestDateTable:
+    def test_date_table_is_only_built_once(self, mock_buckets, monkeypatch):
+
+        def mock_get():
+            return mock_buckets
+        monkeypatch.setattr(
+            'src.processing.processing_handler.get_client',
+            mock_get)
+        mock_buckets.put_object(Bucket='nc-group3-ingestion-bucket',
+                                Body=currency_string(),
+                                Key='currency/currency20221103150000.csv')
+        test_event = {'Records': [{
+            's3': {
+                'bucket': {'name': 'nc-group3-ingestion-bucket'},
+                'object': {'key': 'currency/currency20221103150000.csv'}
+            }
+        }]}
+
+        main(test_event, None)
+        main(test_event, None)
+        from src.processing.processing_handler import (COUNT)
+        assert COUNT == 1
 
 
 class TestBasicTableFunctionality:
@@ -122,9 +148,8 @@ class TestWarning:
             main(test_event, None)
             expected = ('Invalid currency code detected in file: ' +
                         'currency/currency20221103150000.csv')
+            main(test_event, None)
             assert expected in caplog.text
-
-# LOGGER = logging.getLogger(__name__)
 
 
 class TestErrorHandling:
