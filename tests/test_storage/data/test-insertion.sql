@@ -1,6 +1,6 @@
-DROP DATABASE IF EXISTS olap_test
+DROP DATABASE IF EXISTS olap_test;
 
-CREATE DATABASE olap_test
+CREATE DATABASE olap_test;
 
 \c olap_test
 

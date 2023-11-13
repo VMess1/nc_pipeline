@@ -8,10 +8,9 @@ import json
 from pg8000.native import Connection
 from src.storage.write_database import (
     get_credentials,
-    create_insert_statement,
     run_insert_query
 )
-from tests.test_storage.seed_data import (
+from tests.test_storage.data.seed_data import (
     get_create_location_query,
     get_create_sales_query,
     get_seed_location_query,
@@ -74,46 +73,44 @@ class TestGetCredentials:
         assert output == secret_values
 
 
-class TestCreateInsertStatement:
-    def test_returns_correct_insert_statement_for_multirow_table(self):
-        test_input = pd.DataFrame(data={
-            'location_id': [1, 2, 3],
-            'address_line_1': ['street_1', 'street_2', 'street_3'],
-            'address_line_2': ['place_1', 'None', 'None'],
-            'district': ['district_1', 'district_2', 'district_3'],
-            'city': ['city_1',
-                     'city_2',
-                     'city_3'],
-            'postal_code': ['A111AA', 'B222BB', 'C333CC'],
-            'country': ['country_1', 'country_2', 'country_3'],
-            'phone': ['1803 637401', '1803 637401', '1803 637401']
-        })
-        output = create_insert_statement('dim_location', test_input)
-        test_expected = (
-            'INSERT INTO dim_location \n'
-            '(location_id, address_line_1, address_line_2, district, '
-            'city, postal_code, country, phone) \n' 'VALUES \n'
-            '(1, street_1, place_1, district_1, city_1, A111AA, '
-            'country_1, 1803 637401)\n'
-            '(2, street_2, None, district_2, city_2, B222BB, '
-            'country_2, 1803 637401)\n'
-            '(3, street_3, None, district_3, city_3, C333CC, '
-            'country_3, 1803 637401)\n;'
-        )
-        assert output == test_expected
-
-
 class TestRunInsertQuery:
     def test_updates_dim_table_with_new_records(self, seeded_connection):
-        test_query = (
-            "INSERT INTO test_dim_location \n"
-            "(location_id, address_line_1, address_line_2, district, "
-            "city, postal_code, country, phone) \n" "VALUES \n"
-            "(4, 'street_4', 'place_4', 'district_4', 'city_4', 'D444DD', "
-            "'country_4', '1803 637401'),\n"
-            "(5, 'street_5', NULL, 'district_5', 'city_4', 'E555EE', "
-            "'country_5', '1803 637401');\n"
-        )
-        run_insert_query(seeded_connection, test_query)
+        test_input = pd.DataFrame(data={
+            'location_id': [4, 5],
+            'address_line_1': ['street_4', 'street_5'],
+            'address_line_2': ['place_4', None],
+            'district': ['district_4', 'district_5'],
+            'city': ['city_4',
+                     'city_5'],
+            'postal_code': ['D444DD', 'E555EE'],
+            'country': ['country_4', 'country_5'],
+            'phone': ['1803 637401', '1803 637401']
+        })
+        run_insert_query(seeded_connection, 'test_dim_location', test_input)
         result = seeded_connection.run('SELECT * FROM test_dim_location;')
-        print(result)
+        assert result ==[
+            [1, 'street_1', 'place_1', 'district_1', 'city_1', 'A111AA', 'country_1', '1803 637401'],
+            [2, 'street_2', None, 'district_2', 'city_2', 'B222BB', 'country_2', '1803 637401'],
+            [3, 'street_3', None, 'district_3', 'city_3', 'C333CC', 'country_3', '1803 637401'],
+            [4, 'street_4', 'place_4', 'district_4', 'city_4', 'D444DD', 'country_4', '1803 637401'],
+            [5, 'street_5', None, 'district_5', 'city_5', 'E555EE', 'country_5', '1803 637401']]
+    
+    def test_updates_dim_table_with_conflicting_records(self, seeded_connection):
+        test_input = pd.DataFrame(data={
+            'location_id': [2, 5],
+            'address_line_1': ['street_4', 'street_5'],
+            'address_line_2': ['place_4', None],
+            'district': ['district_4', 'district_5'],
+            'city': ['city_4',
+                     'city_5'],
+            'postal_code': ['D444DD', 'E555EE'],
+            'country': ['country_4', 'country_5'],
+            'phone': ['1803 637401', '1803 637401']
+        })
+        run_insert_query(seeded_connection, 'test_dim_location', test_input)
+        result = seeded_connection.run('SELECT * FROM test_dim_location;')
+        assert result ==[
+            [1, 'street_1', 'place_1', 'district_1', 'city_1', 'A111AA', 'country_1', '1803 637401'],
+            [3, 'street_3', None, 'district_3', 'city_3', 'C333CC', 'country_3', '1803 637401'],
+            [2, 'street_4', 'place_4', 'district_4', 'city_4', 'D444DD', 'country_4', '1803 637401'],
+            [5, 'street_5', None, 'district_5', 'city_5', 'E555EE', 'country_5', '1803 637401']]

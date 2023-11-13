@@ -22,24 +22,27 @@ def get_con(credentials):
     )
 
 
-def create_insert_statement(table_name, dataframe):
+def run_insert_query(client, table_name, dataframe):
+    entries={}
     column_list = dataframe.columns.tolist()
-
-    def list_to_string(list): return (
-        '(' + ', '.join([str(i) for i in list]) + ')')
-    column_string = list_to_string(column_list)
-    values = dataframe.values.tolist()
-    values_list = [list_to_string(item) for item in values]
-    insert = (
-        f'INSERT INTO {table_name} \n'
-        f'{column_string} \n'
-        'VALUES \n'
-    )
-    for item in values_list:
-        insert += item + '\n'
-
-    return insert + ';'
-
-
-def run_insert_query(client, query):
-    client.run(query)
+    values_list = dataframe.values.tolist()
+    insert_query = f'INSERT INTO {table_name} \n('
+    values_query = 'VALUES \n'
+    conflict_query = f'ON CONFLICT ({column_list[0]}) DO UPDATE SET \n'
+    for index, column in enumerate(column_list):
+        insert_query += column + ', '
+        entries[f'column_{index}'] = column
+        conflict_query += f'{column}=EXCLUDED.{column}, '
+    insert_query = insert_query[:-2] + ')\n'
+    conflict_query = conflict_query[:-2] + ';'
+    count = 0
+    for row in values_list:
+        values_query += '('
+        for value in row:
+            values_query += f':value_{count}, '
+            entries[f'value_{count}'] = value
+            count += 1
+        values_query = values_query[:-2] + '),\n'
+    values_query = values_query[:-2] + '\n'
+    insert_statement = insert_query + values_query + conflict_query
+    client.run(insert_statement, **entries)
