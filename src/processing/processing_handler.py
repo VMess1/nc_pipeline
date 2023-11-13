@@ -50,15 +50,17 @@ def main(event, context):
             raise TypeError('File type is not csv.')
         s3 = get_client()
         df = get_csv_data(s3, bucket, filepath)
-        parquet_table_list = []
-        parquet_table_list += check_transformation_bucket(
-            s3, 'nc-group3-transformation-bucket')
-        if 'dim_date' not in parquet_table_list:
-            new_table_name = 'dim_date'
-            dim_date = dim_date_tf()
-            write_to_bucket(s3, new_table_name, dim_date, last_time_stamp)
-            global COUNT
-            COUNT += 1
+        test = str(df.head(5))
+        logger.info(test)
+        # parquet_table_list = []
+        # parquet_table_list += check_transformation_bucket(
+        #     s3, 'nc-group3-transformation-bucket')
+        # if 'dim_date' not in parquet_table_list:
+        #     new_table_name = 'dim_date'
+        #     dim_date = dim_date_tf()
+        #     write_to_bucket(s3, new_table_name, dim_date, last_time_stamp)
+        #     global COUNT
+        #     COUNT += 1
 
         if table_name == 'currency':
             new_table_name = 'dim_currency'
@@ -74,9 +76,14 @@ def main(event, context):
             write_to_bucket(s3, new_table_name, dim_design, last_time_stamp)
         elif table_name == 'staff':
             new_table_name = 'dim_staff'
+            logger.info("hello")
             department_df = compile_full_csv_table(
                 s3, 'nc-group3-ingestion-bucket', 'department')
+            test = str(department_df.head(5))
+            logger.info("second hello??", test)  # <<<< We don't get this far
             dim_staff = dim_join_department(df, department_df)
+            test = str(dim_staff.head(5))
+            logger.info("please be a hello??", test)
             write_to_bucket(s3, new_table_name, dim_staff, last_time_stamp)
         elif table_name == 'counterparty':
             new_table_name = 'dim_counterparty'

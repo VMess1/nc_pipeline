@@ -18,3 +18,9 @@ resource "aws_s3_object" "layer_code_2" {
   source = "${path.module}/../aws_utils/layer_code2.zip"
   bucket = aws_s3_bucket.code_bucket_2.id
 }
+
+# resource "aws_s3_object" "layer_code_3" {
+#   key    = "ingestion_function/layer_code3.zip"
+#   source = "${path.module}/../aws_utils/layer_code3.zip"
+#   bucket = aws_s3_bucket.code_bucket_2.id
+# }

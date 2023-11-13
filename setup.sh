@@ -37,3 +37,9 @@ cp -r src/processing/fact_table_transformation.py layers2/python/src/processing
 cp -r src/processing/read_write_files.py layers2/python/src/processing
 cd layers2
 zip -r layer_code2.zip python
+
+# mkdir layers3/python
+# cp -r venv/lib/python3.11/site-packages/pyarrow layers2/python
+# cp -r venv/lib/python3.11/site-packages/pyarrow-14.0.0.dist-info layers2/python
+# cd layers3
+# zip -r layer_code3.zip python
