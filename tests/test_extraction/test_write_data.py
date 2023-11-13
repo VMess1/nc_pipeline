@@ -35,10 +35,10 @@ def test_connection():
 class TestSqlToCsv:
     def test_returns_correct_string_for_csv(self, test_connection):
         csv = (
-            "department_id,department_name,location,"
-            + "manager,created_at,last_updated\n"
-            + "9,departmentname-9,location-9,manager-9,"
-            + "2023-10-10 11:30:30,2025-10-10 11:30:30\n"
+            "department_id;department_name;location;"
+            + "manager;created_at;last_updated\n"
+            + "9;departmentname-9;location-9;manager-9;"
+            + "2023-10-10 11:30:30;2025-10-10 11:30:30\n"
         )
         data = select_table(
             test_connection, "department", datetime(2024, 10, 10, 11, 30, 30)
