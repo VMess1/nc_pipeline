@@ -4,7 +4,7 @@ CREATE DATABASE olap_test;
 
 \c olap_test
 
-CREATE TABLE test_dim_location(
+CREATE TABLE dim_test_location(
     location_id INT PRIMARY KEY,
     address_line_1 VARCHAR NOT NULL,
     address_line_2 VARCHAR,
@@ -15,7 +15,7 @@ CREATE TABLE test_dim_location(
     phone VARCHAR NOT NULL
 );
 
-CREATE TABLE test_fact_sales_order(
+CREATE TABLE fact_test_sales_order(
     sales_record_id SERIAL PRIMARY KEY,
     sales_order_id INT NOT NULL,
     created_date DATE NOT NULL,
@@ -24,10 +24,10 @@ CREATE TABLE test_fact_sales_order(
     last_updated_time TIME NOT NULL,
     units_sold INT NOT NULL,
     unit_price NUMERIC(10, 2) NOT NULL,
-    agreed_delivery_location INT REFERENCES test_dim_location(location_id)
+    agreed_delivery_location INT REFERENCES dim_test_location(location_id)
 );
 
-INSERT INTO test_dim_location
+INSERT INTO dim_test_location
 (location_id, address_line_1, address_line_2, district,
  city, postal_code, country, phone)
 VALUES
@@ -36,7 +36,7 @@ VALUES
 (2, 'street_2', NULL, 'district_2', 'city_2', 'B222BB', 'country_2', '1803 637401'),
 (3, 'street_3', NULL, 'district_3', 'city_3', 'C333CC', 'country_3', '1803 637401');
 
-INSERT INTO test_fact_sales_order
+INSERT INTO fact_test_sales_order
 (sales_order_id, created_date, created_time, last_updated_date,
  last_updated_time, units_sold, unit_price, agreed_delivery_location)
 VALUES

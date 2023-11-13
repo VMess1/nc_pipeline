@@ -23,9 +23,10 @@ def get_con(credentials):
 
 
 def run_insert_query(client, table_name, dataframe):
-    entries={}
+    entries = {}
     column_list = dataframe.columns.tolist()
     values_list = dataframe.values.tolist()
+    print(column_list)
     insert_query = f'INSERT INTO {table_name} \n('
     values_query = 'VALUES \n'
     conflict_query = f'ON CONFLICT ({column_list[0]}) DO UPDATE SET \n'
@@ -44,5 +45,10 @@ def run_insert_query(client, table_name, dataframe):
             count += 1
         values_query = values_query[:-2] + '),\n'
     values_query = values_query[:-2] + '\n'
-    insert_statement = insert_query + values_query + conflict_query
+    insert_statement = insert_query + values_query
+    if table_name.split('_')[0] == 'dim':
+        print(table_name.split('_')[0])
+        insert_statement += conflict_query
+    else:
+        insert_statement += ';'
     client.run(insert_statement, **entries)

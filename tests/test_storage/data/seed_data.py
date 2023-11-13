@@ -1,6 +1,6 @@
 def get_create_location_query():
     return """
-        CREATE TABLE test_dim_location (
+        CREATE TABLE dim_test_location (
         location_id INT PRIMARY KEY,
         address_line_1 VARCHAR NOT NULL,
         address_line_2 VARCHAR,
@@ -15,7 +15,7 @@ def get_create_location_query():
 
 def get_create_sales_query():
     return """
-        CREATE TABLE test_fact_sales_order (
+        CREATE TABLE fact_test_sales_order (
         sales_record_id SERIAL PRIMARY KEY,
         sales_order_id INT NOT NULL,
         created_date DATE NOT NULL,
@@ -24,14 +24,14 @@ def get_create_sales_query():
         last_updated_time TIME NOT NULL,
         units_sold INT NOT NULL,
         unit_price NUMERIC(10,2) NOT NULL,
-        agreed_delivery_location INT REFERENCES test_dim_location(location_id)
+        agreed_delivery_location INT REFERENCES dim_test_location(location_id)
         );
     """
 
 
 def get_seed_location_query():
     return """
-        INSERT INTO test_dim_location
+        INSERT INTO dim_test_location
         (location_id, address_line_1, address_line_2, district,
         city, postal_code, country, phone)
         VALUES
@@ -46,7 +46,7 @@ def get_seed_location_query():
 
 def get_seed_sales_query():
     return """
-        INSERT INTO test_fact_sales_order
+        INSERT INTO fact_test_sales_order
         (sales_order_id, created_date, created_time, last_updated_date,
         last_updated_time, units_sold,
         unit_price, agreed_delivery_location)
