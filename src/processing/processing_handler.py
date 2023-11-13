@@ -39,18 +39,20 @@ def main(event, context):
 
     try:
         bucket = event['Records'][0]['s3']['bucket']['name']
+        logger.info(bucket)
         filepath = event['Records'][0]['s3']['object']['key']
+        logger.info(filepath)
         table_name = filepath.split('/')[0]
+        logger.info(table_name)
         last_time_stamp = re.findall(r'\d{14,}', filepath)[0]
+        logger.info(last_time_stamp)
         if filepath[-4:] != '.csv':
             raise TypeError('File type is not csv.')
         s3 = get_client()
         df = get_csv_data(s3, bucket, filepath)
-
         parquet_table_list = []
         parquet_table_list += check_transformation_bucket(
             s3, 'nc-group3-transformation-bucket')
-
         if 'dim_date' not in parquet_table_list:
             new_table_name = 'dim_date'
             dim_date = dim_date_tf()

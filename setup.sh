@@ -36,4 +36,4 @@ cp -r src/processing/dim_table_transformation.py layers2/python/src/processing
 cp -r src/processing/fact_table_transformation.py layers2/python/src/processing
 cp -r src/processing/read_write_files.py layers2/python/src/processing
 cd layers2
-zip -r layer_code.zip python
+zip -r layer_code2.zip python

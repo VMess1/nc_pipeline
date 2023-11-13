@@ -1,6 +1,10 @@
 import pandas as pd
 from io import BytesIO
 import re
+import logging
+
+logger = logging.getLogger("LPY2Logger")
+logger.setLevel(logging.INFO)
 
 
 def get_csv_data(client, target_bucket, filepath):
@@ -8,12 +12,17 @@ def get_csv_data(client, target_bucket, filepath):
     response = client.get_object(
         Bucket=target_bucket,
         Key=filepath)
-    return pd.read_csv(response['Body'], delimiter=';')
+    body = response['Body']
+    csv_string = body.read().decode('utf-8')
+    print(filepath)
+    print(pd.read_csv(csv_string, sep=';', encoding='utf-8'))
+    return pd.read_csv(csv_string, sep=';')
 
 
 def check_transformation_bucket(client, target_bucket):
     '''returns a list of directories in transformation bucket'''
     response = client.list_objects(Bucket=target_bucket)
+    logger.info(response)
     table_list = []
     if 'Contents' in response:
         response_list = [obj['Key'] for obj in response['Contents']]
