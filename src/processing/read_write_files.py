@@ -8,7 +8,7 @@ def get_csv_data(client, target_bucket, filepath):
     response = client.get_object(
         Bucket=target_bucket,
         Key=filepath)
-    return pd.read_csv(response['Body'])
+    return pd.read_csv(response['Body'], delimiter=';')
 
 
 def check_transformation_bucket(client, target_bucket):

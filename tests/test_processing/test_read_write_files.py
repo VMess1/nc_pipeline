@@ -66,17 +66,17 @@ class TestReadCSV:
 class TestCompileFullCsvTable:
     def test_data_includes_all_csv_files_in_directory(self, mock_csv_bucket):
         test_data_1 = (
-            'item_id,item_name,created_at,last_updated\n' +
-            '1,name_1,2022-12-12 15:15:15,2022-12-12 15:15:15\n'
-            '2,name_2,2022-12-12 15:15:15,2022-12-12 15:15:15'
+            'item_id;item_name;created_at;last_updated\n' +
+            '1;name_1;2022-12-12 15:15:15;2022-12-12 15:15:15\n'
+            '2;name_2;2022-12-12 15:15:15;2022-12-12 15:15:15'
         )
         test_data_2 = (
-            'item_id,item_name,created_at,last_updated\n' +
-            '3,name_3,2023-12-12 15:15:15,2023-12-12 15:15:15'
+            'item_id;item_name;created_at;last_updated\n' +
+            '3;name_3;2023-12-12 15:15:15;2023-12-12 15:15:15'
         )
         test_data_3 = (
-            'item_id,item_name,created_at,last_updated\n' +
-            '4,name_4,2024-12-12 15:15:15,2024-12-12 15:15:15'
+            'item_id;item_name;created_at;last_updated\n' +
+            '4;name_4;2024-12-12 15:15:15;2024-12-12 15:15:15'
         )
         mock_csv_bucket.put_object(
             Bucket="nc-group3-ingestion-bucket",
@@ -107,17 +107,17 @@ class TestCompileFullCsvTable:
     def test_data_removes_duplicate_csv_files_in_directory(
             self, mock_csv_bucket):
         test_data_1 = (
-            'item_id,item_name,created_at,last_updated\n' +
-            '1,name_1,2022-12-12 15:15:15,2022-12-12 15:15:15\n'
-            '2,name_2,2022-12-12 15:15:15,2022-12-12 15:15:15'
+            'item_id;item_name;created_at;last_updated\n' +
+            '1;name_1;2022-12-12 15:15:15;2022-12-12 15:15:15\n'
+            '2;name_2;2022-12-12 15:15:15;2022-12-12 15:15:15'
         )
         test_data_2 = (
-            'item_id,item_name,created_at,last_updated\n' +
-            '3,name_3,2023-12-12 15:15:15,2023-12-12 15:15:15'
+            'item_id;item_name;created_at;last_updated\n' +
+            '3;name_3;2023-12-12 15:15:15;2023-12-12 15:15:15'
         )
         test_data_3 = (
-            'item_id,item_name,created_at,last_updated\n' +
-            '2,name_5,2030-12-12 15:15:15,2030-12-12 15:15:15'
+            'item_id;item_name;created_at;last_updated\n' +
+            '2;name_5;2030-12-12 15:15:15;2030-12-12 15:15:15'
         )
         mock_csv_bucket.put_object(
             Bucket="nc-group3-ingestion-bucket",
