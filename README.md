@@ -54,7 +54,7 @@ psql -f tests/test_storage/data/test-insertion.sql
 * Philip Taylor [@phil-taylor-sj](https://github.com/phil-taylor-sj) ♟️
 * Victoria Messam [@VMess1](https://github.com/VMess1) 👾
 
-
+## ERD Images
 OTLP Database ERD:
 ![SampleDB](https://github.com/VMess1/nc_pipeline/assets/129286879/47f15fb5-1218-4f0f-89c3-3a245e5062e8)
 
