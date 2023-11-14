@@ -17,35 +17,35 @@ To use the pipeline, ensure you have met the following requirements:
     python -m venv venv
     source venv/bin/activate
     ```
-* To install required packages:
+* You have installed the required packages:
     ```
     make requirements
     ```
 
 ## Using the Pipeline
-* To run tests, the test SQL databases must be created.
+To run tests, the test SQL databases must be created.
 
-    * Create a .env file in the nc_pipeline directory with the following information:
-    ```
-    TEST_HOST = 'localhost'
-    TEST_DATABASE = 'oltp_test'
-    TEST_DATA_WAREHOUSE = 'olap_test'
-    USER = <local sql username>
-    PASSWORD = <local sql password>
-    ```
+* Create a .env file in the nc_pipeline directory with the following information:
+```
+TEST_HOST = 'localhost'
+TEST_DATABASE = 'oltp_test'
+TEST_DATA_WAREHOUSE = 'olap_test'
+USER = <local sql username>
+PASSWORD = <local sql password>
+```
 
-    * Create initial otlp test database:
-    ```
-    psql -f tests/test_extraction/data/test-extraction.sql
-    ```
+* Create initial otlp test database:
+```
+psql -f tests/test_extraction/data/test-extraction.sql
+```
 
-    * Create transformed olap test database:
-    ```
-    psql -f tests/test_storage/data/test-insertion.sql
-    ```
+* Create transformed olap test database:
+```
+psql -f tests/test_storage/data/test-insertion.sql
+```
     
 
-* To use the pipeline, the [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) must be installed and the OLTP and OLAP database credentials stored in AWS Secrets Manager.
+<p align="justify">To use the pipeline, the [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) must be installed and the OLTPCredentials and OLAPCredentials must be stored in AWS Secrets Manager.</p>
 
 ## Contributors
 * Tom Avery [@averz87](https://github.com/averz87) 🧮
