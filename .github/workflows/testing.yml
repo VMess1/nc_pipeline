@@ -52,6 +52,11 @@ jobs:
         run: psql -h localhost -U postgres -d oltp_test -f tests/data/test-extraction.sql
         env:
           PGPASSWORD: postgres
+
+      - name: Create 2nd Test Database
+        run: psql -h localhost -U postgres -d oltp_test -f tests/test_storage/data/test-insertion.sql
+        env:
+            PGPASSWORD: postgres
               
       - name: Make unit-test
         run: make unit-test
