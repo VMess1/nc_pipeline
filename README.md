@@ -4,11 +4,11 @@
 <p align="justify">This Northcoders Data Engineering Final Project is a pipeline which transforms an SQL database  of a shops's sales records (in Online Transaction Processing "OLTP" format) to a structured data warehouse (in Online Analytical Processing "OLAP" format); all hosted in amazon web services (AWS). See the end of the ReadMe for images of the entity relationship diagrams (ERDs) for the initial and transformed databases.</p>
 
 ## The Pipeline
-<p align="justify">1. The pipeline's "extraction" Lambda function collects both archive and new data entries by scanning the database periodically for updates. It converts new, unique data to CSV files which are stored in an S3 bucket; and logs in CloudWatch. The database credentials are stored in Secrets Manager; and Systems Manager is used to store timestamps.
-2. Any bucket upload event triggers a second "processing" Lambda function which transforms and normalises the data and stores them in parquet format in a second S3 bucket.
-3. Finally, a third "storage" Lambda function scans the second bucket periodically for updates, which the pipeline converts back to SQL and loads to a data warehouse in star format.
+<p align="justify">1. The pipeline's "extraction" Lambda function collects both archive and new data entries by scanning the database periodically for updates. It converts new, unique data to CSV files which are stored in an S3 bucket; and logs in CloudWatch. The database credentials are stored in Secrets Manager; and Systems Manager is used to store timestamps.</p>
+<p align="justify">2. Any bucket upload event triggers a second "processing" Lambda function which transforms and normalises the data and stores them in parquet format in a second S3 bucket.</p>
+<p align="justify">3. Finally, a third "storage" Lambda function scans the second bucket periodically for updates, which the pipeline converts back to SQL and loads to a data warehouse in star format.</p>
 
-The entire pipeline infrastructure is managed using Terraform.</p>
+The entire pipeline infrastructure is managed using Terraform.
 
 ## Prerequisites
 To use the pipeline, ensure you have met the following requirements:
