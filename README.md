@@ -12,7 +12,11 @@ The entire pipeline infrastructure is managed using Terraform.
 
 ## Prerequisites
 To use the pipeline, ensure you have met the following requirements:
-* You have installed the latest version of Python and set up a venv.
+* You have installed the latest version of Python and set up a virtual environment in the nc_pipeline directory.
+    ```
+    python -m venv venv
+    source venv/bin/activate
+    ```
 * To install required packages:
     ```
     make requirements
