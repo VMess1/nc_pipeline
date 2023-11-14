@@ -20,6 +20,7 @@ resource "aws_iam_role" "lambda_transformation_role" {
     })
 }
 
+
 # Policy document for lambda_transformation to write to cloudwatch
 data "aws_iam_policy_document" "write_to_cw_policy_2" {
   statement {
