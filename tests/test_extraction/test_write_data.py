@@ -51,6 +51,10 @@ class TestSqlToCsv:
 class TestUploadToCsv:
     @mock_s3
     def test_s3_upload(self, test_connection):
+        """
+        Tests that upload_to_s3() can successfully connect to an s3 bucket
+        and place a mock csv file into the bucket.
+        """
         conn = boto3.client("s3", region_name="eu-west-2")
         conn.create_bucket(
             Bucket="nc-group3-ingestion-bucket",
@@ -64,6 +68,10 @@ class TestUploadToCsv:
 
     @mock_s3
     def test_bucket_naming_errors_handled_correctly(self, test_connection):
+        """
+        Checks that any naming errors that occur during upload_to_s3()
+        execution are handed correctly by the function.
+        """
         conn = boto3.client("s3", region_name="eu-west-2")
         conn.create_bucket(
             Bucket="nc-group2-ingestion-bucket",
@@ -81,6 +89,11 @@ class TestUploadToCsv:
 
     @mock_s3
     def test_parameter_errors_handled_correctly(self, test_connection):
+        """
+        Tests that any parameter errors that occur during upload_to_s3()
+        execution are handled correctly by the function.
+        )
+        """
         conn = boto3.client("s3", region_name="eu-west-2")
         conn.create_bucket(
             Bucket="nc-group3-ingestion-bucket",
