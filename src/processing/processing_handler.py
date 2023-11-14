@@ -36,7 +36,6 @@ def main(event, context):
     Based on table name, tables are transformed as required.
     Table is written to transformation bucket in parquet format.
     '''
-
     try:
         bucket = event['Records'][0]['s3']['bucket']['name']
         logger.info(bucket)
@@ -52,16 +51,15 @@ def main(event, context):
         df = get_csv_data(s3, bucket, filepath)
         test = str(df.head(5))
         logger.info(test)
-        # parquet_table_list = []
-        # parquet_table_list += check_transformation_bucket(
-        #     s3, 'nc-group3-transformation-bucket')
-        # if 'dim_date' not in parquet_table_list:
-        #     new_table_name = 'dim_date'
-        #     dim_date = dim_date_tf()
-        #     write_to_bucket(s3, new_table_name, dim_date, last_time_stamp)
-        #     global COUNT
-        #     COUNT += 1
-
+        parquet_table_list = []
+        parquet_table_list += check_transformation_bucket(
+            s3, 'nc-group3-transformation-bucket')
+        if 'dim_date' not in parquet_table_list:
+            new_table_name = 'dim_date'
+            dim_date = dim_date_tf()
+            write_to_bucket(s3, new_table_name, dim_date, last_time_stamp)
+            global COUNT
+            COUNT += 1
         if table_name == 'currency':
             new_table_name = 'dim_currency'
             dim_currency = dim_remove_dates(df)
@@ -76,14 +74,9 @@ def main(event, context):
             write_to_bucket(s3, new_table_name, dim_design, last_time_stamp)
         elif table_name == 'staff':
             new_table_name = 'dim_staff'
-            logger.info("hello")
             department_df = compile_full_csv_table(
                 s3, 'nc-group3-ingestion-bucket', 'department')
-            test = str(department_df.head(5))
-            logger.info("second hello??", test)  # <<<< We don't get this far
             dim_staff = dim_join_department(df, department_df)
-            test = str(dim_staff.head(5))
-            logger.info("please be a hello??", test)
             write_to_bucket(s3, new_table_name, dim_staff, last_time_stamp)
         elif table_name == 'counterparty':
             new_table_name = 'dim_counterparty'
@@ -96,11 +89,11 @@ def main(event, context):
                 dim_counterparty,
                 last_time_stamp)
         elif table_name == 'address':
-            new_table_name == 'dim_location'
+            new_table_name = 'dim_location'
             dim_location = dim_locationtf(df)
             write_to_bucket(s3, new_table_name, dim_location, last_time_stamp)
         elif table_name == 'sales_order':
-            new_table_name == 'fact_sales_order'
+            new_table_name = 'fact_sales_order'
             fact_sales_order = fact_sales_order_tf(df)
             write_to_bucket(
                 s3,
@@ -109,7 +102,6 @@ def main(event, context):
                 last_time_stamp)
         else:
             pass
-
     except ClientError as err:
         if err.response["Error"]["Code"] == "NoSuchKey":
             logger.error("No such key")

@@ -3,21 +3,23 @@
 #lambda function 
 resource "aws_lambda_function" "lambda_ingestion" {
     function_name = var.lambda_ingestion
-    role = aws_iam_role.lambda_ingestion_role.arn
-    s3_bucket = aws_s3_bucket.code_bucket.id
-    s3_key = aws_s3_object.lambda_code.key
-    handler = "extraction_handler.lambda_handler"
-    runtime = "python3.11"
+    role          = aws_iam_role.lambda_ingestion_role.arn
+    s3_bucket     = aws_s3_bucket.code_bucket.id
+    s3_key        = aws_s3_object.lambda_code.key
+    handler       = "extraction_handler.lambda_handler"
+    runtime       = "python3.11"
     # source_code_hash = data.archive_file.lambda.output_base64sha256
-    layers = [aws_lambda_layer_version.layer_dependencies.arn]
-    timeout=60
+    layers        = [aws_lambda_layer_version.layer_dependencies.arn]
+    timeout       = 60
+    depends_on    = [aws_lambda_function.lambda_transformation,
+    aws_lambda_permission.s3_trigger]
 }
 
 # lambda dependencies
 resource "aws_lambda_layer_version" "layer_dependencies" {
-  layer_name = "layer_dependencies"
-  s3_bucket = aws_s3_bucket.code_bucket.id
-  s3_key = aws_s3_object.layer_code.key
+  layer_name          = "layer_dependencies"
+  s3_bucket           = aws_s3_bucket.code_bucket.id
+  s3_key              = aws_s3_object.layer_code.key
   compatible_runtimes = ["python3.11"]
 }
 
@@ -44,6 +46,6 @@ resource "aws_s3_bucket_notification" "ingestion_bucket_notification" {
   bucket = aws_s3_bucket.ingestion_bucket.id
   lambda_function {
     lambda_function_arn = aws_lambda_function.lambda_transformation.arn
-    events              = ["s3:ObjectCreated:*"]
+    events              = ["s3:ObjectCreated:Put"]
   }
 }

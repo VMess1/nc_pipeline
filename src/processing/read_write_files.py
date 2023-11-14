@@ -1,12 +1,8 @@
 import pandas as pd
-from io import BytesIO
 import re
 import logging
-import pyarrow as pa
-import pyarrow.parquet as pq
+from io import BytesIO
 
-# table = pa.Table.from_pandas(df)
-# pq.write_table(table, 'example.parquet')
 
 logger = logging.getLogger("LPY2Logger")
 logger.setLevel(logging.INFO)
@@ -24,13 +20,11 @@ def get_csv_data(client, target_bucket, filepath):
 def check_transformation_bucket(client, target_bucket):
     '''returns a list of directories in transformation bucket'''
     response = client.list_objects(Bucket=target_bucket)
-    logger.info(response)
     table_list = []
     if 'Contents' in response:
-        response_list = [obj['Key'] for obj in response['Contents']]
+        response_list = [obj['Key'] for obj in response.get('Contents', [])]
         for i in response_list:
             table_list.append(i.split('/')[0])
-
     return table_list
 
 
@@ -39,11 +33,10 @@ def compile_full_csv_table(client, target_bucket, table_name):
     def extract_timestamp(filepath):
         timestamp = re.findall(r'\d{14,}', filepath)[0]
         return int(timestamp)
-
     response = client.list_objects(Bucket=target_bucket,
-                                   Prefix=f'{table_name}/')
-    logger.info(response)
-    file_list = [obj['Key'] for obj in response['Contents']]
+                                   Prefix=table_name)
+    file_list = [obj['Key'] for obj in response.get('Contents', [])]
+    logger.info(file_list)
     file_list.sort(key=extract_timestamp)
     data_rows = []
     for filepath in file_list:
@@ -60,7 +53,7 @@ def write_to_bucket(client, table_name, df, timestamp):
     out_buffer = BytesIO()
     test = str(df.head(5))
     logger.info(test)
-    df.to_parquet(out_buffer, index=False)
+    df.to_parquet(out_buffer, index=False,)
     out_buffer.seek(0)
     response = client.put_object(
         Bucket="nc-group3-transformation-bucket",
