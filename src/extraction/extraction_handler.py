@@ -30,7 +30,7 @@ def lambda_handler(event, context):
                     logger.info(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
                     headers = select_table_headers(con, table_name[0])
                     csv = convert_to_csv(table_name[0], data, headers)
-                    upload_to_s3(str(datestamp), csv)
+                    upload_to_s3(str(datestamp), csv, table_name[0])
         write_current_timestamp('last_extraction', datestamp)
     except ClientError as err:
         if err.response["Error"]["Code"] == "ResourceNotFoundException":

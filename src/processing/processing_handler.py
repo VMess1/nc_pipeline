@@ -36,28 +36,30 @@ def main(event, context):
     Based on table name, tables are transformed as required.
     Table is written to transformation bucket in parquet format.
     '''
-
     try:
         bucket = event['Records'][0]['s3']['bucket']['name']
+        logger.info(bucket)
         filepath = event['Records'][0]['s3']['object']['key']
+        logger.info(filepath)
         table_name = filepath.split('/')[0]
+        logger.info(table_name)
         last_time_stamp = re.findall(r'\d{14,}', filepath)[0]
+        logger.info(last_time_stamp)
         if filepath[-4:] != '.csv':
             raise TypeError('File type is not csv.')
         s3 = get_client()
         df = get_csv_data(s3, bucket, filepath)
-
+        test = str(df.head(5))
+        logger.info(test)
         parquet_table_list = []
         parquet_table_list += check_transformation_bucket(
             s3, 'nc-group3-transformation-bucket')
-
         if 'dim_date' not in parquet_table_list:
             new_table_name = 'dim_date'
             dim_date = dim_date_tf()
             write_to_bucket(s3, new_table_name, dim_date, last_time_stamp)
             global COUNT
             COUNT += 1
-
         if table_name == 'currency':
             new_table_name = 'dim_currency'
             dim_currency = dim_remove_dates(df)
@@ -87,11 +89,11 @@ def main(event, context):
                 dim_counterparty,
                 last_time_stamp)
         elif table_name == 'address':
-            new_table_name == 'dim_location'
+            new_table_name = 'dim_location'
             dim_location = dim_locationtf(df)
             write_to_bucket(s3, new_table_name, dim_location, last_time_stamp)
         elif table_name == 'sales_order':
-            new_table_name == 'fact_sales_order'
+            new_table_name = 'fact_sales_order'
             fact_sales_order = fact_sales_order_tf(df)
             write_to_bucket(
                 s3,
@@ -100,7 +102,6 @@ def main(event, context):
                 last_time_stamp)
         else:
             pass
-
     except ClientError as err:
         if err.response["Error"]["Code"] == "NoSuchKey":
             logger.error("No such key")

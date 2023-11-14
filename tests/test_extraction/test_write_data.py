@@ -57,8 +57,9 @@ class TestUploadToCsv:
             CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},
         )
         test_datestamp = '2023-11-08 09:59:24'
+        test_tablename = 'test_table'
         new_csv = strings.new_string()
-        res = upload_to_s3(test_datestamp, new_csv)
+        res = upload_to_s3(test_datestamp, new_csv, test_tablename)
         assert res == "file uploaded"
 
     @mock_s3
@@ -69,9 +70,10 @@ class TestUploadToCsv:
             CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},
         )
         test_datestamp = '2023-11-08 09:59:24'
+        test_tablename = 'test_table'
         new_csv = strings.new_string()
         with pytest.raises(ClientError) as excinfo:
-            upload_to_s3(test_datestamp, new_csv)
+            upload_to_s3(test_datestamp, new_csv, test_tablename)
         assert str(excinfo.value) == (
             "An error occurred (NoSuchBucket) when calling the PutObject "
             + "operation: The specified bucket does not exist"
@@ -85,6 +87,7 @@ class TestUploadToCsv:
             CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},
         )
         test_datestamp = '2023-11-08 09:59:24'
+        test_tablename = 'test_table'
         with pytest.raises(TypeError) as excinfo:
-            upload_to_s3(test_datestamp, None)
+            upload_to_s3(test_datestamp, None, test_tablename)
         assert str(excinfo.value) == "Incorrect csv formatting."
