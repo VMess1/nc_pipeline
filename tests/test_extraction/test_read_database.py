@@ -56,12 +56,6 @@ class TestGetCredentials:
         output = get_credentials(secret_id)
         assert output == secret_values
 
-    # def test_get_credentials_errors(self, secrets):
-    #     secret_id = "test_secret"
-    #     output = get_credentials(secret_id)
-    #     assert output["Error"]["Code"] == "ResourceNotFoundException"
-    #     assert output["ResponseMetadata"]["HTTPStatusCode"] == 404
-
 
 class TestSelectFunctions:
     def test_select_table_returns_department_table_rows(self, test_connection):

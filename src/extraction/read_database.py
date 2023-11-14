@@ -82,7 +82,6 @@ def select_table(con, table_name, last_extraction):
     query = f"""SELECT * FROM {table_name}
     WHERE last_updated > TIMESTAMP '{last_extraction}';"""
     data = con.run(query)
-    print(type(data))
     return data
 
 
