@@ -11,7 +11,7 @@ from src.storage.store_timestamp import (get_last_timestamp,
                                          write_current_timestamp)
 from src.storage.write_database import (get_credentials,
                                         get_con,
-                                        create_insert_statement)
+                                        run_insert_query)  #change back before merge
 
 logger = logging.getLogger("LPY2Logger")
 logger.setLevel(logging.INFO)
