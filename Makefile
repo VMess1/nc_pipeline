@@ -89,7 +89,7 @@ check-coverage2:
 	$(call execute_in_env, PYTHONPATH=${PYTHONPATH} coverage run --omit 'venv/*' -m pytest tests/test_processing/ && coverage report -m)
 
 check-coverage3:
-	$(call execute_in_env, PYTHONPATH=${PYTHONPATH} coverage run --omit 'venv/*' -m pytest tests/test_sotrage/ && coverage report -m)
+	$(call execute_in_env, PYTHONPATH=${PYTHONPATH} coverage run --omit 'venv/*' -m pytest tests/test_storage/ && coverage report -m)
 
 
 # ## Run all checks
