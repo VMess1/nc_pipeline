@@ -51,13 +51,10 @@ def write_to_bucket(client, table_name, df, timestamp):
     '''Writes dataframe to parquet format in an S3 bucket'''
     file_key = table_name + '/' + table_name + str(timestamp) + '.parquet'
     out_buffer = BytesIO()
-    test = str(df.head(5))
-    logger.info(test)
     df.to_parquet(out_buffer, index=False,)
     out_buffer.seek(0)
     response = client.put_object(
         Bucket="nc-group3-transformation-bucket",
         Key=file_key,
         Body=out_buffer)
-    logger.info(response)
     return response
