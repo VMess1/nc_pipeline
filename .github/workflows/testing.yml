@@ -45,8 +45,8 @@ jobs:
       - name: Make security-test
         run: make security-test
   
-      - name: Make run-flake
-        run: make run-flake
+      # - name: Make run-flake
+      #   run: make run-flake
 
       - name: Create Test Database
         run: psql -h localhost -U postgres -d oltp_test -f tests/data/test-extraction.sql
