@@ -1,7 +1,7 @@
-<p align="justify">
+
 
 # Northcoders Data Engineering Final Project
-This Northcoders Data Engineering Final Project is a pipeline which transforms an SQL database  of a shops's sales records (in Online Transaction Processing "OLTP" format) to a structured data warehouse (in Online Analytical Processing "OLAP" format); all hosted in amazon web services (AWS). See the end of the ReadMe for images of the entity relationship diagrams (ERDs) for the initial and transformed databases.
+<p align="justify">This Northcoders Data Engineering Final Project is a pipeline which transforms an SQL database  of a shops's sales records (in Online Transaction Processing "OLTP" format) to a structured data warehouse (in Online Analytical Processing "OLAP" format); all hosted in amazon web services (AWS). See the end of the ReadMe for images of the entity relationship diagrams (ERDs) for the initial and transformed databases.</p>
 
 ## The Pipeline
 1. The pipeline's "extraction" Lambda function collects both archive and new data entries by scanning the database periodically for updates. It converts new, unique data to CSV files which are stored in an S3 bucket; and logs in CloudWatch. The database credentials are stored in Secrets Manager; and Systems Manager is used to store timestamps.
@@ -57,4 +57,4 @@ OTLP Database ERD:
 OLAP Database ERD:
 ![SampleDW-Sales](https://github.com/VMess1/nc_pipeline/assets/129286879/786e2668-e611-40b5-bd8c-0f8687f126a6)
 
-</p>
+
