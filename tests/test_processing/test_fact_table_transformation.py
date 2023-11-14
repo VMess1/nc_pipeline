@@ -4,6 +4,10 @@ from tests.test_processing.dataframes import (sales_order_dataframe,
 
 
 def test_fact_sales_order_transformed_correctly():
+    '''
+    tests that the info in the sales order df is
+    correctly transformed for fact table format
+    '''
     test_sale_order = sales_order_dataframe()
     actual = fact_sales_order_tf(
         test_sale_order).sort_index().sort_index(axis=1)
