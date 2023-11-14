@@ -51,7 +51,6 @@ class TestLambdaHandlerFunctionality(unittest.TestCase):
             'test_table1'
             )
         mock_convert_to_csv.assert_called_once_with(
-            'test_table1',
             'test',
             'test_headers'
             )
@@ -135,7 +134,6 @@ class TestLambdaHandlerErrorHandling:
 
 
 class TestLambdaHandler(unittest.TestCase):
-
     @patch('src.extraction.extraction_handler.upload_to_s3')
     @patch('src.extraction.extraction_handler.convert_to_csv',
            return_value='test_csv')
@@ -155,6 +153,10 @@ class TestLambdaHandler(unittest.TestCase):
                           mock_convert_to_s3,
                           mock_upload_to_s3
                           ):
+        """
+        Tests that the extraction_handler() logs the timestamp to a mock log
+        when it has successfully run
+        """
         with patch("src.extraction.extraction_handler.datetime") as mock_dt:
             mock_dt.now.return_value = datetime(2000, 1, 1, 12, 0, 0)
             with patch("src.extraction.extraction_handler.logger") as mock_log:

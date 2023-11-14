@@ -34,13 +34,47 @@ logger.setLevel(logging.INFO)
 logger.propagate = True
 
 
+from tests.test_storage.data.main_dataframes import (
+    dim_location_df0,
+    dim_location_df1,
+    dim_location_df2,
+    dim_location_df3
+)
+
+load_dotenv()
+
 @pytest.fixture(scope="function")
-def aws_credentials():
-    os.environ["AWS_ACCESS_KEY_ID"] = "test"
-    os.environ["AWS_SECRET_ACCESS_KEY"] = "test"
-    os.environ["AWS_SECURITY_TOKEN"] = "test"
-    os.environ["AWS_SESSION_TOKEN"] = "test"
-    os.environ["AWS_DEFAULT_REGION"] = "eu-west-2"
+def seeded_connection(test_connection):
+    test_connection.run("DROP TABLE IF EXISTS fact_test_sales_order;")
+    test_connection.run("DROP TABLE IF EXISTS dim_test_location;")
+    test_connection.run(get_create_location_query())
+    test_connection.run(get_create_sales_query())
+    test_connection.run(get_seed_location_query())
+    test_connection.run(get_seed_sales_query())
+    return test_connection
+
+
+
+@pytest.fixture(scope="function")
+def test_connection():
+    return Connection(
+        user=os.environ["USER"],
+        host="localhost",
+        database=os.environ["TEST_DATA_WAREHOUSE"],
+        password=os.environ["PASSWORD"],
+    )
+
+
+@pytest.fixture(scope="function")
+def seeded_connection(test_connection):
+    test_connection.run("DROP TABLE IF EXISTS fact_test_sales_order;")
+    test_connection.run("DROP TABLE IF EXISTS dim_test_location;")
+    test_connection.run(get_create_location_query())
+    test_connection.run(get_create_sales_query())
+    test_connection.run(get_seed_location_query())
+    test_connection.run(get_seed_sales_query())
+    return test_connection
+
 
 
 @pytest.fixture(scope="function")

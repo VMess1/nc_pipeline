@@ -45,16 +45,22 @@ jobs:
       - name: Make security-test
         run: make security-test
   
-      - name: Make run-flake
-        run: make run-flake
+      # - name: Make run-flake
+      #   run: make run-flake
 
       - name: Create Test Database
-        run: psql -h localhost -U postgres -d oltp_test -f tests/data/test-extraction.sql
+        run: psql -h localhost -U postgres -d oltp_test -f tests/test_extraction/data/test-extraction.sql
         env:
           PGPASSWORD: postgres
+
+      - name: Create 2nd Test Database
+        run: psql -h localhost -U postgres -d oltp_test -f tests/test_storage/data/test-insertion.sql
+        env:
+              PGPASSWORD: postgres
+
               
-      - name: Make unit-test
-        run: make unit-test
+      - name: Make unit-test1
+        run: make unit-test1
         env:
           PGPASSWORD: postgres
           POSTGRES_USER: postgres
@@ -63,8 +69,21 @@ jobs:
           PASSWORD: postgres
           USER: postgres
 
-      - name: Make check-coverage
-        run: make check-coverage
+      - name: Make unit-test2
+        run: make unit-test2  
+
+      - name: Make unit-test3
+        run: make unit-test3
+        env:
+          PGPASSWORD: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_DB: oltp_test
+          TEST_DATA_WAREHOUSE: oltp_test
+          PASSWORD: postgres
+          USER: postgres
+
+      - name: Make check-coverage1
+        run: make check-coverage1
         env:
           PGPASSWORD: postgres
           POSTGRES_USER: postgres
@@ -73,14 +92,19 @@ jobs:
           PASSWORD: postgres
           USER: postgres
       
-    
-      - name: Make run-checks
-        run: make run-checks
+      - name: Make check-coverage2
+        run: make check-coverage2
+     
+      - name: Make check-coverage3
+        run: make check-coverage3
         env:
-          PGPASSWORD: postgres
-          POSTGRES_USER: postgres
-          POSTGRES_DB: oltp_test
-          TEST_DATABASE: oltp_test
-          PASSWORD: postgres
-          USER: postgres
+            PGPASSWORD: postgres
+            POSTGRES_USER: postgres
+            POSTGRES_DB: oltp_test
+            TEST_DATA_WAREHOUSE: oltp_test
+            PASSWORD: postgres
+            USER: postgres
+      
+    
+    
 

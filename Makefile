@@ -72,12 +72,25 @@ run-flake:
 	$(call execute_in_env, flake8  ./src/*/*.py ./tests/*/*.py)
 
 ## Run the unit tests
-unit-test:
-	$(call execute_in_env, PYTHONPATH=${PYTHONPATH} pytest -v)
+unit-test1:
+	$(call execute_in_env, PYTHONPATH=${PYTHONPATH} pytest -v tests/test_extraction/)
+
+unit-test2:
+	$(call execute_in_env, PYTHONPATH=${PYTHONPATH} pytest -v tests/test_processing/)
+
+unit-test3:
+	$(call execute_in_env, PYTHONPATH=${PYTHONPATH} pytest -v tests/test_storage/)
 
 ## Run the coverage check
-check-coverage:
-	$(call execute_in_env, PYTHONPATH=${PYTHONPATH} coverage run --omit 'venv/*' -m pytest && coverage report -m)
+check-coverage1:
+	$(call execute_in_env, PYTHONPATH=${PYTHONPATH} coverage run --omit 'venv/*' -m pytest tests/test_extraction/ && coverage report -m)
 
-## Run all checks
-run-checks: security-test run-flake unit-test check-coverage
+check-coverage2:
+	$(call execute_in_env, PYTHONPATH=${PYTHONPATH} coverage run --omit 'venv/*' -m pytest tests/test_processing/ && coverage report -m)
+
+check-coverage3:
+	$(call execute_in_env, PYTHONPATH=${PYTHONPATH} coverage run --omit 'venv/*' -m pytest tests/test_storage/ && coverage report -m)
+
+
+# ## Run all checks
+# run-checks: security-test run-flake unit-test check-coverage
