@@ -138,7 +138,6 @@ class TestRunInsertQuery:
             'unit_price': [1.5, 1.5],
             'agreed_delivery_location': [1, 2]
         })
-        print(date(2023, 10, 10))
         test_expected = [
             [1, 1, date(2023, 10, 10), time(11, 30, 30),
              date(2023, 10, 10), time(11, 30, 30), 10, 1.5, 1],
@@ -156,7 +155,6 @@ class TestRunInsertQuery:
             'fact_test_sales_order',
             test_input)
         result = seeded_connection.run('SELECT * FROM fact_test_sales_order;')
-        print(result)
         assert result == test_expected
 
     def test_updates_facts_table_with_modified_records(
@@ -172,7 +170,6 @@ class TestRunInsertQuery:
             'unit_price': [2.5, 2.5],
             'agreed_delivery_location': [1, 2]
         })
-        print(date(2023, 10, 10))
         test_expected = [
             [1, 1, date(2023, 10, 10), time(11, 30, 30),
              date(2023, 10, 10), time(11, 30, 30), 10, 1.5, 1],
@@ -190,5 +187,4 @@ class TestRunInsertQuery:
             'fact_test_sales_order',
             test_input)
         result = seeded_connection.run('SELECT * FROM fact_test_sales_order;')
-        print(result)
         assert result == test_expected
