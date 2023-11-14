@@ -10,6 +10,7 @@ Before you begin, ensure you have met the following requirements:
 * You have installed the latest version of Python and set up a venv.
 * Run make-requirements to install required packages.
 * To run tests, the test SQL databases must be created:
+
     * Create a .env file in the nc_pipeline directory with the following information:
     ```
     TEST_HOST = 'localhost'
@@ -19,3 +20,9 @@ Before you begin, ensure you have met the following requirements:
     ```
     <!-- do we need olap_test? -->
 * To use the pipeline, aws CLI must be installed and the OLTP and OLAP credentials known.
+
+Inital ERD:
+![SampleDB](https://github.com/VMess1/nc_pipeline/assets/129286879/47f15fb5-1218-4f0f-89c3-3a245e5062e8)
+
+Transformed ERD:
+![SampleDW-Sales](https://github.com/VMess1/nc_pipeline/assets/129286879/786e2668-e611-40b5-bd8c-0f8687f126a6)
