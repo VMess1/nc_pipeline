@@ -1,7 +1,7 @@
 
 
 # Northcoders Data Engineering Final Project
-<p align="justify">This Northcoders Data Engineering Final Project is a pipeline which transforms an SQL database  of a shop's sales records (in Online Transaction Processing "OLTP" format) to a structured data warehouse (in Online Analytical Processing "OLAP" format); all hosted in amazon web services (AWS). See the end of the ReadMe for images of the entity relationship diagrams (ERDs) for the initial and transformed databases.</p>
+<p align="justify">This Northcoders Data Engineering Final Project is a pipeline which transforms an SQL database of a shop's sales records (in Online Transaction Processing "OLTP" format) to a structured data warehouse (in Online Analytical Processing "OLAP" format); all hosted in amazon web services (AWS). See the end of the ReadMe for images of the entity relationship diagrams (ERDs) for the initial and transformed databases.</p>
 
 ## The Pipeline
 <p align="justify">1. The pipeline's "extraction" Lambda function collects both archive and new data entries by scanning the database periodically for updates. It converts new, unique data to CSV files which are stored in an S3 bucket; and logs in CloudWatch. The database credentials are stored in Secrets Manager; and Systems Manager is used to store timestamps.</p>
@@ -45,7 +45,7 @@ psql -f tests/test_storage/data/test-insertion.sql
 ```
     
 
-<p align="justify">To use the pipeline, the [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) must be installed and the OLTPCredentials and OLAPCredentials must be stored in AWS Secrets Manager.</p>
+<p align="justify">To use the pipeline, the <a href="https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html">AWS CLI</a> must be installed and the OLTPCredentials and OLAPCredentials must be stored in AWS Secrets Manager.</p>
 
 ## Contributors
 * Tom Avery [@averz87](https://github.com/averz87) 🧮
