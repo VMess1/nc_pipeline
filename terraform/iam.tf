@@ -69,7 +69,7 @@ resource "aws_iam_role_policy_attachment" "lambda_cw_policy_attachment" {
     role = aws_iam_role.lambda_ingestion_role.name
     policy_arn = aws_iam_policy.cw_policy.arn
 }
-
+# creates ssm policy document
 data "aws_iam_policy_document" "ssm_document" {
   statement {
     actions = ["ssm:GetParameters", "ssm:GetParameter","ssm:PutParameter" ]

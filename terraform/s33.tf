@@ -1,5 +1,5 @@
 # resource "aws_s3_bucket" "code_bucket_3" {
-#  bucket = "nc-group3-code-bucket2"
+#  bucket = "nc-group3-code-bucket3"
 # }
 
 # #NEEDS TO BE PUT IN WHEN WAREHOUSE LAMBDA READY
@@ -8,3 +8,11 @@
 #   source = "${path.module}/../function3.zip"
 #   bucket = aws_s3_bucket.code_bucket_3.id
 # }
+
+# resource "aws_s3_object" "layer_code_3" {
+#   key    = "ingestion_function/layer_code3.zip"
+#   source = "${path.module}/../aws_utils/layer_code3.zip"
+#   bucket = aws_s3_bucket.code_bucket_3.id
+# }
+
+#change key
