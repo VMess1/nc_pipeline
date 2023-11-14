@@ -57,7 +57,8 @@ class TestLambdaHandlerFunctionality(unittest.TestCase):
             )
         mock_upload_to_s3.assert_called_once_with(
             str(mock_datestamp),
-            'test_csv'
+            'test_csv',
+            'test_table1'
             )
         mock_write_timestamp.assert_called_with(
             'last_extraction',
