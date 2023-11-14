@@ -82,8 +82,8 @@ jobs:
           PASSWORD: postgres
           USER: postgres
 
-      - name: Make check-coverage
-        run: make check-coverage
+      - name: Make check-coverage1
+        run: make check-coverage1
         env:
           PGPASSWORD: postgres
           POSTGRES_USER: postgres
@@ -92,14 +92,19 @@ jobs:
           PASSWORD: postgres
           USER: postgres
       
+      - name: Make check-coverage2
+        run: make check-coverage2
+     
+      - name: Make check-coverage3
+        run: make check-coverage3
+        env:
+            PGPASSWORD: postgres
+            POSTGRES_USER: postgres
+            POSTGRES_DB: oltp_test
+            TEST_DATA_WAREHOUSE: oltp_test
+            PASSWORD: postgres
+            USER: postgres
+      
     
-      # - name: Make run-checks
-      #   run: make run-checks
-      #   env:
-      #     PGPASSWORD: postgres
-      #     POSTGRES_USER: postgres
-      #     POSTGRES_DB: oltp_test
-      #     TEST_DATABASE: oltp_test
-      #     PASSWORD: postgres
-      #     USER: postgres
+    
 
