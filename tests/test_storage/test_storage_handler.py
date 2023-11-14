@@ -23,7 +23,11 @@ from tests.test_storage.data.main_dataframes import (
     dim_location_df0,
     dim_location_df1,
     dim_location_df2,
-    dim_location_df3
+    dim_location_df3,
+    fact_sales_order_df0,
+    fact_sales_order_df1,
+    fact_sales_order_df2,
+    fact_sales_order_df3
 )
 
 
@@ -91,6 +95,16 @@ def mock_bucket_location(mock_bucket):
             Body=data[index].to_parquet())
     return mock_bucket
 
+@pytest.fixture(scope='function')
+def mock_bucket_filled(mock_bucket_location):
+    data = [fact_sales_order_df0(), fact_sales_order_df1(),
+            fact_sales_order_df2(), fact_sales_order_df3()]
+    for index in range(4):
+        mock_bucket.put_object(
+            Bucket="nc-group3-transformation-bucket",
+            Key=f'fact_sales_order/fact_sales_order2023101{index}3030.parquet',
+            Body=data[index].to_parquet())
+    return mock_bucket_location
 
 @pytest.fixture(scope='function')
 def mock_missing_parquet_bucket(aws_credentials):
@@ -118,9 +132,9 @@ class TestBasicFunctionRuns:
             seeded_connection,
             mock_bucket_location):
         mock_table_list.return_value = [
-            'dim_test_location', 'dim_test_date', 'dim_test_currency',
+            'dim_test_date', 'dim_test_currency',
             'dim_test_design', 'dim_test_staff',
-            'dim_test_counterparty',
+            'dim_test_location', 'dim_test_counterparty',
             'fact_test_sales_order'
         ]
         mock_s3.return_value = mock_bucket_location

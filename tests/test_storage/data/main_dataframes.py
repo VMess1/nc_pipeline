@@ -54,3 +54,52 @@ def dim_location_df3():
         'country': ['country_9'],
         'phone': ['1803 637409']
     })
+
+def fact_sales_order_df0():
+    return pd.DataFrame(data={
+        'sales_order_id': [1, 2, 3],
+        'created_date': ['2023-10-10', '2023-10-10', '2023-10-10'],
+        'created_time': ['11:30:30', '11:30:30', '11:30:30'],
+        'last_updated_date': ['2023-10-10', '2023-10-10', '2023-10-10'],
+        'last_updated_time': ['11:30:30', '11:30:30', '11:30:30'],
+        'units_sold': [10, 20, 30],
+        'unit_price': [1.5, 1.5, 1.5],
+        'agreed_delivery_location': [1, 2, 3]
+    })
+
+def fact_sales_order_df1():
+    return pd.DataFrame(data={
+           'sales_order_id': [4, 5, 6],
+            'created_date': ['2023-10-14', '2023-10-15', '2023-10-16'],
+            'created_time': ['11:30:30', '11:30:30', '11:30:30'],
+            'last_updated_date': ['2023-10-14', '2023-10-14', '2023-10-14'],
+            'last_updated_time': ['11:30:30', '11:30:30', '11:30:30'],
+            'units_sold': [40, 50, 60],
+            'unit_price': [1.5, 1.5, 1.5],
+            'agreed_delivery_location': [4, 5, 6]
+        })
+
+def fact_sales_order_df2():
+    return pd.DataFrame(data={
+           'sales_order_id': [7, 8],
+            'created_date': ['2023-10-17', '2023-10-18'],
+            'created_time': ['11:30:30', '11:30:30'],
+            'last_updated_date': ['2023-10-17', '2023-10-18'],
+            'last_updated_time': ['11:30:30', '11:30:30'],
+            'units_sold': [70, 80],
+            'unit_price': [1.5, 1.5, 1.5],
+            'agreed_delivery_location': [7, 8]
+        })
+
+
+def fact_sales_order_df3():
+    return pd.DataFrame(data={
+           'sales_order_id': [4],
+            'created_date': ['2023-10-14'],
+            'created_time': ['11:30:30'],
+            'last_updated_date': ['2023-10-19'],
+            'last_updated_time': ['11:30:30'],
+            'units_sold': [140],
+            'unit_price': [4.5],
+            'agreed_delivery_location': [9]
+        })
