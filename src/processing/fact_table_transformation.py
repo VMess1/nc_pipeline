@@ -2,7 +2,10 @@ import pandas as pd
 
 
 def fact_sales_order_tf(sale_order):
-    '''transforms sales_order to fact_sales_order format'''
+    '''
+    takes sales_order dataframe and transforms it,
+    returning fact_sales_order format dataframe
+    '''
     new_dataframe = sale_order
     new_dataframe['sales_record_id'] = new_dataframe.reset_index().index
     new_dataframe = new_dataframe.rename(

@@ -9,7 +9,12 @@ logger.setLevel(logging.INFO)
 
 
 def get_csv_data(client, target_bucket, filepath):
-    '''Retrieves csv data from an S3 bucket and converts to dataframe'''
+    '''
+    Takes S3 client, bucket information and the filepath
+    of the newly added file which is included in the event
+    response. Retrieves csv data from the bucket and
+    returns the data as a pandas dataframe.
+    '''
     response = client.get_object(
         Bucket=target_bucket,
         Key=filepath)
@@ -18,7 +23,10 @@ def get_csv_data(client, target_bucket, filepath):
 
 
 def check_transformation_bucket(client, target_bucket):
-    '''returns a list of directories in transformation bucket'''
+    '''
+    Takes S3 client, and transformation bucket name and
+    returns a list of directories in transformation bucket
+    '''
     response = client.list_objects(Bucket=target_bucket)
     table_list = []
     if 'Contents' in response:
@@ -29,7 +37,11 @@ def check_transformation_bucket(client, target_bucket):
 
 
 def compile_full_csv_table(client, target_bucket, table_name):
-    '''Compiles csv files into a dataframe and removes duplicate'''
+    '''
+    Takes S3 client, bucket and table info of the full table 
+    needed. Compiles csv files and returns a dataframe with any
+    duplicates removed
+    '''
     def extract_timestamp(filepath):
         timestamp = re.findall(r'\d{14,}', filepath)[0]
         return int(timestamp)
@@ -48,7 +60,13 @@ def compile_full_csv_table(client, target_bucket, table_name):
 
 
 def write_to_bucket(client, table_name, df, timestamp):
-    '''Writes dataframe to parquet format in an S3 bucket'''
+    '''
+    Takes S3 client, table name and timestamp of the newly
+    added file which is included in the event response,
+    and the transformed dataframe.
+    Writes dataframe to the transformation bucket in parquet
+    format.
+    '''
     file_key = table_name + '/' + table_name + str(timestamp) + '.parquet'
     out_buffer = BytesIO()
     df.to_parquet(out_buffer, index=False,)
