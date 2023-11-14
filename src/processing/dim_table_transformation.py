@@ -4,9 +4,12 @@ from datetime import date, timedelta
 
 def dim_remove_dates(data):
     '''removes created_at and last_updated columns'''
+    print(data,'issue')
     transformed_data = data.drop(columns="created_at", inplace=False, axis=1)
+    print(transformed_data)
     transformed_data = transformed_data.drop(
         columns='last_updated', inplace=False, axis=1)
+      
     return transformed_data
 
 

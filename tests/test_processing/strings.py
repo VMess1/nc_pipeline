@@ -85,8 +85,8 @@ def difference_2():
 
 
 def currency_string():
-    return '''currency_id,currency_code,created_at,last_updated\n
-    1,GBP,2022-11-03 14:20:52,2022-11-03 14:20:52\n
-    2,USD,2022-11-03 14:20:52,2022-11-03 14:20:52\n
-    3,EUR,2022-11-03 14:20:52,2022-11-03 14:20:52\n
+    return '''currency_id;currency_code;created_at;last_updated\n
+    1;GBP;2022-11-03 14:20:52;2022-11-03 14:20:52\n
+    2;USD;2022-11-03 14:20:52;2022-11-03 14:20:52\n
+    3;EUR;2022-11-03 14:20:52;2022-11-03 14:20:52\n
     '''
