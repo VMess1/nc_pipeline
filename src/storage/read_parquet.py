@@ -11,13 +11,17 @@ def get_file_list(client, target_bucket, table_name, last_timestamp):
         return int(timestamp)
     response = client.list_objects(Bucket=target_bucket,
                                    Prefix=f'{table_name}/')
-    file_list = [obj['Key'] for obj in response['Contents']]
-    file_list.sort(key=extract_timestamp)
-    last_timestamp_int = int(last_timestamp.replace('-', '')
-                             .replace(':', '').replace(' ', ''))
-    newest_files = [file for file in file_list if
-                    extract_timestamp(file) > last_timestamp_int]
-    return newest_files
+    contents = response.get('Contents', [])
+    if contents:
+        file_list = [obj['Key'] for obj in response['Contents']]
+        file_list.sort(key=extract_timestamp)
+        last_timestamp_int = int(last_timestamp.replace('-', '')
+                                 .replace(':', '').replace(' ', ''))
+        newest_files = [file for file in file_list if
+                        extract_timestamp(file) > last_timestamp_int]
+        return newest_files
+    else:
+        return []
 
 
 def get_parquet_data(client, target_bucket, filepath):
@@ -40,4 +44,4 @@ def compile_parquet_data(client, target_bucket, table_name, timestamp):
                 data_rows.append(data)
         return pd.concat(data_rows, axis=0, ignore_index=True)
     else:
-        return data_rows
+        return pd.DataFrame()
