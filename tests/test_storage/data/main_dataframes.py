@@ -87,7 +87,7 @@ def fact_sales_order_df2():
             'last_updated_date': ['2023-10-17', '2023-10-18'],
             'last_updated_time': ['11:30:30', '11:30:30'],
             'units_sold': [70, 80],
-            'unit_price': [1.5, 1.5, 1.5],
+            'unit_price': [1.5, 1.5],
             'agreed_delivery_location': [7, 8]
         })
 
@@ -101,5 +101,5 @@ def fact_sales_order_df3():
             'last_updated_time': ['11:30:30'],
             'units_sold': [140],
             'unit_price': [4.5],
-            'agreed_delivery_location': [9]
+            'agreed_delivery_location': [6]
         })

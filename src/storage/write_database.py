@@ -64,5 +64,4 @@ def run_insert_query(client, table_name, dataframe):
         insert_statement += conflict_query
     else:
         insert_statement += ';'
-    print(insert_statement)
     client.run(insert_statement, **entries)
