@@ -3,10 +3,11 @@ from datetime import date, timedelta
 
 
 def dim_remove_dates(data):
-    '''removes created_at and last_updated columns'''
-    print(data,'issue')
+    '''
+    takes a dataframe and returns one with the columns
+    'created_at' and 'last_updated' columns removed.
+    '''
     transformed_data = data.drop(columns="created_at", inplace=False, axis=1)
-    print(transformed_data)
     transformed_data = transformed_data.drop(
         columns='last_updated', inplace=False, axis=1)
       
@@ -14,7 +15,11 @@ def dim_remove_dates(data):
 
 
 def dim_join_department(staff_data, departments_data):
-    '''joins department info to staff data on department_id'''
+    '''
+    takes staff dataframe and full department dataframe and
+    joins department info to staff data on department_id,
+    returning a staff dataframe with department names
+    '''
     new_staff_data = dim_remove_dates(staff_data.copy())
     new_departments_data = dim_remove_dates(departments_data.copy())
     result = pd.merge(new_staff_data, new_departments_data, on="department_id")
@@ -26,8 +31,10 @@ def dim_join_department(staff_data, departments_data):
 
 
 def dim_insert_currency_name(data):
-    '''Add currency codes to currency table'''
-
+    '''
+    Takes a currency dataframe and returns a new dataframe
+    with currency codes added.
+    '''
     new_data = data.copy()
     currency_codes = {
         'USD': 'United States Dollar',
@@ -41,6 +48,9 @@ def dim_insert_currency_name(data):
     }
 
     def get_code(name):
+        '''
+        takes a currency name and returns a code
+        '''
         return currency_codes.get(name, 'Invalid')
 
     code_entries = new_data['currency_code'].tolist()
@@ -50,7 +60,11 @@ def dim_insert_currency_name(data):
 
 
 def join_address(counterparty_df, address_df):
-    '''Joins address info to counterparty table'''
+    '''
+    Takes a counterparty dataframe and a full address dataframe,
+    joins address info to counterparty table.
+    Returns counterparty dataframe with full address info.
+    '''
     renamed_cp = counterparty_df.rename(
         {'legal_address_id': 'address_id'}, axis='columns')
     merged_df = pd.merge(renamed_cp, address_df, on='address_id')
@@ -82,7 +96,8 @@ def join_address(counterparty_df, address_df):
 
 
 def dim_locationtf(address_df):
-    '''transforms address table to location table'''
+    '''takes address dataframe and renames column to 
+    transform into location dataframe'''
     renamed_df = address_df.rename(
         {'address_id': 'location_id'}, axis='columns')
     renamed_df = dim_remove_dates(renamed_df)
@@ -90,7 +105,10 @@ def dim_locationtf(address_df):
 
 
 def dim_date_tf():
-    '''creates a table with every date from 2020 to 2050'''
+    '''
+    Returns a dataframe with info for every day's date
+    from 01/01/2020 to 31/12/2049
+    '''
     date_df = pd.date_range(date(2020, 1, 1), date(
         2050, 1, 1) - timedelta(days=1), freq='d')
     date_df = date_df.to_frame(index=False, name='date_id')

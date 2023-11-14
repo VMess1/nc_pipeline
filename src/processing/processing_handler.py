@@ -31,10 +31,26 @@ COUNT = 0
 
 
 def main(event, context):
-    '''Checks parquet bucket for directories.
-    If dim_date is not a directory, the table is created.
-    Based on table name, tables are transformed as required.
-    Table is written to transformation bucket in parquet format.
+    '''
+    Main function for processing CSV files into parquet:
+    This function is triggered by the event of a new file
+    being uploaded to the extraction S3 bucket.
+    Bucket and file information is taken from the event
+    response information.
+
+    First, checks transformation bucket for directories.
+    If dim_date is not a directory, creates this table.
+    This should only be created once as it is just a list
+    of dates from 2020 to 2050. 
+    
+    Second, based on the table whose update has triggered
+    this function, transforms tables as neccessary to
+    match the OLAP format.
+    
+    Last, the writes the table to the transformation bucket
+    in parquet format.
+    Handles errors that may arise during the transformation
+    process.
     '''
     try:
         bucket = event['Records'][0]['s3']['bucket']['name']
@@ -45,8 +61,6 @@ def main(event, context):
             raise TypeError('File type is not csv.')
         s3 = get_client()
         df = get_csv_data(s3, bucket, filepath)
-        #test = str(df.head(5))
-        #logger.info(test)
         parquet_table_list = []
         parquet_table_list += check_transformation_bucket(
             s3, 'nc-group3-transformation-bucket')

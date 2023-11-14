@@ -17,6 +17,11 @@ from src.processing.dim_table_transformation import (
 
 class TestDimRemoveDates:
     def test_dates_are_removed_from_basic_tables(self):
+        '''
+        Creates a test currency dataframe and an expected dataframe.
+        Checks that the dim_remove_dates function invoked with the
+        test dataframe results in the expected.
+        '''
         test_dataframe = currency_dataframe()
         expected_dataframe = pd.DataFrame(data={
             'currency_id': [1, 2, 3],
@@ -27,6 +32,11 @@ class TestDimRemoveDates:
 
 class TestDimInsertCurrencyName:
     def test_new_currency_table_includes_correct_currency_name(self):
+        '''
+        Creates an input and output currency dataframe.
+        Tests that the dim_insert_currency_name function invoked with
+        input, results in the output.
+        '''
         test_input = pd.DataFrame(data={
             'currency_id': [1, 2, 3],
             'currency_code': ['GBP', 'USD', 'EUR']
@@ -42,6 +52,10 @@ class TestDimInsertCurrencyName:
         assert output.equals(test_expected)
 
     def test_invalid_code_marked_as_invalid_in_currency_name(self):
+        '''
+        Creates input and expected dataframes with invalid currency codes.
+        Tests that the invalid code gets transformed to "Invalid" 
+        '''
         test_input = pd.DataFrame(data={
             'currency_id': [1, 2, 3],
             'currency_code': ['GBP', 'USD', 'ABC']
@@ -57,6 +71,10 @@ class TestDimInsertCurrencyName:
         assert output.equals(test_expected)
 
     def test_does_not_mutate_input_dataframe(self):
+        '''
+        Tests that the function dim_insert_currency_name function
+        does not mutate data.
+        '''
         test_input = pd.DataFrame(data={
             'currency_id': [1, 2, 3],
             'currency_code': ['GBP', 'USD', 'EUR']
@@ -71,7 +89,11 @@ class TestDimInsertCurrencyName:
 
 
 class TestDimJoinDepartmentId:
-    def test_merges_2_tables_and_drop_2_tables(self):
+    def test_merges_2_tables_and_drop_2_columns(self):
+        '''
+        Tests that the department names are correctly inserted into
+        staff table and other columns are removed.
+        '''
         test_staff_table = pd.DataFrame(data={
             'staff_id': [1, 2, 3],
             'first_name': ['A', 'B', 'C'],
@@ -106,6 +128,10 @@ class TestDimJoinDepartmentId:
 
 class TestCounterParty:
     def test_counterparty_address_tables_are_joined_correctly(self):
+        '''
+        tests that the address table information is correctly joined
+        onto the counterparty dataframe.
+        '''
         test_counterparty = counterparty_dataframe()
         test_address = address_dataframe()
         test_transformed = dim_counterparty_dataframe()
@@ -113,6 +139,10 @@ class TestCounterParty:
         assert actual.equals(test_transformed)
 
     def test_data_is_not_mutated_by_join_address(self):
+        '''
+        tests that the counterparty or address data
+        is not mutated by join address
+        '''
         test_counterparty = counterparty_dataframe()
         test_address = address_dataframe()
         join_address(test_counterparty, test_address)
@@ -124,12 +154,18 @@ class TestCounterParty:
 
 class TestLocation:
     def test_location_table_is_formed_correctly(self):
+        '''
+        tests that address table is correctly transformed
+        '''
         test_address = address_dataframe()
         test_transformed = dim_locationtf(test_address)
         actual = dim_location_dataframe()
         assert actual.equals(test_transformed)
 
     def test_data_is_not_mutated_by_dim_location(self):
+        '''
+        tests that address data is not mutated
+        '''
         test_address = address_dataframe()
         dim_locationtf(test_address)
         original_address = address_dataframe()
@@ -138,11 +174,20 @@ class TestLocation:
 
 class TestDimDate:
     def test_start_date_of_dim_date_is_1_1_2020(self):
+        '''
+        tests that when the dim_data table is generated,
+        the first date is 1/1/2020
+        '''
         test_df = dim_date_tf()
         assert test_df.iloc[0]['date_id'] == pd.Timestamp(
             year=2020, month=1, day=1)
 
     def test_first_row_has_appropriate_info(self):
+        '''
+        tests that when the dim_data table is generated,
+        the last date is 1/1/2020 and has appropriate
+        column info
+        '''
         test_df = dim_date_tf()
         assert test_df.iloc[0]['year'] == 2020
         assert test_df.iloc[0]['month'] == 1
@@ -153,6 +198,11 @@ class TestDimDate:
         assert test_df.iloc[0]['quarter'] == 1
 
     def test_last_row_has_appropriate_info(self):
+        '''
+        tests that when the dim_data table is generated,
+        the last date is 31/12/2049 and has appropriate
+        column info
+        '''
         test_df = dim_date_tf()
         assert test_df.iloc[10957]['year'] == 2049
         assert test_df.iloc[10957]['month'] == 12

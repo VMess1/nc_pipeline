@@ -45,18 +45,15 @@ def mock_parquet_bucket(aws_credentials):
 
 
 class TestReadCSV:
-    # def test_csv_is_read(self):
-    #     output = read_csv('tests/test_processing/test_payment.csv')
-    #     assert output.iloc[1]['payment_id'] == 2
-
     def test_csv_is_read_from_s3(self, mock_csv_bucket):
+        '''
+        Tests that csv files are read correctly and so
+        can be interrogated.
+        '''
         mock_csv_bucket.put_object(
             Bucket="nc-group3-ingestion-bucket",
             Body=new_string(),
             Key='payment/payment20221103150000.csv')
-        # response = mock_csv_bucket.get_object(
-        #     Bucket="nc-group3-ingestion-bucket",
-        #     Key="payment/20221103150000.csv")
         data = get_csv_data(mock_csv_bucket,
                             "nc-group3-ingestion-bucket",
                             'payment/payment20221103150000.csv')
@@ -65,6 +62,10 @@ class TestReadCSV:
 
 class TestCompileFullCsvTable:
     def test_data_includes_all_csv_files_in_directory(self, mock_csv_bucket):
+        '''
+        Test that compile_full_csv_table returns a dataframe with
+        all csv files in one dataframe.
+        '''
         test_data_1 = (
             'item_id;item_name;created_at;last_updated\n' +
             '1;name_1;2022-12-12 15:15:15;2022-12-12 15:15:15\n'
@@ -106,6 +107,9 @@ class TestCompileFullCsvTable:
 
     def test_data_removes_duplicate_csv_files_in_directory(
             self, mock_csv_bucket):
+        '''
+        test that compiling removes any duplicate rows of data 
+        '''
         test_data_1 = (
             'item_id;item_name;created_at;last_updated\n' +
             '1;name_1;2022-12-12 15:15:15;2022-12-12 15:15:15\n'
@@ -149,6 +153,10 @@ class TestWriteToBucket:
     def test_dataframe_is_saved_to_bucket(
             self, mock_parquet_bucket
     ):
+        '''
+        tests that write_to_bucket saves parquet data
+        to transoformation bucket
+        '''
         test_df = currency_dataframe()
         response = write_to_bucket(
             mock_parquet_bucket, 'currency',
@@ -159,6 +167,9 @@ class TestWriteToBucket:
     def test_parquet_file_is_added_to_bucket_and_is_readable(
             self, mock_parquet_bucket
     ):
+        '''
+        tests that the parquet file that is added is readable when downloaded
+        '''
         test_df = currency_dataframe()
         write_to_bucket(
             mock_parquet_bucket, 'dim_currency',
@@ -176,6 +187,10 @@ class TestWriteToBucket:
 
 class TestParquetChecker:
     def test_gives_list_of_directories(self, mock_parquet_bucket):
+        '''
+        test that check_transformation_bucket returns a list of
+        directories, i.e. table names.
+        '''
         mock_parquet_bucket.put_object(
             Bucket='nc-group3-transformation-bucket',
             Body='string',
