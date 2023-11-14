@@ -42,6 +42,11 @@ def secrets(aws_credentials):
 
 class TestGetCredentials:
     def test_get_credentials(self, secrets):
+        """
+        Checks to see that get_credentials() is able to connect to
+        the AWS secrets manager and return the correct credentials
+        to connect to OLTP DB
+        """
         secret_id = "test_secret"
         secret_values = {
             "engine": "postgres",
@@ -59,6 +64,10 @@ class TestGetCredentials:
 
 class TestSelectFunctions:
     def test_select_table_returns_department_table_rows(self, test_connection):
+        """
+        Tests that select_table() returns the correct data from a specified
+        table and returns a list of the data
+        """
         data = select_table(
             test_connection, "department", datetime(2022, 10, 10, 11, 30, 30)
         )
@@ -118,6 +127,10 @@ class TestSelectFunctions:
     def test_select_table_headers_returns_department_table_headers(
         self, test_connection
     ):
+        """
+        Tests that select_table_headers() returns a nested list of
+        the headers/column names of a specified table in a DB.
+        """
         data = select_table_headers(test_connection, "department")
         assert data[0][0] == "department_id"
         assert data[5][0] == "last_updated"
@@ -125,6 +138,10 @@ class TestSelectFunctions:
     def test_select_table_headers_returns_staff_table_headers(
             self,
             test_connection):
+        """
+        Tests that select_table_headers() returns a nested list of
+        the headers/column names of a specified table in a DB.
+        """
         data = select_table_headers(test_connection, "staff")
         assert data[0][0] == "staff_id"
         assert data[5][0] == "created_at"
