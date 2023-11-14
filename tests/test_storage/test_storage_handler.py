@@ -97,11 +97,10 @@ class TestBasicFunctionRuns:
             'country': ['country_1', 'country_2', 'country_3'],
             'phone': ['1803 637401', '1803 637401', '1803 637401']
         })
-        test_string = test_df.to_string()
         mock_parquet_bucket.put_object(
             Bucket="nc-group3-transformation-bucket",
             Key='dim_location/dim_location2020110315000.parquet',
-            Body=BytesIO(bytes(test_string, encoding='utf-8'))
+            Body=BytesIO(bytes(pd.DataFrame, encoding='utf-8'))
         )
         print(datetime.datetime(2020,1,1,10,30,0)) 
     
