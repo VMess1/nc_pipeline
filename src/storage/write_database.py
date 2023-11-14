@@ -22,11 +22,25 @@ def get_con(credentials):
     )
 
 
+def remove_dim_duplicates(table_name, dataframe):
+    new_data = dataframe.copy()
+    primary_key = dataframe.columns.tolist()[0]
+    new_data = new_data.drop_duplicates(subset=[primary_key],
+                                        keep='last',
+                                        ignore_index=True)
+    return new_data
+
+
 def run_insert_query(client, table_name, dataframe):
     entries = {}
+    table_type = table_name.split('_')[0]
+    if table_type == 'dim':
+        dataframe = remove_dim_duplicates(
+            table_name,
+            dataframe
+        )
     column_list = dataframe.columns.tolist()
     values_list = dataframe.values.tolist()
-    print(column_list)
     insert_query = f'INSERT INTO {table_name} \n('
     values_query = 'VALUES \n'
     conflict_query = f'ON CONFLICT ({column_list[0]}) DO UPDATE SET \n'
@@ -46,9 +60,9 @@ def run_insert_query(client, table_name, dataframe):
         values_query = values_query[:-2] + '),\n'
     values_query = values_query[:-2] + '\n'
     insert_statement = insert_query + values_query
-    if table_name.split('_')[0] == 'dim':
-        print(table_name.split('_')[0])
+    if table_type == 'dim':
         insert_statement += conflict_query
     else:
         insert_statement += ';'
+    print(insert_statement)
     client.run(insert_statement, **entries)

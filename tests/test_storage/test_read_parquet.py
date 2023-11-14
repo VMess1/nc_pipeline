@@ -123,6 +123,16 @@ class TestGetFileListFunction:
         test_expected = []
         assert result == test_expected
 
+    def test_returns_empty_when_no_files_found_matching_prefix(
+        self,
+        mock_parquet_bucket
+    ):
+        result = get_file_list(mock_parquet_bucket,
+                               "nc-group3-transformation-bucket",
+                               "payment",
+                               "10001003150000")
+        assert result == []
+
 
 class TestReadParquetFunction():
     def test_parquet_is_read_from_s3(self, mock_parquet_bucket):
@@ -145,7 +155,7 @@ class TestCompileTransformedParquetData():
     def test_returns_merged_dataframe_from_all_newest_parquet_files(
             self,
             mock_parquet_bucket
-            ):
+    ):
         '''Tests that all new parquet data files are merged into one
         dataframe ready for insertion if there are new files'''
         test_dataframe1 = dim_location_dataframe1()
@@ -165,31 +175,31 @@ class TestCompileTransformedParquetData():
                                       "location",
                                       "20221100150000")
         test_expected = pd.DataFrame(data={
-                'location_id': [1, 2, 3, 4, 5],
-                'address_line_1': ['Herzog Via',
-                                   'Alexie Cliffs',
-                                   'Sincere Fort',
-                                   'Daniel Daniels',
-                                   'David Davids'],
-                'address_line_2': ['None', 'None', 'None', 'None', 'None'],
-                'district': ['Avon1', 'Avon', 'Avon', 'Avon1', 'Babylon'],
-                'city': ['New Patienceburgh1',
-                         'New Patienceburgh',
-                         'New Patienceburgh',
-                         'New Patienceburgh1',
-                         'Luton'],
-                'postal_code': ['28441', '28441', '28441', '28441', '12345'],
-                'country': ['Turkey1',
-                            'Turkey',
-                            'Turkey',
-                            'Brazil',
-                            'England'],
-                'phone': ['1803 637401',
-                          '1803 637401',
-                          '1803 637401',
-                          '1803 637401',
-                          '1234 567890']
-                })
+            'location_id': [1, 2, 3, 4, 5],
+            'address_line_1': ['Herzog Via',
+                               'Alexie Cliffs',
+                               'Sincere Fort',
+                               'Daniel Daniels',
+                               'David Davids'],
+            'address_line_2': ['None', 'None', 'None', 'None', 'None'],
+            'district': ['Avon1', 'Avon', 'Avon', 'Avon1', 'Babylon'],
+            'city': ['New Patienceburgh1',
+                     'New Patienceburgh',
+                     'New Patienceburgh',
+                     'New Patienceburgh1',
+                     'Luton'],
+            'postal_code': ['28441', '28441', '28441', '28441', '12345'],
+            'country': ['Turkey1',
+                        'Turkey',
+                        'Turkey',
+                        'Brazil',
+                        'England'],
+            'phone': ['1803 637401',
+                      '1803 637401',
+                      '1803 637401',
+                      '1803 637401',
+                      '1234 567890']
+        })
         assert isinstance(result, pd.DataFrame)
         assert result.equals(test_expected)
 
@@ -217,7 +227,7 @@ class TestCompileTransformedParquetData():
                                       "nc-group3-transformation-bucket",
                                       "location",
                                       new_timestamp)
-        assert result == []
+        assert result.equals(pd.DataFrame())
 
     def test_returns_correct_dataframe_if_file_empty(
             self,
@@ -248,29 +258,29 @@ class TestCompileTransformedParquetData():
                                       "location",
                                       "20221001154000")
         test_expected = pd.DataFrame(data={
-                'location_id': [1, 2, 3, 4, 5],
-                'address_line_1': ['Herzog Via',
-                                   'Alexie Cliffs',
-                                   'Sincere Fort',
-                                   'Daniel Daniels',
-                                   'David Davids'],
-                'address_line_2': ['None', 'None', 'None', 'None', 'None'],
-                'district': ['Avon1', 'Avon', 'Avon', 'Avon1', 'Babylon'],
-                'city': ['New Patienceburgh1',
-                         'New Patienceburgh',
-                         'New Patienceburgh',
-                         'New Patienceburgh1',
-                         'Luton'],
-                'postal_code': ['28441', '28441', '28441', '28441', '12345'],
-                'country': ['Turkey1',
-                            'Turkey',
-                            'Turkey',
-                            'Brazil',
-                            'England'],
-                'phone': ['1803 637401',
-                          '1803 637401',
-                          '1803 637401',
-                          '1803 637401',
-                          '1234 567890']
-                })
+            'location_id': [1, 2, 3, 4, 5],
+            'address_line_1': ['Herzog Via',
+                               'Alexie Cliffs',
+                               'Sincere Fort',
+                               'Daniel Daniels',
+                               'David Davids'],
+            'address_line_2': ['None', 'None', 'None', 'None', 'None'],
+            'district': ['Avon1', 'Avon', 'Avon', 'Avon1', 'Babylon'],
+            'city': ['New Patienceburgh1',
+                     'New Patienceburgh',
+                     'New Patienceburgh',
+                     'New Patienceburgh1',
+                     'Luton'],
+            'postal_code': ['28441', '28441', '28441', '28441', '12345'],
+            'country': ['Turkey1',
+                        'Turkey',
+                        'Turkey',
+                        'Brazil',
+                        'England'],
+            'phone': ['1803 637401',
+                      '1803 637401',
+                      '1803 637401',
+                      '1803 637401',
+                      '1234 567890']
+        })
         assert result.equals(test_expected)
