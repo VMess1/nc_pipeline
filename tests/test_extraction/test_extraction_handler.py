@@ -51,7 +51,6 @@ class TestLambdaHandlerFunctionality(unittest.TestCase):
             'test_table1'
             )
         mock_convert_to_csv.assert_called_once_with(
-            'test_table1',
             'test',
             'test_headers'
             )

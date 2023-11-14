@@ -17,6 +17,14 @@ logger.setLevel(logging.INFO)
 
 
 def lambda_handler(event, context):
+    """
+    Main function for extracting information from a DB:
+    Connects to database to return data from each table inside
+    the database, converts the data into a csv format and saves
+    the data as .csv files inside a specified bucket, ready to
+    be used by a transformation lambda for data manipulation.
+    Handles errors that may arise during the extraction process.
+    """
     try:
         credentials = get_credentials("OLTPCredentials")
         datestamp = datetime.now().replace(microsecond=0)
@@ -29,7 +37,7 @@ def lambda_handler(event, context):
                 if len(data) > 0:
                     logger.info(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
                     headers = select_table_headers(con, table_name[0])
-                    csv = convert_to_csv(table_name[0], data, headers)
+                    csv = convert_to_csv(data, headers)
                     upload_to_s3(str(datestamp), csv, table_name[0])
         write_current_timestamp('last_extraction', datestamp)
     except ClientError as err:

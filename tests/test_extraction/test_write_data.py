@@ -44,7 +44,7 @@ class TestSqlToCsv:
             test_connection, "department", datetime(2024, 10, 10, 11, 30, 30)
         )
         headers = select_table_headers(test_connection, "department")
-        result = convert_to_csv("department", data, headers)
+        result = convert_to_csv(data, headers)
         assert result == csv
 
 
