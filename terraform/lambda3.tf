@@ -8,6 +8,7 @@ resource "aws_lambda_function" "lambda_warehouse" {
     layers = [aws_lambda_layer_version.layer_dependencies_3.arn,
     "arn:aws:lambda:eu-west-2:336392948345:layer:AWSSDKPandas-Python311:2"]
     timeout = 120
+    memory_size = 512
 }
 
 # lambda3 dependencies

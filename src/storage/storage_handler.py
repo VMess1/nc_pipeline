@@ -43,10 +43,11 @@ def main(event, context):
         logger.info(timestamp)
         target_bucket = 'nc-group3-transformation-bucket'
         for table_name in table_list:
-            logger.info('hello')
+            logger.info(f'{table_name}')
             dataframe = compile_parquet_data(
                 s3client, target_bucket, table_name, timestamp)
-            logger.info('test')
+            tester = dataframe.head(5)
+            logger.info(tester)
             if not dataframe.empty:
                 run_insert_query(con_warehouse, table_name, dataframe)
                 logger.info(f'Updated {table_name}')

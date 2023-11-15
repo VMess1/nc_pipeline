@@ -12,19 +12,20 @@ def get_file_list(client, target_bucket, table_name, last_timestamp):
     def extract_timestamp(filepath):
         timestamp = re.findall(r'\d{14,}', filepath)[0]
         return int(timestamp)
-    logger.info("testing2")
     response = client.list_objects(Bucket=target_bucket,
                                    Prefix=f'{table_name}/')
-    logger.info("Objects listed")
     contents = response.get('Contents', [])
+    logger.info(f"Objects listed")
+    logger.info(response)
     if contents:
         file_list = [obj['Key'] for obj in response['Contents']]
         file_list.sort(key=extract_timestamp)
+        logger.info(f"Full file list: {file_list}")
         last_timestamp_int = int(last_timestamp.replace('-', '')
                                  .replace(':', '').replace(' ', ''))
         newest_files = [file for file in file_list if
                         extract_timestamp(file) > last_timestamp_int]
-        logger.info(newest_files)
+        logger.info(f"Filtered file list {newest_files}")
         return newest_files
     else:
         return []
@@ -43,6 +44,7 @@ def compile_parquet_data(client, target_bucket, table_name, timestamp):
     '''Compiles parquet files, if there are new ones, into a dataframe
     or returns an empty list if no new files'''
     file_list = get_file_list(client, target_bucket, table_name, timestamp)
+    logger.info(f"File list: {file_list}")
     data_rows = []
     if file_list:
         for filepath in file_list:

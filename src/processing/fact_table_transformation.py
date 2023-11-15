@@ -7,7 +7,7 @@ def fact_sales_order_tf(sale_order):
     returning fact_sales_order format dataframe
     '''
     new_dataframe = sale_order
-    new_dataframe['sales_record_id'] = new_dataframe.reset_index().index
+    # new_dataframe['sales_record_id'] = new_dataframe.reset_index().index
     new_dataframe = new_dataframe.rename(
         {'staff_id': 'sales_staff_id'}, axis='columns')
     new_dataframe['created_date'] = pd.DatetimeIndex(
