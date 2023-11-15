@@ -172,6 +172,10 @@ class TestBasicFunctionRuns:
             mock_table_list,
             seeded_connection,
             mock_bucket_location):
+        '''
+        Tests that when location data is passed to the
+        function, this is loaded to the data warehouse.
+        '''
         mock_table_list.return_value = [
             'dim_test_date', 'dim_test_currency',
             'dim_test_design', 'dim_test_staff',
@@ -218,6 +222,11 @@ class TestBasicFunctionRuns:
             mock_table_list,
             seeded_connection,
             mock_bucket_filled):
+        '''
+        Tests that when sales data is passed to the
+        function, this is loaded to the data warehouse
+        into the fact_sales_order table.
+        '''
         mock_table_list.return_value = [
             'dim_test_date', 'dim_test_currency',
             'dim_test_design', 'dim_test_staff',
@@ -327,6 +336,10 @@ class TestErrorHandling:
     def test_handler_logs_error_for_incorrect_parameter_type(
             self, caplog, mock_patches
     ):
+        '''
+        Tests that an error is logged when any parameter type
+        is incorrect.
+        '''
         mock_patches['mock_get_table_list'].return_value = 123
         with caplog.at_level(logging.ERROR):
             main(None, None)
@@ -335,6 +348,9 @@ class TestErrorHandling:
 
     def test_file_logs_exception_error_message(
             self, caplog, mock_patches):
+        '''
+        Tests that all other errors are logged
+        '''
         mock_patches['mock_get_table_list'].side_effect = Exception
         with caplog.at_level(logging.ERROR):
             main(None, None)
