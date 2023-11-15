@@ -16,6 +16,7 @@ from pg8000.native import Connection
 from unittest.mock import patch
 from datetime import date, time
 from decimal import Decimal
+from botocore.exceptions import ClientError
 
 
 from tests.test_storage.data.main_dataframes import (
@@ -115,6 +116,42 @@ def mock_missing_parquet_bucket(aws_credentials):
     with mock_s3():
         conn = boto3.client("s3", region_name="eu-west-2")
         yield conn
+
+
+@pytest.fixture(scope='function')
+def mock_patches(mock_missing_parquet_bucket):
+    with (
+        patch('src.storage.storage_handler.get_table_list')
+        as mock_get_table_list,
+        patch('src.storage.storage_handler.get_credentials')
+        as mock_get_credentials,
+        patch('src.storage.storage_handler.get_con')
+        as mock_get_con,
+        patch('src.storage.storage_handler.get_s3_client',
+              return_value=mock_missing_parquet_bucket)
+        as mock_get_s3_client,
+        patch('src.storage.storage_handler.get_last_timestamp')
+        as mock_get_last_timestamp,
+        patch('src.storage.storage_handler.run_insert_query')
+        as mock_run_insert_query,
+        patch('src.storage.storage_handler.compile_parquet_data')
+        as mock_compile_parquet_data,
+        patch('src.storage.storage_handler.write_current_timestamp')
+        as mock_write_current_timestamp
+    ):
+        mock_get_table_list.return_value = ['table1', 'table2']
+        mock_get_credentials.return_value = 'mocked_credentials'
+        mock_get_con.return_value = 'mocked_connection'
+        yield {
+            'mock_get_table_list': mock_get_table_list,
+            'mock_get_credentials': mock_get_credentials,
+            'mock_get_con': mock_get_con,
+            'mock_get_s3_client': mock_get_s3_client,
+            'mock_get_last_timestamp': mock_get_last_timestamp,
+            'mock_run_insert_query': mock_run_insert_query,
+            'mock_compile_parquet_data': mock_compile_parquet_data,
+            'mock_write_current_timestamp': mock_write_current_timestamp,
+        }
 
 
 class TestBasicFunctionRuns:
@@ -220,3 +257,86 @@ class TestBasicFunctionRuns:
              Decimal('4.50'), 6]]
         result = seeded_connection.run("SELECT * FROM fact_test_sales_order")
         assert result == test_expected
+
+
+class TestErrorHandling:
+    def test_transformation_bucket_not_found(self, caplog, mock_patches):
+        """
+        Tests that a ClientError of NoSuchBucket returns the
+        correct logging error if no such bucket exists
+        """
+        mock_patches['mock_compile_parquet_data'].side_effect = ClientError(
+            error_response={
+                "Error": {
+                    "Code": "NoSuchBucket",
+                    "Message": "The specified bucket does not exist.",
+                    "BucketName": "nc-group3-transformation-bucket"
+                }
+            },
+            operation_name="ClientError"
+        )
+        with caplog.at_level(logging.ERROR):
+            main(None, None)
+        expected = "Bucket not found: nc-group3-transformation-bucket"
+        assert expected in caplog.text
+
+    def test_handler_logs_internal_service_errors(
+            self, caplog, mock_patches
+    ):
+        """
+        Tests that a ClientError of InternalServiceError returns the
+        correct logging error
+        """
+        mock_patches['mock_compile_parquet_data'].side_effect = ClientError(
+            error_response={
+                "Error": {
+                    "Code": "InternalServiceError",
+                    "Message": "Internal service error detected!",
+                    "BucketName": "nc-group3-transformation-bucket"
+                }
+            },
+            operation_name="ClientError"
+        )
+        with caplog.at_level(logging.ERROR):
+            main(None, None)
+        expected = "Internal service error detected."
+        assert expected in caplog.text
+
+    def test_handler_logs_no_such_key_errors(
+            self, caplog, mock_patches
+    ):
+        """
+        Tests that a ClientError of NoSuchKey returns the
+        correct logging error
+        """
+        mock_patches['mock_compile_parquet_data'].side_effect = ClientError(
+            error_response={
+                "Error": {
+                    "Code": "NoSuchKey",
+                    "Message": "Testing key errors",
+                    "BucketName": "nc-group3-transformation-bucket"
+                }
+            },
+            operation_name="ClientError"
+        )
+        with caplog.at_level(logging.ERROR):
+            main(None, None)
+        expected = "No such key"
+        assert expected in caplog.text
+
+    def test_handler_logs_error_for_incorrect_parameter_type(
+            self, caplog, mock_patches
+    ):
+        mock_patches['mock_get_table_list'].return_value = 123
+        with caplog.at_level(logging.ERROR):
+            main(None, None)
+        expected = "Incorrect parameter type:"
+        assert expected in caplog.text
+
+    def test_file_logs_exception_error_message(
+            self, caplog, mock_patches):
+        mock_patches['mock_get_table_list'].side_effect = Exception
+        with caplog.at_level(logging.ERROR):
+            main(None, None)
+        expected = "An unexpected error has occurred:"
+        assert expected in caplog.text
