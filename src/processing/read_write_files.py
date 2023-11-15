@@ -38,7 +38,7 @@ def check_transformation_bucket(client, target_bucket):
 
 def compile_full_csv_table(client, target_bucket, table_name):
     '''
-    Takes S3 client, bucket and table info of the full table 
+    Takes S3 client, bucket and table info of the full table
     needed. Compiles csv files and returns a dataframe with any
     duplicates removed
     '''

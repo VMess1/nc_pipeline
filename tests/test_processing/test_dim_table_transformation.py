@@ -54,7 +54,7 @@ class TestDimInsertCurrencyName:
     def test_invalid_code_marked_as_invalid_in_currency_name(self):
         '''
         Creates input and expected dataframes with invalid currency codes.
-        Tests that the invalid code gets transformed to "Invalid" 
+        Tests that the invalid code gets transformed to "Invalid"
         '''
         test_input = pd.DataFrame(data={
             'currency_id': [1, 2, 3],

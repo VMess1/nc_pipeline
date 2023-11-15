@@ -10,7 +10,7 @@ def dim_remove_dates(data):
     transformed_data = data.drop(columns="created_at", inplace=False, axis=1)
     transformed_data = transformed_data.drop(
         columns='last_updated', inplace=False, axis=1)
-      
+
     return transformed_data
 
 
@@ -96,7 +96,7 @@ def join_address(counterparty_df, address_df):
 
 
 def dim_locationtf(address_df):
-    '''takes address dataframe and renames column to 
+    '''takes address dataframe and renames column to
     transform into location dataframe'''
     renamed_df = address_df.rename(
         {'address_id': 'location_id'}, axis='columns')

@@ -41,12 +41,12 @@ def main(event, context):
     First, checks transformation bucket for directories.
     If dim_date is not a directory, creates this table.
     This should only be created once as it is just a list
-    of dates from 2020 to 2050. 
-    
+    of dates from 2020 to 2050.
+
     Second, based on the table whose update has triggered
     this function, transforms tables as neccessary to
     match the OLAP format.
-    
+
     Last, the writes the table to the transformation bucket
     in parquet format.
     Handles errors that may arise during the transformation

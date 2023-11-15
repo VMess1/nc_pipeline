@@ -108,7 +108,7 @@ class TestCompileFullCsvTable:
     def test_data_removes_duplicate_csv_files_in_directory(
             self, mock_csv_bucket):
         '''
-        test that compiling removes any duplicate rows of data 
+        test that compiling removes any duplicate rows of data
         '''
         test_data_1 = (
             'item_id;item_name;created_at;last_updated\n' +
