@@ -5,7 +5,7 @@
 
 ## The Pipeline
 <p align="justify">1. The pipeline's "extraction" Lambda function collects both archive and new data entries by scanning the database periodically for updates. It converts new, unique data to CSV files which are stored in an S3 bucket; and logs in CloudWatch. The database credentials are stored in Secrets Manager; and Systems Manager is used to store timestamps.</p>
-<p align="justify">2. Any bucket upload event triggers a second "processing" Lambda function which transforms and normalises the data and stores them in parquet format in a second S3 bucket.</p>
+<p align="justify">2. Any bucket upload event triggers a second "processing" Lambda function which transforms and normalises the data using Pandas DataFrames and stores them in parquet format in a second S3 bucket.</p>
 <p align="justify">3. Finally, a third "storage" Lambda function scans the second bucket periodically for updates, which the pipeline converts back to SQL and loads to a data warehouse in star format.</p>
 
 The entire pipeline infrastructure is managed using Terraform.
