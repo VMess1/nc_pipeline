@@ -26,6 +26,10 @@ def mock_params(aws_credentials):
 
 class TestGetLastTimestamp:
     def test_returns_value_if_parameter_found(self, mock_params):
+        '''
+        Tests that the parameter is returned if it is present
+        in the AWS Systems Manager.
+        '''
         test_name = "Test-parameter"
         test_value = datetime(2023, 10, 10, 11, 30, 30)
         mock_params.put_parameter(
@@ -36,6 +40,10 @@ class TestGetLastTimestamp:
         assert get_last_timestamp(test_name) == str(test_value)
 
     def test_raises_error_if_parameter_not_found(self, mock_params):
+        '''
+        Tests that an error is raised if the required parameter
+        is not in the Systems Manager.
+        '''
         test_name = "Test-parameter"
         with pytest.raises(ClientError) as excinfo:
             get_last_timestamp(test_name)
@@ -50,6 +58,10 @@ class TestWriteCurrentTimestamp:
     def test_returns_correct_status_response_when_successful(
             self,
             mock_params):
+        '''
+        Tests that the status code is 200 when the timestamp is
+        written correctly.
+        '''
         test_name = "Test-parameter"
         test_value = datetime(2025, 10, 10, 11, 30, 30)
         response = write_current_timestamp(test_name, test_value)
@@ -61,6 +73,9 @@ class TestWriteCurrentTimestamp:
         assert output == "2025-10-10 11:30:30"
 
     def test_overwrites_existing_parameter(self, mock_params):
+        '''
+        Tests that when an
+        '''
         test_name = "Test-parameter"
         test_value_1 = datetime(2025, 10, 10, 11, 30, 30)
         test_value_2 = datetime(1999, 4, 10, 6, 30, 30)

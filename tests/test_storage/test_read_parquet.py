@@ -127,6 +127,8 @@ class TestGetFileListFunction:
         self,
         mock_parquet_bucket
     ):
+        '''Tests that an empty list is returned when
+        there are no new files.'''
         result = get_file_list(mock_parquet_bucket,
                                "nc-group3-transformation-bucket",
                                "payment",
