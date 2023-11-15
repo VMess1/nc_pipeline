@@ -4,8 +4,14 @@ import re
 
 
 def get_file_list(client, target_bucket, table_name, last_timestamp):
-    '''Retrieves the most recent parquet files from s3 bucket
-    compared to the last_timestamp'''
+    '''
+    Takes the S3 client, transformation bucket, table name and
+    last insertion timestamp. The timestamp is set to 2020 for
+    the first run to ensure archive data is retrieved.
+    Retrieves new parquet files from s3 bucket compared to the
+    timestamp. Loads the data to the data warehouse and updates
+    the last insertion timestamp ready for the next invocation.
+    '''
     def extract_timestamp(filepath):
         timestamp = re.findall(r'\d{14,}', filepath)[0]
         return int(timestamp)
@@ -25,7 +31,11 @@ def get_file_list(client, target_bucket, table_name, last_timestamp):
 
 
 def get_parquet_data(client, target_bucket, filepath):
-    '''Retrieves parquet data from an S3 bucket and converts to dataframe'''
+    '''
+    Takes the S3 client, transformation bucket and filepath
+    of the file. Retrieves parquet data from the S3 bucket
+    and returns the data as a dataframe.
+    '''
     response = client.get_object(
         Bucket=target_bucket,
         Key=filepath)
@@ -33,8 +43,11 @@ def get_parquet_data(client, target_bucket, filepath):
 
 
 def compile_parquet_data(client, target_bucket, table_name, timestamp):
-    '''Compiles parquet files, if there are new ones, into a dataframe
-    or returns an empty list if no new files'''
+    '''
+    Takes the S3 client, transformation bucket, table and last
+    insertion timestamp. returns compiled parquet files, if there are new
+    ones, into a single dataframe or returns an empty list if no new files.
+    '''
     file_list = get_file_list(client, target_bucket, table_name, timestamp)
     data_rows = []
     if file_list:
