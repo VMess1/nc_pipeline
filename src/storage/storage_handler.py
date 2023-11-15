@@ -2,7 +2,7 @@ import boto3
 from botocore.exceptions import ClientError
 import logging
 from datetime import datetime
-
+import time
 from src.storage.read_parquet import (compile_parquet_data)
 from src.storage.store_timestamp import (get_last_timestamp,
                                          write_current_timestamp)
@@ -10,7 +10,7 @@ from src.storage.write_database import (get_credentials,
                                         get_con,
                                         run_insert_query)
 
-logger = logging.getLogger("LPY2Logger")
+logger = logging.getLogger("LPY3Logger")
 logger.setLevel(logging.INFO)
 
 
@@ -32,6 +32,7 @@ def get_table_list():
 def main(event, context):
     '''Cycles through tables and updates warehouse when updates are found.'''
     try:
+        time.sleep(10)
         table_list = get_table_list()
         current_time = datetime.now().replace(microsecond=0)
         credentials = get_credentials("OLAPCredentials")
@@ -45,8 +46,10 @@ def main(event, context):
             logger.info('hello')
             dataframe = compile_parquet_data(
                 s3client, target_bucket, table_name, timestamp)
+            logger.info('test')
             if not dataframe.empty:
                 run_insert_query(con_warehouse, table_name, dataframe)
+                logger.info(f'Updated {table_name}')
             else:
                 logger.info(f'No updates made to {table_name}')
         write_current_timestamp('last_insertion', current_time)

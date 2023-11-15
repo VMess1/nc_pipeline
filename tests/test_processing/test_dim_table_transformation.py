@@ -173,41 +173,41 @@ class TestLocation:
 
 
 class TestDimDate:
-    def test_start_date_of_dim_date_is_1_1_2020(self):
+    def test_start_date_of_dim_date_is_1_1_2022(self):
         '''
         tests that when the dim_data table is generated,
         the first date is 1/1/2020
         '''
         test_df = dim_date_tf()
         assert test_df.iloc[0]['date_id'] == pd.Timestamp(
-            year=2020, month=1, day=1)
+            year=2022, month=1, day=1)
 
     def test_first_row_has_appropriate_info(self):
         '''
         tests that when the dim_data table is generated,
-        the last date is 1/1/2020 and has appropriate
+        the last date is 1/1/2022 and has appropriate
         column info
         '''
         test_df = dim_date_tf()
-        assert test_df.iloc[0]['year'] == 2020
+        assert test_df.iloc[0]['year'] == 2022
         assert test_df.iloc[0]['month'] == 1
         assert test_df.iloc[0]['day'] == 1
-        assert test_df.iloc[0]['day_of_week'] == 2
-        assert test_df.iloc[0]['day_name'] == "Wednesday"
+        assert test_df.iloc[0]['day_of_week'] == 5
+        assert test_df.iloc[0]['day_name'] == "Saturday"
         assert test_df.iloc[0]['month_name'] == "January"
         assert test_df.iloc[0]['quarter'] == 1
 
     def test_last_row_has_appropriate_info(self):
         '''
         tests that when the dim_data table is generated,
-        the last date is 31/12/2049 and has appropriate
+        the last date is 31/12/2027 and has appropriate
         column info
         '''
         test_df = dim_date_tf()
-        assert test_df.iloc[10957]['year'] == 2049
-        assert test_df.iloc[10957]['month'] == 12
-        assert test_df.iloc[10957]['day'] == 31
-        assert test_df.iloc[10957]['day_of_week'] == 4
-        assert test_df.iloc[10957]['day_name'] == "Friday"
-        assert test_df.iloc[10957]['month_name'] == "December"
-        assert test_df.iloc[10957]['quarter'] == 4
+        assert test_df.iloc[-1]['year'] == 2027
+        assert test_df.iloc[-1]['month'] == 12
+        assert test_df.iloc[-1]['day'] == 31
+        assert test_df.iloc[-1]['day_of_week'] == 4
+        assert test_df.iloc[-1]['day_name'] == "Friday"
+        assert test_df.iloc[-1]['month_name'] == "December"
+        assert test_df.iloc[-1]['quarter'] == 4

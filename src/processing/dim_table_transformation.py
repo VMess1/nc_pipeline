@@ -109,8 +109,8 @@ def dim_date_tf():
     Returns a dataframe with info for every day's date
     from 01/01/2020 to 31/12/2049
     '''
-    date_df = pd.date_range(date(2020, 1, 1), date(
-        2050, 1, 1) - timedelta(days=1), freq='d')
+    date_df = pd.date_range(date(2022, 1, 1), date(
+        2028, 1, 1) - timedelta(days=1), freq='d')
     date_df = date_df.to_frame(index=False, name='date_id')
     date_df['year'] = pd.DatetimeIndex(date_df['date_id']).year
     date_df['month'] = pd.DatetimeIndex(date_df['date_id']).month
@@ -119,11 +119,11 @@ def dim_date_tf():
     s = pd.Series(
         pd.date_range(
             date(
-                2020,
+                2022,
                 1,
                 1),
             date(
-                2050,
+                2028,
                 1,
                 1) -
             timedelta(

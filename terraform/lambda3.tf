@@ -17,3 +17,10 @@ resource "aws_lambda_layer_version" "layer_dependencies_3" {
   s3_key = aws_s3_object.layer_code_3.key
   compatible_runtimes = ["python3.11"]
 }
+
+resource "aws_lambda_permission" "allow_eventbridge_ware" {
+  action         = "lambda:InvokeFunction"
+  function_name  = aws_lambda_function.lambda_warehouse.function_name
+  principal      = "events.amazonaws.com"
+  source_arn     = aws_cloudwatch_event_rule.event_rule2.arn
+}

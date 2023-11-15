@@ -1,7 +1,10 @@
 import pandas as pd
 from io import BytesIO
 import re
+import logging
 
+logger = logging.getLogger("LPY3Logger")
+logger.setLevel(logging.INFO)
 
 def get_file_list(client, target_bucket, table_name, last_timestamp):
     '''Retrieves the most recent parquet files from s3 bucket
@@ -9,8 +12,10 @@ def get_file_list(client, target_bucket, table_name, last_timestamp):
     def extract_timestamp(filepath):
         timestamp = re.findall(r'\d{14,}', filepath)[0]
         return int(timestamp)
+    logger.info("testing2")
     response = client.list_objects(Bucket=target_bucket,
                                    Prefix=f'{table_name}/')
+    logger.info("Objects listed")
     contents = response.get('Contents', [])
     if contents:
         file_list = [obj['Key'] for obj in response['Contents']]
@@ -19,6 +24,7 @@ def get_file_list(client, target_bucket, table_name, last_timestamp):
                                  .replace(':', '').replace(' ', ''))
         newest_files = [file for file in file_list if
                         extract_timestamp(file) > last_timestamp_int]
+        logger.info(newest_files)
         return newest_files
     else:
         return []
@@ -29,6 +35,7 @@ def get_parquet_data(client, target_bucket, filepath):
     response = client.get_object(
         Bucket=target_bucket,
         Key=filepath)
+    logger.info(response)
     return pd.read_parquet(BytesIO(response['Body'].read()))
 
 
