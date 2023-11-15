@@ -9,13 +9,13 @@ resource "aws_s3_bucket" "ingestion_bucket" {
 }
 
 resource "aws_s3_object" "lambda_code" {
-  key    = "ingestion_function/function.zip"      #updating(function name)
+  key    = "ingestion_function/function.zip"     
   source = "${path.module}/../function.zip" 
-  bucket = aws_s3_bucket.code_bucket.id #update with proper 
+  bucket = aws_s3_bucket.code_bucket.id 
 }
 
 resource "aws_s3_object" "layer_code" {
-  key    = "ingestion_function/layer_code.zip"      #updating(function name
-  source = "${path.module}/../aws_utils/layer_code.zip"   #update with proper 
+  key    = "ingestion_function/layer_code.zip"      
+  source = "${path.module}/../aws_utils/layer_code.zip"   
   bucket = aws_s3_bucket.code_bucket.id
 }

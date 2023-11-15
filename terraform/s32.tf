@@ -14,9 +14,8 @@ resource "aws_s3_bucket" "transformation_bucket" {
 }
 
 resource "aws_s3_object" "layer_code_2" {
-  key    = "ingestion_function/layer_code2.zip"
+  key    = "transformation_function/layer_code2.zip"
   source = "${path.module}/../aws_utils/layer_code2.zip"
   bucket = aws_s3_bucket.code_bucket_2.id
 }
 
-#double check key
