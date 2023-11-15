@@ -35,11 +35,14 @@ def main(event, context):
         table_list = get_table_list()
         current_time = datetime.now().replace(microsecond=0)
         credentials = get_credentials("OLAPCredentials")
+        logger.info('has credentials')
         con_warehouse = get_con(credentials)
         s3client = get_s3_client()
         timestamp = get_last_timestamp('last_insertion')
+        logger.info(timestamp)
         target_bucket = 'nc-group3-transformation-bucket'
         for table_name in table_list:
+            logger.info('hello')
             dataframe = compile_parquet_data(
                 s3client, target_bucket, table_name, timestamp)
             if not dataframe.empty:
