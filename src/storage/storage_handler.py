@@ -42,7 +42,7 @@ def main(event, context):
     Main function for taking information from parquet tables
     and loading to data warehouse.
     Connects to transformation bucket and cycles through directories
-    to retrieve new parquet data based by comparing a timestamp. 
+    to retrieve new parquet data based by comparing a timestamp.
     Updates SQL data warehouse when updates are found.
     '''
     try:
