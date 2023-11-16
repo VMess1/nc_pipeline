@@ -4,15 +4,18 @@ from pg8000.native import Connection
 
 
 def get_credentials(secret_name):
-    """Get credentials from AWS Secrets Manager"""
-
+    """
+    Takes OLAP credentials name and returns credentials
+    from AWS Secrets Manager
+    """
     client = boto3.client("secretsmanager", region_name="eu-west-2")
     response = client.get_secret_value(SecretId=secret_name)
     return json.loads(response["SecretString"])
 
 
 def get_con(credentials):
-    """Gets connection using credentials obtained"""
+    """Takes OLAP credentials and returns connection
+    to Data Warehouse"""
 
     return Connection(
         user=credentials["username"],
@@ -23,6 +26,12 @@ def get_con(credentials):
 
 
 def remove_dim_duplicates(table_name, dataframe):
+    '''
+    Takes table name and data and returns a new
+    dataframe, with any duplicates removed, ensuring
+    that the latest duplicate is the one that is saved,
+    in case of any updates.
+    '''
     new_data = dataframe.copy()
     primary_key = dataframe.columns.tolist()[0]
     new_data = new_data.drop_duplicates(subset=[primary_key],

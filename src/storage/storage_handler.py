@@ -14,11 +14,19 @@ logger.setLevel(logging.INFO)
 
 
 def get_s3_client():
+    '''
+    Gets the connection to s3 transformation bucket.
+    Uses boto3 to establish the connection.
+    Returns an instance of the boto3 connection class.
+    '''
     s3 = boto3.client("s3", region_name="eu-west-2")
     return s3
 
 
 def get_table_list():
+    '''
+    Returns list of tables required for the OLAP star schema.
+    '''
     return ['dim_date',
             'dim_currency',
             'dim_design',
@@ -29,7 +37,13 @@ def get_table_list():
 
 
 def main(event, context):
-    '''Cycles through tables and updates warehouse when updates are found.'''
+    '''
+    Main function for taking information from parquet tables
+    and loading to data warehouse.
+    Connects to transformation bucket and cycles through directories
+    to retrieve new parquet data based by comparing a timestamp.
+    Updates SQL data warehouse when updates are found.
+    '''
     try:
         table_list = get_table_list()
         current_time = (
