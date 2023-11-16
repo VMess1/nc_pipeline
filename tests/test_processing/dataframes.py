@@ -186,7 +186,6 @@ def sales_order_dataframe():
 
 def fact_sales_dataframe():
     return pd.DataFrame(data={
-        'sales_record_id': [0, 1, 2],
         'sales_order_id': [5136, 5137, 5138],
         'created_date': [datetime.date(2022, 1, 1),
                          datetime.date(2022, 2, 1),

@@ -1,8 +1,7 @@
 import boto3
 from botocore.exceptions import ClientError
 import logging
-from datetime import datetime
-
+from datetime import datetime, timedelta
 from src.storage.read_parquet import (compile_parquet_data)
 from src.storage.store_timestamp import (get_last_timestamp,
                                          write_current_timestamp)
@@ -10,7 +9,7 @@ from src.storage.write_database import (get_credentials,
                                         get_con,
                                         run_insert_query)
 
-logger = logging.getLogger("LPY2Logger")
+logger = logging.getLogger("LPY3Logger")
 logger.setLevel(logging.INFO)
 
 
@@ -47,7 +46,9 @@ def main(event, context):
     '''
     try:
         table_list = get_table_list()
-        current_time = datetime.now().replace(microsecond=0)
+        current_time = (
+            datetime.now() - timedelta(seconds=60)
+            ).replace(microsecond=0)
         credentials = get_credentials("OLAPCredentials")
         logger.info('has credentials')
         con_warehouse = get_con(credentials)
@@ -56,11 +57,14 @@ def main(event, context):
         logger.info(timestamp)
         target_bucket = 'nc-group3-transformation-bucket'
         for table_name in table_list:
-            logger.info('hello')
+            logger.info(f'{table_name}')
             dataframe = compile_parquet_data(
                 s3client, target_bucket, table_name, timestamp)
+            tester = dataframe.head(5)
+            logger.info(tester)
             if not dataframe.empty:
                 run_insert_query(con_warehouse, table_name, dataframe)
+                logger.info(f'Updated {table_name}')
             else:
                 logger.info(f'No updates made to {table_name}')
         write_current_timestamp('last_insertion', current_time)

@@ -56,7 +56,8 @@ resource "aws_iam_role_policy_attachment" "lambda_cw_policy_attachment3" {
 data "aws_iam_policy_document" "s3_document_3" {
   statement {
     actions = ["s3:GetObject", "s3:ListBucket"]  #potentially need to add put object
-    resources = ["${aws_s3_bucket.transformation_bucket.arn}/*"]
+    resources = [ "${aws_s3_bucket.transformation_bucket.arn}",
+      "${aws_s3_bucket.transformation_bucket.arn}/*"]
   }
 } 
 
