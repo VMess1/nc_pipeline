@@ -93,4 +93,4 @@ check-coverage3:
 
 
 # ## Run all checks
-# run-checks: security-test run-flake unit-test check-coverage
+run-checks: security-test run-flake unit-test1 unit-test2 unit-test3 check-coverage1 check-coverage2 check-coverage3

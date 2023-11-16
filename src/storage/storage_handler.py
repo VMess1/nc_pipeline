@@ -1,8 +1,7 @@
 import boto3
 from botocore.exceptions import ClientError
 import logging
-from datetime import datetime
-import time
+from datetime import datetime, timedelta
 from src.storage.read_parquet import (compile_parquet_data)
 from src.storage.store_timestamp import (get_last_timestamp,
                                          write_current_timestamp)
@@ -32,9 +31,10 @@ def get_table_list():
 def main(event, context):
     '''Cycles through tables and updates warehouse when updates are found.'''
     try:
-        time.sleep(10)
         table_list = get_table_list()
-        current_time = datetime.now().replace(microsecond=0)
+        current_time = (
+            datetime.now() - timedelta(seconds=60)
+            ).replace(microsecond=0)
         credentials = get_credentials("OLAPCredentials")
         logger.info('has credentials')
         con_warehouse = get_con(credentials)
