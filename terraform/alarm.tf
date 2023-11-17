@@ -3,7 +3,6 @@ resource "aws_cloudwatch_log_group" "lambda1" {
   name = "lambda_ingestion_errors"
 }
 
-
 #ClientError alarm filter
 resource "aws_cloudwatch_log_metric_filter" "ClientError" {
     name           = "Ingestion function Client Error"

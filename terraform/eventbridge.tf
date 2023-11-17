@@ -10,7 +10,7 @@ resource "aws_cloudwatch_event_target" "event_target" {
     rule = aws_cloudwatch_event_rule.event_rule.name
 }
 
-
+#Creates an EventBridge rule to invoke storage lambda every 2 minutes
 resource "aws_cloudwatch_event_rule" "event_rule2" {
     name = "event_rule"
     schedule_expression = "rate(2 minutes)"

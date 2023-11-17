@@ -59,6 +59,9 @@ def secrets(aws_credentials):
 
 class TestGetCredentials:
     def test_get_credentials(self, secrets):
+        '''
+        Tests that credentials are retrieved.
+        '''
         secret_id = "test_secret"
         secret_values = {
             "engine": "postgres",
@@ -76,6 +79,9 @@ class TestGetCredentials:
 
 class TestRunInsertQuery:
     def test_updates_dim_table_with_new_records(self, seeded_connection):
+        '''
+        Tests that the sql table is updated with a new record.
+        '''
         test_input = pd.DataFrame(data={
             'location_id': [4, 5],
             'address_line_1': ['street_4', 'street_5'],
@@ -103,6 +109,10 @@ class TestRunInsertQuery:
 
     def test_updates_dim_table_with_conflicting_records(
             self, seeded_connection):
+        '''
+        Tests that when data is conflicting, the table is updated
+        with the new data.
+        '''
         test_input = pd.DataFrame(data={
             'location_id': [2, 5],
             'address_line_1': ['street_4', 'street_5'],
@@ -127,6 +137,10 @@ class TestRunInsertQuery:
              'E555EE', 'country_5', '1803 637401']]
 
     def test_updates_facts_table_with_new_records(self, seeded_connection):
+        '''
+        Tests that the sql fact table is updated with new records
+        and not overwritten.
+        '''
         test_input = pd.DataFrame(data={
             'sales_order_id': [4, 5],
             'created_date': ['2024-10-10', '2025-10-10'],
@@ -159,6 +173,10 @@ class TestRunInsertQuery:
 
     def test_updates_facts_table_with_modified_records(
             self, seeded_connection):
+        '''
+        Tests that sql sales records that have been modified are
+        updated.
+        '''
         test_input = pd.DataFrame(data={
             'sales_order_id': [2, 1],
             'created_date': ['2024-10-10', '2025-10-10'],

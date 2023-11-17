@@ -37,11 +37,13 @@ data "aws_iam_policy_document" "write_to_cw_policy_2" {
     ]
   }
 }
+
 # Attaches cw policy document to policy
 resource "aws_iam_policy" "cw_policy_2" {
     name_prefix = "cw-policy-${var.lambda_transformation}"
     policy = data.aws_iam_policy_document.write_to_cw_policy_2.json
 }
+
 #Attaches cw policy to the lambda_transformation_roles
 resource "aws_iam_role_policy_attachment" "lambda_cw_policy_attachment2" {
     role = aws_iam_role.lambda_transformation_role.name

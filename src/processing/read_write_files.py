@@ -1,11 +1,6 @@
 import pandas as pd
 import re
-import logging
 from io import BytesIO
-
-
-logger = logging.getLogger("LPY2Logger")
-logger.setLevel(logging.INFO)
 
 
 def get_csv_data(client, target_bucket, filepath):
@@ -48,7 +43,6 @@ def compile_full_csv_table(client, target_bucket, table_name):
     response = client.list_objects(Bucket=target_bucket,
                                    Prefix=table_name)
     file_list = [obj['Key'] for obj in response.get('Contents', [])]
-    logger.info(file_list)
     file_list.sort(key=extract_timestamp)
     data_rows = []
     for filepath in file_list:

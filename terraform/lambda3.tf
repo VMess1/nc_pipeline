@@ -1,3 +1,6 @@
+#STORAGE LAMBDA
+
+# lambda function
 resource "aws_lambda_function" "lambda_warehouse" {
     function_name = var.lambda_warehouse
     role = aws_iam_role.lambda_warehouse_role.arn
@@ -19,6 +22,7 @@ resource "aws_lambda_layer_version" "layer_dependencies_3" {
   compatible_runtimes = ["python3.11"]
 }
 
+# allows lambda 3 to be invoked by EventBridge
 resource "aws_lambda_permission" "allow_eventbridge_ware" {
   action         = "lambda:InvokeFunction"
   function_name  = aws_lambda_function.lambda_warehouse.function_name

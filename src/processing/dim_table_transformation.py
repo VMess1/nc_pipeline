@@ -107,7 +107,7 @@ def dim_locationtf(address_df):
 def dim_date_tf():
     '''
     Returns a dataframe with info for every day's date
-    from 01/01/2020 to 31/12/2049
+    from 01/01/2022 to 31/12/2027
     '''
     date_df = pd.date_range(date(2022, 1, 1), date(
         2028, 1, 1) - timedelta(days=1), freq='d')
@@ -118,16 +118,9 @@ def dim_date_tf():
     date_df['day_of_week'] = pd.DatetimeIndex(date_df['date_id']).dayofweek
     s = pd.Series(
         pd.date_range(
-            date(
-                2022,
-                1,
-                1),
-            date(
-                2028,
-                1,
-                1) -
-            timedelta(
-                days=1),
+            date(2022, 1, 1),
+            date(2028, 1, 1) -
+            timedelta(days=1),
             freq='d'))
     date_df['day_name'] = s.dt.day_name()
     date_df['month_name'] = s.dt.month_name()

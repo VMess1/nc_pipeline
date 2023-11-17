@@ -25,7 +25,7 @@ def get_con(credentials):
     )
 
 
-def remove_dim_duplicates(table_name, dataframe):
+def remove_dim_duplicates(dataframe):
     '''
     Takes table name and data and returns a new
     dataframe, with any duplicates removed, ensuring
@@ -43,10 +43,7 @@ def remove_dim_duplicates(table_name, dataframe):
 def run_insert_query(client, table_name, dataframe):
     table_type = table_name.split('_')[0]
     if table_type == 'dim':
-        dataframe = remove_dim_duplicates(
-            table_name,
-            dataframe
-        )
+        dataframe = remove_dim_duplicates(dataframe)
     column_list = dataframe.columns.tolist()
     values_list = dataframe.values.tolist()
     for row in values_list:

@@ -41,7 +41,7 @@ def main(event, context):
     First, checks transformation bucket for directories.
     If dim_date is not a directory, creates this table.
     This should only be created once as it is just a list
-    of dates from 2020 to 2050.
+    of dates from 2022 to 2028.
 
     Second, based on the table whose update has triggered
     this function, transforms tables as neccessary to

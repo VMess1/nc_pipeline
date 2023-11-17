@@ -74,7 +74,8 @@ class TestWriteCurrentTimestamp:
 
     def test_overwrites_existing_parameter(self, mock_params):
         '''
-        Tests that when an
+        Tests that when a new parameter is given, the existing
+        one is overwritten.
         '''
         test_name = "Test-parameter"
         test_value_1 = datetime(2025, 10, 10, 11, 30, 30)

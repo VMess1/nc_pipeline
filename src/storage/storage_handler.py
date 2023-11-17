@@ -50,18 +50,13 @@ def main(event, context):
             datetime.now() - timedelta(seconds=60)
             ).replace(microsecond=0)
         credentials = get_credentials("OLAPCredentials")
-        logger.info('has credentials')
         con_warehouse = get_con(credentials)
         s3client = get_s3_client()
         timestamp = get_last_timestamp('last_insertion')
-        logger.info(timestamp)
         target_bucket = 'nc-group3-transformation-bucket'
         for table_name in table_list:
-            logger.info(f'{table_name}')
             dataframe = compile_parquet_data(
                 s3client, target_bucket, table_name, timestamp)
-            tester = dataframe.head(5)
-            logger.info(tester)
             if not dataframe.empty:
                 run_insert_query(con_warehouse, table_name, dataframe)
                 logger.info(f'Updated {table_name}')
